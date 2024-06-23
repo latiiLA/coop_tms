@@ -1,13 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter as Router } from "react-router-dom";
+import "./index.css";
+import { ThemeProvider } from "./context/ThemeProvider";
+import { lightTheme, darkTheme } from "./context/Themes";
+import { useTheme } from "./context/ThemeProvider";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <React.StrictMode>
-    <App />
+    <Router>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </Router>
   </React.StrictMode>
 );
 
