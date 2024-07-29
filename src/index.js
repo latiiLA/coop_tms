@@ -5,17 +5,18 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router } from "react-router-dom";
 import "./index.css";
 import { ThemeProvider } from "./context/ThemeProvider";
-import { lightTheme, darkTheme } from "./context/Themes";
-import { useTheme } from "./context/ThemeProvider";
+import { AuthContextProvider } from "./context/AuthContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
     <Router>
-      <ThemeProvider>
-        <App />
-      </ThemeProvider>
+      <AuthContextProvider>
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
+      </AuthContextProvider>
     </Router>
   </React.StrictMode>
 );
