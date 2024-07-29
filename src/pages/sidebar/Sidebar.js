@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Drawer,
   Toolbar,
   Divider,
-  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -12,13 +11,10 @@ import {
   Typography,
   Box,
   Collapse,
-  Avatar,
 } from "@mui/material";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import coop from "../../assets/coop.gif";
 import {
@@ -35,24 +31,40 @@ import {
   ManageAccounts,
   SettingsInputComposite,
   SettingsApplications,
-  Logout,
+  Home,
 } from "@mui/icons-material";
+import { useAuthContext } from "../../context/AuthContext";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import HomeLink from "../../components/HomeLink";
 
 const drawerWidth = "18%";
 
 const Sidebar = () => {
   const theme = useTheme();
-  console.log("theme value in sidebar ", theme);
   const navigate = useNavigate();
-  const [openAdmin, setOpenAdmin] = useState(false);
+  const [openAdmin, setOpenAdmin] = useState(true);
+  const [openReport, setOpenReport] = useState(true);
+  const { role, loading } = useAuthContext();
+
+  useEffect(() => {
+    console.log("Role updated:", role);
+  }, [role]);
+
+  if (!role) {
+    return null; // Hide the sidebar if no role is present
+  }
+
   const handleAdminClick = () => {
     setOpenAdmin(!openAdmin);
   };
 
-  const [openReport, setOpenReport] = useState(false);
   const handleReportClick = () => {
     setOpenReport(!openReport);
   };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <Box>
@@ -62,110 +74,60 @@ const Sidebar = () => {
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
+            bgcolor: theme.palette.background.paper, // Adapt to theme
           },
         }}
         variant="permanent"
         anchor="left"
       >
         <Toolbar>
-          {/* <IconButton sx={{}} onClick={() => setOpenDrawer(!openDrawer)}>
-            <MenuIcon />
-          </IconButton> */}
-          <Box>
-            <Avatar
-              src={coop}
-              sx={{
-                width: 100,
-                borderRadius: 0,
-                objectFit: "cover",
-                marginY: "auto",
-              }}
-            />
-          </Box>
-          <Typography variant="h4">ATM</Typography>
+          <HomeLink />
+          <Typography variant="h4" sx={{ color: theme.palette.primary.main }}>
+            TMS
+          </Typography>
         </Toolbar>
         <Divider />
         <List>
           {[
-            { text: "Dashboard", path: "/dashboard", icon: <Dashboard /> },
-            { text: "Explore ATM", path: "/view", icon: <Atm /> },
-            // { text: "Edit ATM", path: "/edit" },
-            // { text: "Manual", path: "/manual" },
-            { text: "Reports", path: "/report", icon: <Assessment /> },
             {
-              text: "Administration",
-              path: "/administration",
-              icon: <AdminPanelSettings />,
+              text: "Home",
+              path: "/home",
+              icon: <Home sx={{ color: theme.palette.primary.main }} />,
             },
-            { text: "Logout", path: "/logout", icon: <Logout /> },
+            {
+              text: "Dashboard",
+              path: "/dashboard",
+              icon: <Dashboard sx={{ color: theme.palette.primary.main }} />,
+            },
+            ...(role === "user"
+              ? [
+                  {
+                    text: "Explore ATM",
+                    path: "/view",
+                    icon: <Atm sx={{ color: theme.palette.primary.main }} />,
+                  },
+                ]
+              : []),
+            {
+              text: "Reports",
+              path: "/report",
+              icon: <Assessment sx={{ color: theme.palette.primary.main }} />,
+            },
           ].map((item, index) =>
-            item.text === "Administration" ? (
-              <React.Fragment key={item.text}>
-                <ListItem disablePadding>
-                  <ListItemButton onClick={handleAdminClick}>
-                    <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText primary={item.text} />
-                    {openAdmin ? <ExpandLess /> : <ExpandMore />}
-                  </ListItemButton>
-                </ListItem>
-                <Collapse in={openAdmin} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding>
-                    {[
-                      { text: "Create ATM", path: "/add", icon: <Add /> },
-                      {
-                        text: "Create User",
-                        path: "/createuser",
-                        icon: <PersonAdd />,
-                      },
-                      {
-                        text: "Create Port",
-                        path: "/ports",
-                        icon: <Outlet />,
-                      },
-                      {
-                        text: "Manage ATM",
-                        path: "/manage_atm",
-                        icon: <ManageSearch />,
-                      },
-                      {
-                        text: "Manage User",
-                        path: "/viewuser",
-                        icon: <ManageAccounts />,
-                      },
-                      {
-                        text: "Manage Port",
-                        path: "/viewports",
-                        icon: <SettingsInputComposite />,
-                      },
-
-                      // { text: "Add Commands", path: "/new_command" },
-                      // { text: "View Commands", path: "/commands" },
-                      {
-                        text: "Settings",
-                        path: "/settings",
-                        icon: <SettingsApplications />,
-                      },
-                    ].map((subItem) => (
-                      <ListItem key={subItem.text} disablePadding>
-                        <ListItemButton
-                          sx={{ pl: 4 }}
-                          onClick={() => navigate(subItem.path)}
-                        >
-                          <ListItemIcon>{subItem.icon}</ListItemIcon>
-                          <ListItemText primary={subItem.text} />
-                        </ListItemButton>
-                      </ListItem>
-                    ))}
-                  </List>
-                </Collapse>
-              </React.Fragment>
-            ) : item.text === "Reports" ? (
+            item.text === "Reports" ? (
               <React.Fragment key={item.text}>
                 <ListItem disablePadding>
                   <ListItemButton onClick={handleReportClick}>
                     <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText primary={item.text} />
-                    {openReport ? <ExpandLess /> : <ExpandMore />}
+                    <ListItemText
+                      primary={item.text}
+                      sx={{ color: theme.palette.text.primary }}
+                    />
+                    {openReport ? (
+                      <ExpandLess sx={{ color: theme.palette.text.primary }} />
+                    ) : (
+                      <ExpandMore sx={{ color: theme.palette.text.primary }} />
+                    )}
                   </ListItemButton>
                 </ListItem>
                 <Collapse in={openReport} timeout="auto" unmountOnExit>
@@ -174,12 +136,18 @@ const Sidebar = () => {
                       {
                         text: "Terminal Report",
                         path: "/terminalreport",
-                        icon: <AddBox />,
+                        icon: (
+                          <AddBox sx={{ color: theme.palette.primary.main }} />
+                        ),
                       },
                       {
                         text: "General Terminal Report",
                         path: "/generalreport",
-                        icon: <Summarize />,
+                        icon: (
+                          <Summarize
+                            sx={{ color: theme.palette.primary.main }}
+                          />
+                        ),
                       },
                     ].map((subItem) => (
                       <ListItem key={subItem.text} disablePadding>
@@ -188,7 +156,10 @@ const Sidebar = () => {
                           onClick={() => navigate(subItem.path)}
                         >
                           <ListItemIcon>{subItem.icon}</ListItemIcon>
-                          <ListItemText primary={subItem.text} />
+                          <ListItemText
+                            primary={subItem.text}
+                            sx={{ color: theme.palette.text.primary }}
+                          />
                         </ListItemButton>
                       </ListItem>
                     ))}
@@ -199,10 +170,111 @@ const Sidebar = () => {
               <ListItem key={item.text} disablePadding>
                 <ListItemButton onClick={() => navigate(item.path)}>
                   <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
+                  <ListItemText
+                    primary={item.text}
+                    sx={{ color: theme.palette.text.primary }}
+                  />
                 </ListItemButton>
               </ListItem>
             )
+          )}
+
+          {/* Render "Administration" section only if the role is "admin" */}
+          {role === "admin" && (
+            <React.Fragment key="Administration">
+              <ListItem disablePadding>
+                <ListItemButton onClick={handleAdminClick}>
+                  <ListItemIcon>
+                    <AdminPanelSettings
+                      sx={{ color: theme.palette.primary.main }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Administration"
+                    sx={{ color: theme.palette.text.primary }}
+                  />
+                  {openAdmin ? (
+                    <ExpandLess sx={{ color: theme.palette.text.primary }} />
+                  ) : (
+                    <ExpandMore sx={{ color: theme.palette.text.primary }} />
+                  )}
+                </ListItemButton>
+              </ListItem>
+              <Collapse in={openAdmin} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {[
+                    {
+                      text: "Create ATM",
+                      path: "/add",
+                      icon: <Add sx={{ color: theme.palette.primary.main }} />,
+                    },
+                    {
+                      text: "Create User",
+                      path: "/createuser",
+                      icon: (
+                        <PersonAdd sx={{ color: theme.palette.primary.main }} />
+                      ),
+                    },
+                    {
+                      text: "Create Port",
+                      path: "/ports",
+                      icon: (
+                        <Outlet sx={{ color: theme.palette.primary.main }} />
+                      ),
+                    },
+                    {
+                      text: "Manage ATM",
+                      path: "/manage_atm",
+                      icon: (
+                        <ManageSearch
+                          sx={{ color: theme.palette.primary.main }}
+                        />
+                      ),
+                    },
+                    {
+                      text: "Manage User",
+                      path: "/viewuser",
+                      icon: (
+                        <ManageAccounts
+                          sx={{ color: theme.palette.primary.main }}
+                        />
+                      ),
+                    },
+                    {
+                      text: "Manage Port",
+                      path: "/viewports",
+                      icon: (
+                        <SettingsInputComposite
+                          sx={{ color: theme.palette.primary.main }}
+                        />
+                      ),
+                    },
+                    {
+                      text: "Settings",
+                      path: "/settings",
+                      icon: (
+                        <SettingsApplications
+                          sx={{ color: theme.palette.primary.main }}
+                        />
+                      ),
+                    },
+                  ].map((subItem) => (
+                    <ListItem key={subItem.text} disablePadding>
+                      <ListItemButton
+                        sx={{ pl: 4 }}
+                        onClick={() => navigate(subItem.path)}
+                      >
+                        <ListItemIcon>{subItem.icon}</ListItemIcon>
+                        <ListItemText
+                          primary={subItem.text}
+                          sx={{ color: theme.palette.text.primary }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            </React.Fragment>
           )}
         </List>
         <Divider />
