@@ -1,7 +1,10 @@
 import { Box, Button, Typography } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   {
@@ -35,17 +38,52 @@ const columns = [
 // ];
 
 // Mock function for demonstration
-async function fetchRows() {
-  const response = await axios.get(
-    "http://localhost:8000/terminal/getTerminalCounts"
-  ); // Replace with your actual API endpoint
-  return response.data.terminalsCount; // Adjust this line based on your JSON structure
-}
 
 const TerminalTypeReports = () => {
+  const navigate = useNavigate();
   const [data_rows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const hasShownToast = useRef(false); // Use ref to track if the toast has been shown
+
+  async function fetchRows() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("No authentication token found");
+      if (!hasShownToast.current) {
+        toast.error("User is not authenticated");
+        hasShownToast.current = true; // Mark that the toast has been shown
+        navigate("/home"); // Redirect to the home page
+      }
+      return [];
+    }
+
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/terminal/getTerminalCounts",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data.terminalsCount; // Adjust this line based on your JSON structure
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      if (!hasShownToast.current) {
+        const errorMessage =
+          error.response?.data?.message ||
+          "An error occurred while fetching data.";
+        toast.error(`Error: ${errorMessage}`);
+        hasShownToast.current = true; // Mark that the toast has been shown
+        navigate("/home"); // Redirect to the home page
+      }
+      throw error; // Rethrow error to be caught in the calling function
+    }
+  }
+
   useEffect(() => {
     async function loadRows() {
       try {
@@ -83,7 +121,7 @@ const TerminalTypeReports = () => {
     ...row,
   }));
   if (loading) {
-    return <Typography>Loading...</Typography>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
