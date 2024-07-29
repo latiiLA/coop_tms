@@ -15,8 +15,10 @@ import React from "react";
 import * as Yup from "yup";
 import ViewPort from "./ViewPort";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Port = () => {
+  const navigate = useNavigate();
   const atm_type = [
     { value: "CRM", label: "CRM" },
     { value: "NCR", label: "NCR" },
@@ -48,6 +50,18 @@ const Port = () => {
   });
 
   const handleSubmit = async (data) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("No authentication token found");
+      // if (!hasShownToast.current) {
+      toast.error("User is not authenticated");
+      //   hasShownToast.current = true;
+      // }
+      navigate("/home");
+      return; // Exit the function if no token is found
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:8000/port/createPort",
@@ -57,6 +71,12 @@ const Port = () => {
           portAssignment: data.portAssignment,
           portSiteAssignment: data.portSiteAssignment,
           portCapacity: data.portCapacity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
         }
       );
       console.log("New port is created:", response.data);
@@ -82,6 +102,7 @@ const Port = () => {
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
+          marginTop: 10,
         }}
       >
         <Card
