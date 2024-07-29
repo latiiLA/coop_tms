@@ -65,7 +65,8 @@ const Header = () => {
             justifyContent: "space-between",
           }}
         >
-          <Search />
+          {/* <Search /> */}
+          <Box></Box>
           <Box
             sx={{
               display: "flex",
@@ -73,59 +74,57 @@ const Header = () => {
               alignItems: "Center",
             }}
           >
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip
-                title="Open settings"
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  gap: 10,
-                }}
+            {/* <Tooltip
+              title="Open notification"
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 10,
+              }}
+            >
+              <IconButton
+                size="large"
+                aria-label="show 17 new notifications"
+                color="theme"
               >
-                <IconButton
-                  size="large"
-                  aria-label="show 17 new notifications"
-                  color="theme"
+                <Badge badgeContent={17} color="error">
+                  <Notifications />
+                </Badge>
+              </IconButton>
+            </Tooltip> */}
+            <Tooltip title="Open setting">
+              <IconButton onClick={handleOpenUserMenu}>
+                <Avatar
+                  alt="Remy Sharp"
+                  src="https://gravatar.com/avatar/27205e5c51cb03f862138b22bcb5dc20f94a342e744ff6df1b8dc8af3c865109"
+                />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map(({ name, link }) => (
+                <MenuItem
+                  key={name}
+                  onClick={() => handleMenuItemClick(link, handleCloseUserMenu)}
                 >
-                  <Badge badgeContent={17} color="error">
-                    <Notifications />
-                  </Badge>
-                </IconButton>
-                <IconButton onClick={handleOpenUserMenu}>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src="https://gravatar.com/avatar/27205e5c51cb03f862138b22bcb5dc20f94a342e744ff6df1b8dc8af3c865109"
-                  />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map(({ name, link }) => (
-                  <MenuItem
-                    key={name}
-                    onClick={() =>
-                      handleMenuItemClick(link, handleCloseUserMenu)
-                    }
-                  >
-                    <Typography textAlign="center">{name}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
+                  <Typography textAlign="center">{name}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
             <DarkMode />
           </Box>
         </Toolbar>
