@@ -26,6 +26,7 @@ export default function ViewUsers() {
   const [dataRows, setDataRows] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
+  const apiUrl = process.env.API_URL;
 
   const handleClickOpen = (rowId) => {
     setSelectedRowId(rowId);
@@ -49,7 +50,7 @@ export default function ViewUsers() {
     }
     try {
       await axios.patch(
-        `http://localhost:8000/auth/deleteUser/${selectedRowId}`,
+        `${apiUrl}/auth/deleteUser/${selectedRowId}`,
         {},
         {
           headers: {
@@ -79,7 +80,7 @@ export default function ViewUsers() {
     }
     try {
       await axios.patch(
-        `http://localhost:8000/auth/resetCount/${rowId}`,
+        `${apiUrl}/auth/resetCount/${rowId}`,
         {},
         {
           headers: {
@@ -153,7 +154,7 @@ export default function ViewUsers() {
       return [];
     }
     try {
-      const response = await axios.get("http://localhost:8000/auth/getUser", {
+      const response = await axios.get(`${apiUrl}/auth/getUser`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

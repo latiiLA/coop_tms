@@ -60,15 +60,13 @@ const TerminalTypeReports = () => {
     }
 
     try {
-      const response = await axios.get(
-        "http://localhost:8000/terminal/getTerminalCounts",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const apiUrl = process.env.API_URL;
+      const response = await axios.get(`${apiUrl}/terminal/getTerminalCounts`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
       return response.data.terminalsCount; // Adjust this line based on your JSON structure
     } catch (error) {
       console.error("Error fetching data:", error);

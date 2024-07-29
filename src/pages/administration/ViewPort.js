@@ -25,6 +25,7 @@ const ViewPort = () => {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
+  const apiUrl = process.env.API_URL;
 
   const hasShownToast = useRef(false);
 
@@ -40,7 +41,7 @@ const ViewPort = () => {
       return []; // Exit the function and return an empty array
     }
     try {
-      const response = await axios.get("http://localhost:8000/port/getports", {
+      const response = await axios.get(`${apiUrl}/port/getports`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,15 +82,12 @@ const ViewPort = () => {
       return; // Exit the function if no token is found
     }
     try {
-      await axios.delete(
-        `http://localhost:8000/port/deletePort/${selectedRowId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      await axios.delete(`${apiUrl}/port/deletePort/${selectedRowId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
 
       // Re-fetch the data to reflect the changes
       const updatedData = await fetchRows();

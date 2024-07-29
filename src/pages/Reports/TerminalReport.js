@@ -44,15 +44,13 @@ const TerminalReport = () => {
     }
 
     try {
-      const response = await axios.get(
-        "http://localhost:8000/terminal/getTerminal",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      ); // Replace with your actual API endpoint
+      const apiUrl = process.env.API_URL;
+      const response = await axios.get(`${apiUrl}/terminal/getTerminal`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }); // Replace with your actual API endpoint
 
       console.log("fetchRows", response.data.terminals);
       return response.data.terminals; // Adjust this line based on your JSON structure

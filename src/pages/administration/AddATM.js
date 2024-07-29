@@ -10,6 +10,7 @@ const AddATM = () => {
   const hasShownToast = useRef(false); // Use ref to track if the toast has been shown
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    const apiUrl = process.env.API_URL;
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -23,7 +24,7 @@ const AddATM = () => {
     }
     try {
       const response = await axios.post(
-        "http://localhost:8000/terminal/createTerminal",
+        `${apiUrl}/terminal/createTerminal`,
         values,
         {
           headers: {

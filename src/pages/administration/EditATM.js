@@ -26,8 +26,9 @@ const EditATM = () => {
       return; // Exit the function if no token is found
     }
     try {
+      const apiUrl = process.env.API_URL;
       const response = await axios.put(
-        `http://localhost:8000/terminal/updateTerminal/${row._id}`,
+        `${apiUrl}/terminal/updateTerminal/${row._id}`,
         data,
         {
           headers: {

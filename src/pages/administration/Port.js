@@ -63,8 +63,9 @@ const Port = () => {
     }
 
     try {
+      const apiUrl = process.env.API_URL;
       const response = await axios.post(
-        "http://localhost:8000/port/createPort",
+        `${apiUrl}/port/createPort`,
         {
           portName: data.portName,
           portNumber: data.portNumber,

@@ -30,6 +30,7 @@ export default function ViewATM() {
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const hasShownToast = useRef(false);
+  const apiUrl = process.env.API_URL;
 
   const columns = [
     { field: "id", headerName: "No", type: "number", width: 10 },
@@ -110,15 +111,12 @@ export default function ViewATM() {
     }
 
     try {
-      const response = await axios.get(
-        "http://localhost:8000/terminal/getTerminal",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axios.get(`${apiUrl}/terminal/getTerminal`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
 
       setDataRows(response.data.terminals);
       setRole(response.data.role);
@@ -164,7 +162,7 @@ export default function ViewATM() {
         return []; // Exit the function and return an empty array
       }
       await axios.patch(
-        `http://localhost:8000/terminal/deleteTerminal/${selectedRowId}`,
+        `${apiUrl}/terminal/deleteTerminal/${selectedRowId}`,
         {},
         {
           headers: {

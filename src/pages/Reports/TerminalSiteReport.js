@@ -56,15 +56,13 @@ const TerminalSiteReport = () => {
     }
 
     try {
-      const response = await axios.get(
-        "http://localhost:8000/terminal/getSiteCounts",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const apiUrl = process.env.API_URL;
+      const response = await axios.get(`${apiUrl}/terminal/getSiteCounts`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
       return response.data.data; // Adjust this line based on your JSON structure
     } catch (error) {
       console.error("Error fetching data:", error);

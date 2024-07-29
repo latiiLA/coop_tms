@@ -8,7 +8,8 @@ import SaveAsIcon from "@mui/icons-material/SaveAs";
 
 // Mock function for demonstration
 async function fetchRows() {
-  const response = await axios.get("http://localhost:8000/command/getCommand"); // Replace with your actual API endpoint
+  const apiUrl = process.env.API_URL;
+  const response = await axios.get(`${apiUrl}/command/getCommand`); // Replace with your actual API endpoint
   return response.data.commands; // Adjust this line based on your JSON structure
 }
 

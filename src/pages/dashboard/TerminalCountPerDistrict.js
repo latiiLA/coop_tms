@@ -5,13 +5,12 @@ import { Box, Typography } from "@mui/material";
 
 const TerminalCountPerType = () => {
   const [terminalData, setTerminalData] = useState([]);
+  const apiUrl = process.env.API_URL;
 
   useEffect(() => {
     async function fetchTerminals() {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/terminal/getTerminal"
-        );
+        const response = await axios.get(`${apiUrl}/terminal/getTerminal`);
         setTerminalData(response.data.terminals);
       } catch (error) {
         console.error("Failed to fetch terminals:", error);

@@ -13,7 +13,7 @@ const GeneralTerminalReport = () => {
         padding: "inherit",
       }}
     >
-      <Typography variant="h4">GeneralTerminalReport</Typography>
+      <Typography variant="h4">Reports</Typography>
       <TerminalTypeReports />
       <TerminalSiteReport />
     </Box>

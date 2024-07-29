@@ -30,15 +30,13 @@ const CreateCommands = () => {
   });
 
   const handleSubmit = async (data) => {
+    const apiUrl = process.env.API_URL;
     try {
-      const response = await axios.post(
-        "http://localhost:8000/command/createCommand",
-        {
-          command: data.command,
-          description: data.description,
-          example: data.example,
-        }
-      );
+      const response = await axios.post(`${apiUrl}/command/createCommand`, {
+        command: data.command,
+        description: data.description,
+        example: data.example,
+      });
       console.log("New command is created:", response.data);
       alert("Command is created");
     } catch (error) {

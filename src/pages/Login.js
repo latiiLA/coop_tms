@@ -94,15 +94,15 @@ const Login = () => {
   };
 
   const handleSubmit = async (user_data) => {
+    const apiUrl = process.env.API_URL;
+
+    // apiUrl = process
     setLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:8000/auth/loginUser",
-        {
-          username: user_data.username,
-          password: user_data.password,
-        }
-      );
+      const response = await axios.post(`${apiUrl}/auth/loginUser`, {
+        username: user_data.username,
+        password: user_data.password,
+      });
 
       // console.log("Logging in successful:", response.data.user.status);
 
