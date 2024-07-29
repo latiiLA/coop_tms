@@ -1,18 +1,56 @@
-import { Box, Typography } from "@mui/material";
 import React from "react";
-import Sidebar from "./sidebar/Sidebar";
-import Rightside from "./rightside/Rightside";
+import { Box, Typography } from "@mui/material";
+import Services from "../components/Services";
+import { styled } from "@mui/system";
+
+// Styled components
+const WelcomeText = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(4),
+  color: theme.palette.primary.main,
+  fontWeight: "bold",
+}));
+
+const IntroText = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(4),
+  fontSize: "1.2rem",
+  color: theme.palette.text.secondary,
+  lineHeight: 1.5,
+  maxWidth: "800px",
+  textAlign: "center",
+}));
 
 const Home = () => {
   return (
     <Box
       sx={{
         display: "flex",
-        flexDirection: "row",
-        // background: "red",
+        flexDirection: "column",
+        alignItems: "center",
+        mt: 5,
+        padding: 2,
       }}
     >
-      <Typography variant="h4"> Welcome</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          mb: 4,
+        }}
+      >
+        <WelcomeText variant="h1">Welcome to COOP TMS.</WelcomeText>
+      </Box>
+      <Box>
+        <IntroText variant="h4">
+          Automate your workflow effortlessly with our solutions. Simplify your
+          tasks, enhance clarity, and minimize errors with our comprehensive
+          tools.
+        </IntroText>
+      </Box>
+      <Box>
+        <Services />
+      </Box>
     </Box>
   );
 };
