@@ -19,6 +19,8 @@ import {
   Checkbox,
   FormControlLabel,
   OutlinedInput,
+  Toolbar,
+  Avatar,
 } from "@mui/material";
 
 import Visibility from "@mui/icons-material/Visibility";
@@ -29,6 +31,10 @@ import Header from "../components/Header";
 import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
+import { useAuthContext } from "../context/AuthContext";
+import toast from "react-hot-toast";
+import LoadingSpinner from "../components/LoadingSpinner";
+import coop from "../assets/coop.gif";
 
 const useStyles = makeStyles({
   all: {
@@ -39,11 +45,9 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
   loginBox: {
-    // backgroundColor: 'grey',
     width: "60%",
     height: "60%",
     boxShadow: "0.3rem 0.3rem 0.6rem grey",
-    // borderRadius: 25,
     paddingRight: "1rem",
     display: "flex",
     flexDirection: "row !important",
@@ -51,7 +55,7 @@ const useStyles = makeStyles({
   },
   login1: {
     textAlign: "center",
-    fontSize: "3rem !important",
+    fontSize: "2rem !important",
     fontWeight: "bold",
   },
   form: {
@@ -78,8 +82,10 @@ const Login = () => {
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   const classes = useStyles();
   const navigate = useNavigate();
+  const { setRole } = useAuthContext();
+  const [loading, setLoading] = useState(false);
 
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -87,24 +93,54 @@ const Login = () => {
     event.preventDefault();
   };
 
-  const handleSubmit = async (data) => {
+  const handleSubmit = async (user_data) => {
+    setLoading(true);
     try {
       const response = await axios.post(
         "http://localhost:8000/auth/loginUser",
         {
-          username: data.username,
-          password: data.password,
+          username: user_data.username,
+          password: user_data.password,
         }
       );
-      console.log("Logging in successful:", response.data);
-      alert("Successfully Logged In.");
-      navigate("/");
-      // You can redirect the user to the newly created post or update the post list
+
+      // console.log("Logging in successful:", response.data.user.status);
+
+      const data = response.data; // updated to directly access response data
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      console.log(
+        "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&",
+        data,
+        data.data.status
+      );
+
+      // Store the token in localStorage
+      const token = response.data.token; // Adjust this line based on your JSON structure
+      localStorage.setItem("token", token);
+      setRole(data.data.role);
+      if (data.data.status === "New") {
+        navigate("/forgotpassword");
+      } else {
+        // toast.success("Login Successful");
+        navigate("/home");
+      }
     } catch (error) {
       console.error("Error logging in:", error);
-      alert("Error logging in");
+      toast.error(
+        `Login Error: ${error.response?.data?.message || error.message}`
+      );
+      setRole(null);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <Grid container spacing={2}>
@@ -127,6 +163,7 @@ const Login = () => {
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-evenly",
+                  gap: 2,
                 }}
               >
                 <Card
@@ -141,17 +178,35 @@ const Login = () => {
                     alt="login picture"
                   />
                 </Card>
-                <Box sx={{ width: "100%" }}>
+                <Box sx={{ width: "100%", display: "flex", gap: 5 }}>
                   <Formik
                     initialValues={INITIAL_FORM_STATE}
                     validationSchema={FORM_VALIDATION}
-                    onSubmit={(values) => {
-                      handleSubmit(values);
-                    }}
+                    onSubmit={handleSubmit}
                   >
                     {({ errors, touched }) => (
                       <Form className={classes.form}>
                         <Stack gap={2}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              margin: "auto",
+                            }}
+                          >
+                            <Box>
+                              <Avatar
+                                src={coop}
+                                sx={{
+                                  width: 100,
+                                  borderRadius: 0,
+                                  objectFit: "cover",
+                                  marginY: "auto",
+                                }}
+                              />
+                            </Box>
+                            <Typography variant="h3">TMS</Typography>
+                          </Box>
                           <Typography className={classes.login1}>
                             Login
                           </Typography>
@@ -204,7 +259,7 @@ const Login = () => {
                             />
                           </FormControl>
                         </Stack>
-                        <Stack
+                        {/* <Stack
                           sx={{
                             display: "flex",
                             flexDirection: "row",
@@ -217,10 +272,10 @@ const Login = () => {
                           <Link to="/signup">
                             <Button>CREATE AN ACCOUNT?</Button>
                           </Link>
-                        </Stack>
+                        </Stack> */}
                         <Stack>
                           <Button type="submit" variant="contained">
-                            LOGIN
+                            Login
                           </Button>
                         </Stack>
                       </Form>
@@ -245,10 +300,8 @@ const Login = () => {
                 >
                   <CardMedia
                     component="img"
-                    // height="300"
                     image={left_image2}
                     alt="login picture"
-                    sx={{}}
                   />
                 </Card>
 
@@ -261,13 +314,31 @@ const Login = () => {
                   <Formik
                     initialValues={INITIAL_FORM_STATE}
                     validationSchema={FORM_VALIDATION}
-                    onSubmit={(values) => {
-                      handleSubmit(values);
-                    }}
+                    onSubmit={handleSubmit}
                   >
                     {({ errors, touched }) => (
                       <Form className={classes.form}>
                         <Stack gap={2}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              margin: "auto",
+                            }}
+                          >
+                            <Box>
+                              <Avatar
+                                src={coop}
+                                sx={{
+                                  width: 100,
+                                  borderRadius: 0,
+                                  objectFit: "cover",
+                                  marginY: "auto",
+                                }}
+                              />
+                            </Box>
+                            <Typography variant="h3">TMS</Typography>
+                          </Box>
                           <Typography className={classes.login1}>
                             Login
                           </Typography>
@@ -320,7 +391,7 @@ const Login = () => {
                             />
                           </FormControl>
                         </Stack>
-                        <Stack
+                        {/* <Stack
                           sx={{
                             display: "flex",
                             flexDirection: "row",
@@ -333,7 +404,7 @@ const Login = () => {
                           <Link to="/signup">
                             <Button>CREATE AN ACCOUNT?</Button>
                           </Link>
-                        </Stack>
+                        </Stack> */}
                         <Stack>
                           <Button type="submit" variant="contained">
                             LOGIN
@@ -351,4 +422,5 @@ const Login = () => {
     </Grid>
   );
 };
+
 export default Login;
