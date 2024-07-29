@@ -1,11 +1,11 @@
 import { Box } from "@mui/material";
 import React from "react";
-import View from "../../components/View";
+import ViewATM from "./ViewATM";
 
 const ManageAtm = ({ role }) => {
   return (
     <Box>
-      <View role="admin" />
+      <ViewATM role="admin" />
     </Box>
   );
 };
