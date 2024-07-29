@@ -18,9 +18,16 @@ import {
 import { Formik, Form, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../context/AuthContext";
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
+  const { role, setRole } = useAuthContext();
   const [showPassword, setShowPassword] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
@@ -39,9 +46,62 @@ const ForgotPassword = () => {
     event.preventDefault();
   };
 
-  const [password, setPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setconfirmNewPassword] = useState("");
+  const handleSubmit = async (update_data) => {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No authentication token found");
+      toast.error("User is not authenticated");
+      navigate("/login");
+      return;
+    }
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/auth/forgotPassword",
+        {
+          password: update_data.password,
+          newPassword: update_data.newPassword,
+          confirmNewPassword: update_data.confirmNewPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log("Forgot password is successful:", response.data);
+
+      const data = response.data; // updated to directly access response data
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$", data, data.data.status);
+
+      // // Store the token in localStorage
+      // const token = response.data.token; // Adjust this line based on your JSON structure
+      // localStorage.setItem("token", token);
+      // setRole(data.data.role);
+      // if (data.data.status === "New") {
+      //   navigate("/forgotpassword");
+      // } else {
+
+      toast.success("password changed successfully.");
+      navigate("/home");
+      // }
+    } catch (error) {
+      console.error("Error changing password in:", error);
+      toast.error(
+        `Login Error: ${error.response?.data?.message || error.message}`
+      );
+      // setRole(null);
+      // navigate("/login");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const INITIAL_FORM_STATE = {
     password: "",
@@ -80,7 +140,7 @@ const ForgotPassword = () => {
           initialValues={INITIAL_FORM_STATE}
           validationSchema={FORM_VALIDATION}
           onSubmit={(values) => {
-            console.log(values);
+            handleSubmit(values);
           }}
         >
           {({ errors, touched }) => (
@@ -129,12 +189,12 @@ const ForgotPassword = () => {
                   error={touched.newPassword && !!errors.newPassword}
                   fullWidth
                 >
-                  <InputLabel htmlFor="outlined-adornment-password">
+                  <InputLabel htmlFor="outlined-adornment-password2">
                     New Password
                   </InputLabel>
                   <Field
                     as={OutlinedInput}
-                    id="outlined-adornment-password"
+                    id="outlined-adornment-password2"
                     type={showPassword2 ? "text" : "password"}
                     name="newPassword"
                     endAdornment={
@@ -162,12 +222,12 @@ const ForgotPassword = () => {
                   error={touched.newPassword && !!errors.newPassword}
                   fullWidth
                 >
-                  <InputLabel htmlFor="outlined-adornment-password">
+                  <InputLabel htmlFor="outlined-adornment-password3">
                     Confirm New Password
                   </InputLabel>
                   <Field
                     as={OutlinedInput}
-                    id="outlined-adornment-password"
+                    id="outlined-adornment-password3"
                     type={showPassword3 ? "text" : "password"}
                     name="confirmNewPassword"
                     endAdornment={
