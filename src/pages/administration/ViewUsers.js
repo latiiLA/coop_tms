@@ -26,7 +26,7 @@ export default function ViewUsers() {
   const [dataRows, setDataRows] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
-  const apiUrl = process.env.API_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleClickOpen = (rowId) => {
     setSelectedRowId(rowId);

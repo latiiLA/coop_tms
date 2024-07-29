@@ -25,7 +25,7 @@ const ViewPort = () => {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
-  const apiUrl = process.env.API_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const hasShownToast = useRef(false);
 

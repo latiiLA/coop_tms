@@ -94,7 +94,8 @@ const Login = () => {
   };
 
   const handleSubmit = async (user_data) => {
-    const apiUrl = process.env.API_URL;
+    const apiUrl = process.env.REACT_APP_API_URL;
+    console.log(apiUrl);
 
     // apiUrl = process
     setLoading(true);

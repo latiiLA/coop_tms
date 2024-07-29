@@ -35,6 +35,7 @@ const UserProfile = () => {
   });
 
   async function fetchRows() {
+    const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -46,15 +47,12 @@ const UserProfile = () => {
       navigate("/home");
       return; // Exit the function if no token is found
     }
-    const response = await axios.get(
-      "http://localhost:8000/auth/getUserProfile",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      }
-    );
+    const response = await axios.get(`${apiUrl}/auth/getUserProfile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
     return response.data.user; // Assuming response.data contains 'users' array
   }
 

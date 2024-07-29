@@ -79,7 +79,7 @@ const CreateUser = () => {
       return; // Exit the function if no token is found
     }
     try {
-      const apiUrl = process.env.API_URL;
+      const apiUrl = process.env.REACT_APP_API_URL;
       const response = await axios.post(
         `${apiUrl}/auth/createUser`,
         {

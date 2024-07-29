@@ -30,7 +30,7 @@ const CreateCommands = () => {
   });
 
   const handleSubmit = async (data) => {
-    const apiUrl = process.env.API_URL;
+    const apiUrl = process.env.REACT_APP_API_URL;
     try {
       const response = await axios.post(`${apiUrl}/command/createCommand`, {
         command: data.command,

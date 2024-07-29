@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material";
 
 const TerminalCountPerType = () => {
   const [terminalData, setTerminalData] = useState([]);
-  const apiUrl = process.env.API_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     async function fetchTerminals() {

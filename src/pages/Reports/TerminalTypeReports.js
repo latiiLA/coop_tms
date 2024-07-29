@@ -60,7 +60,7 @@ const TerminalTypeReports = () => {
     }
 
     try {
-      const apiUrl = process.env.API_URL;
+      const apiUrl = process.env.REACT_APP_API_URL;
       const response = await axios.get(`${apiUrl}/terminal/getTerminalCounts`, {
         headers: {
           Authorization: `Bearer ${token}`,
