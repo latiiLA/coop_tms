@@ -1,304 +1,197 @@
-import { DataGrid } from "@mui/x-data-grid";
+import React, { useEffect, useState, useRef } from "react";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
   Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
-  MenuItem,
-  Select,
-  TextField,
+  Toolbar,
+  Tooltip,
   Typography,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SaveAsIcon from "@mui/icons-material/SaveAs";
+import { Edit, Preview, Delete } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import toast from "react-hot-toast";
+import { jwtDecode } from "jwt-decode";
+import { useAuthContext } from "../../context/AuthContext";
 
-// const rows = [
-//   {
-//     id: 1,
-//     unitId: 1,
-//     terminalId: "EFDC0122",
-//     terminalName: "Nekemte",
-//     branchName: "Nekemte",
-//     acceptorLocation: "Nekemte",
-//     cbsAccount: "ETB10005000102222",
-//     port: "6800",
-//     ipAddress: "198.563.25.3",
-//     type: "CRM",
-//     status: "Done",
-//     dateCreated: "06/06/2024",
-//   },
-//   {
-//     id: 2,
-//     unitId: 1,
-//     terminalId: "EFD0122",
-//     terminalName: "Nekemte",
-//     branchName: "Nekemte",
-//     acceptorLocation: "Nekemte",
-//     cbsAccount: "ETB10005000102222",
-//     port: "6800",
-//     ipAddress: "198.563.255.333",
-//     type: "NCR",
-//     status: "Done",
-//     dateCreated: "6/6/2024",
-//   },
-//   {
-//     id: 3,
-//     unitId: 444,
-//     terminalId: "EFD0122",
-//     terminalName: "Nekemte",
-//     branchName: "Nekemte",
-//     acceptorLocation: "Nekemte",
-//     cbsAccount: "ETB10005000102222",
-//     port: "6800",
-//     ipAddress: "198.563.25.3",
-//     type: "CRM",
-//     status: "Done",
-//     dateCreated: "6/6/2024",
-//   },
-//   { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-//   { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-//   { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
-//   { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-//   { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-//   { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
-// ];
-
-async function fetchRows() {
-  const response = await axios.get(
-    "http://localhost:8000/terminal/getTerminal"
-  ); // Replace with your actual API endpoint
-  console.log("fethRows", response.data.terminals);
-  return response.data.terminals; // Adjust this line based on your JSON structure
-}
-export default function ViewATM({ role }) {
-  const [data_rows, setDataRows] = useState([]);
-  const [editingRow, setEditingRow] = useState(null);
-  const [edited, setEdited] = useState({});
+export default function ViewATM() {
+  const navigate = useNavigate();
+  const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const allColumns = [
+  const [role, setRole] = useState("user");
+  const [open, setOpen] = useState(false);
+  const [selectedRowId, setSelectedRowId] = useState(null);
+  const hasShownToast = useRef(false);
+
+  const columns = [
     { field: "id", headerName: "No", type: "number", width: 10 },
-    {
-      field: "unitId",
-      headerName: "Unit ID",
-      type: "number",
-      flex: 1,
-    },
-    {
-      field: "terminalId",
-      headerName: "Terminal ID",
-      flex: 1,
-      renderCell: (params) =>
-        editingRow === params.row.id ? (
-          <TextField
-            name="terminalId"
-            value={edited.terminalId}
-            onChange={handleInputChange}
-            fullWidth
-            width="auto"
-          />
-        ) : (
-          params.row.terminalId
-        ),
-    },
-    {
-      field: "terminalName",
-      headerName: "Terminal Name",
-      flex: 1,
-      renderCell: (params) =>
-        editingRow === params.row.id ? (
-          <TextField
-            name="terminalName"
-            value={edited.terminalName}
-            onChange={handleInputChange}
-          />
-        ) : (
-          params.row.terminalName
-        ),
-    },
-    {
-      field: "branchName",
-      headerName: "Branch Name",
-      flex: 1,
-      renderCell: (params) =>
-        editingRow === params.row.id ? (
-          <TextField
-            name="branchName"
-            value={edited.branchName}
-            onChange={handleInputChange}
-          />
-        ) : (
-          params.row.branchName
-        ),
-    },
-
-    {
-      field: "acceptorLocation",
-      headerName: "Acceptor Location",
-      flex: 1,
-      renderCell: (params) =>
-        editingRow === params.row.id ? (
-          <TextField
-            name="acceptorLocation"
-            value={edited.acceptorLocation}
-            onChange={handleInputChange}
-          />
-        ) : (
-          params.row.acceptorLocation
-        ),
-    },
-    {
-      field: "cbsAccount",
-      headerName: "CBS Account",
-      flex: 1,
-      renderCell: (params) =>
-        editingRow === params.row.id ? (
-          <TextField
-            name="cbsAccount"
-            value={edited.cbsAccount}
-            onChange={handleInputChange}
-          />
-        ) : (
-          params.row.cbsAccount
-        ),
-    },
-    {
-      field: "port",
-      headerName: "Port",
-      flex: 1,
-      renderCell: (params) =>
-        editingRow === params.row.id ? (
-          <TextField
-            fullWidth
-            name="port"
-            value={edited.port}
-            onChange={handleInputChange}
-          />
-        ) : (
-          params.row.port
-        ),
-    },
-    {
-      field: "ipAddress",
-      headerName: "IP Address",
-      flex: 1,
-      renderCell: (params) =>
-        editingRow === params.row.id ? (
-          <TextField
-            fullWidth
-            name="ipAddress"
-            value={edited.ipAddress}
-            onChange={handleInputChange}
-          />
-        ) : (
-          params.row.ipAddress
-        ),
-    },
-    {
-      field: "type",
-      headerName: "ATM TYPE",
-    },
-    {
-      field: "createdAt",
-      headerName: "CreatedAt",
-      flex: 1,
-    },
-    {
-      field: "status",
-      headerName: "Status",
-      flex: 1,
-    },
-
+    { field: "unitId", headerName: "Unit ID", type: "number", flex: 1 },
+    { field: "terminalId", headerName: "Terminal ID", flex: 1 },
+    { field: "terminalName", headerName: "Terminal Name", flex: 1 },
+    { field: "branchName", headerName: "Branch Name", flex: 1 },
+    { field: "acceptorLocation", headerName: "Acceptor Location", flex: 1 },
+    { field: "cbsAccount", headerName: "CBS Account", flex: 1 },
+    { field: "port", headerName: "Port", flex: 1 },
+    { field: "ipAddress", headerName: "IP Address", flex: 1 },
+    { field: "type", headerName: "ATM TYPE" },
+    { field: "site", headerName: "Terminal Site" },
+    { field: "createdAt", headerName: "CreatedAt", flex: 1 },
+    { field: "status", headerName: "Status", flex: 1 },
     {
       field: "actions",
       headerName: "Actions",
       flex: 1,
       renderCell: (params) => (
-        <div
-          sx={{ display: "flex", flexDirection: "row", gap: 5, width: "100%" }}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "100%",
+            alignItems: "center",
+          }}
         >
-          {editingRow === params.row.id ? (
+          <Tooltip title="Edit Terminal">
             <IconButton
               color="primary"
               size="small"
-
-              // onClick={() => handleDelete(params.row.id)}
+              disabled={role === "user"}
+              style={{ display: role === "user" ? "none" : "inline-flex" }}
+              onClick={() => navigate("/edit", { state: { row: params.row } })}
             >
-              <SaveAsIcon />
+              <Edit />
             </IconButton>
-          ) : (
-            <Box>
-              <IconButton
-                color="primary"
-                size="small"
-                disable={!role}
-                onClick={() => handleEdit(params.row)}
-              >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                color="primary"
-                size="small"
-                disable={!role}
-                // onClick={() => handleDelete(params.row.id)}
-              >
-                <SaveAsIcon />
-              </IconButton>
-              <IconButton
-                color="secondary"
-                size="small"
-                // onClick={() => handleDelete(params.row.id)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Box>
-          )}
-        </div>
+          </Tooltip>
+          <Tooltip title="View Terminal">
+            <IconButton
+              color="primary"
+              size="small"
+              onClick={() =>
+                navigate("/viewdetail", { state: { row: params.row } })
+              }
+            >
+              <Preview />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete Terminal">
+            <IconButton
+              color="secondary"
+              size="small"
+              disabled={role === "user"}
+              style={{ display: role === "user" ? "none" : "inline-flex" }}
+              onClick={() => handleClickOpen(params.row._id)}
+            >
+              <Delete />
+            </IconButton>
+          </Tooltip>
+        </Box>
       ),
     },
   ];
+  const fetchRows = async () => {
+    const token = localStorage.getItem("token");
 
-  const handleEdit = (row) => {
-    setEditingRow(row.id);
-    setEdited({ ...row });
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEdited({ ...edited, [name]: value });
-  };
-
-  const columns =
-    role === "user"
-      ? allColumns.filter((col) => col.field !== "actions")
-      : role === "admin"
-      ? allColumns
-      : allColumns.filter((col) => col.field !== "actions"); // Modify this part if you want to apply a different filter for other roles
-
-  useEffect(() => {
-    async function loadRows() {
-      try {
-        const data = await fetchRows();
-        setDataRows(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError(error);
-      } finally {
-        setLoading(false);
+    if (!token) {
+      console.error("No authentication token found");
+      if (!hasShownToast.current) {
+        toast.error("User is not authenticated");
+        hasShownToast.current = true;
       }
+      navigate("/home");
+      return;
     }
 
-    loadRows();
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/terminal/getTerminal",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      setDataRows(response.data.terminals);
+      setRole(response.data.role);
+    } catch (error) {
+      console.error("Error fetching terminals:", error);
+      setError(error.message); // Set the error state
+      if (!hasShownToast.current) {
+        toast.error(`Error: ${error.response?.data?.message || error.message}`);
+        hasShownToast.current = true;
+      }
+      navigate("/home");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchRows();
   }, []);
 
-  const rows = data_rows.map((row, index) => ({
-    id: index + 1,
-    ...row,
-  }));
+  const handleClickOpen = (rowId) => {
+    setSelectedRowId(rowId);
+    console.log("selected port id", rowId);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedRowId(null);
+  };
+
+  const handleConfirmDelete = async (row) => {
+    if (!selectedRowId) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No authentication token found");
+        if (!hasShownToast.current) {
+          toast.error("User is not authenticated");
+          hasShownToast.current = true;
+        }
+        navigate("/home"); // Redirect to the home page
+        return []; // Exit the function and return an empty array
+      }
+      await axios.patch(
+        `http://localhost:8000/terminal/deleteTerminal/${selectedRowId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      // Refresh data after deletion
+      fetchRows();
+      toast.success("Terminal successfully deleted.");
+      handleClose();
+    } catch (error) {
+      console.error("Error deleting terminal:", error);
+      toast.error("Failed to delete terminal.");
+    }
+  };
+
+  const rows =
+    dataRows?.map((row, index) => ({
+      id: index + 1,
+      ...row,
+    })) ?? [];
 
   if (loading) {
-    return <Typography>Loading...</Typography>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
@@ -310,32 +203,48 @@ export default function ViewATM({ role }) {
       <Typography variant="h4">All ATM Terminals</Typography>
       <Box
         sx={{
-          height: 400,
           width: "auto",
           "& .super-app-theme--header": {
             backgroundColor: "#0693e3",
           },
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: "#0693e3",
+            color: "#fff",
           },
           "& .MuiDataGrid-footerContainer": {
             backgroundColor: "#0693e3",
+            color: "#fff",
           },
         }}
       >
         <DataGrid
           rows={rows}
           columns={columns}
-          isRowEditable={true}
+          slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 5 },
             },
           }}
           pageSizeOptions={[5, 10]}
-          checkboxSelection
         />
       </Box>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this terminal?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="secondary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
