@@ -16,13 +16,10 @@ import axios from "axios";
 import { ErrorMessage, Field, Formik, Form } from "formik";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
-
-async function fetchRows() {
-  const response = await axios.get("http://localhost:8000/auth/getUser");
-  return response.data.users; // Assuming response.data contains 'users' array
-}
+import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
+  const navigate = useNavigate();
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,14 +34,36 @@ const UserProfile = () => {
     phoneNumber: "",
   });
 
+  async function fetchRows() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("No authentication token found");
+      // if (!hasShownToast.current) {
+      toast.error("User is not authenticated");
+      //   hasShownToast.current = true;
+      // }
+      navigate("/home");
+      return; // Exit the function if no token is found
+    }
+    const response = await axios.get(
+      "http://localhost:8000/auth/getUserProfile",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return response.data.user; // Assuming response.data contains 'users' array
+  }
+
   useEffect(() => {
     async function loadRows() {
       try {
         const data = await fetchRows();
-        // Assuming data is an array and we take the first element for this example
-        if (data.length > 0) {
-          setDataRows(data[0]); // Update state with fetched data
-        }
+        console.log("data in user profil", data);
+        setDataRows(data); // Update state with fetched data
       } catch (error) {
         console.error("Error fetching data:", error);
         setError(error);
