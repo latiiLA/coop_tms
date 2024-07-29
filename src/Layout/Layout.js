@@ -4,9 +4,11 @@ import Header from "../components/Header";
 import { Box } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import Footer from "../components/Footer";
+import { useAuthContext } from "../context/AuthContext";
 
 const Layout = ({ children }) => {
   const theme = useTheme();
+  const { role } = useAuthContext();
 
   return (
     <Box
@@ -22,7 +24,7 @@ const Layout = ({ children }) => {
           minHeight: "100vh",
         }}
       >
-        <Sidebar />
+        {role && <Sidebar />}
       </Box>
 
       <Box
@@ -34,7 +36,8 @@ const Layout = ({ children }) => {
           minHeight: "100vh",
         }}
       >
-        <Header />
+        {role && <Header />}
+
         <Box sx={{ padding: 2, flexGrow: 1 }}>{children}</Box>
         <Box sx={{ padding: 2, display: "flex", justifyContent: "center" }}>
           <Footer />
