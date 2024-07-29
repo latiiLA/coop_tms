@@ -1,66 +1,93 @@
-import { Route, Routes } from "react-router-dom";
-import AddATM from "./pages/administration/AddATM";
-import Home from "./pages/Home";
-// import Sidebar from "./pages/sidebar/Sidebar";
-import Dashboard from "./pages/dashboard/Dashboard";
-import View from "./components/View";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuthContext } from "./context/AuthContext";
 import Layout from "./Layout/Layout";
-import { ThemeProvider, useTheme } from "./context/ThemeProvider";
-import DarkMode from "./DarkMode/DarkMode";
-import { darkTheme, lightTheme } from "./context/Themes";
-import Administration from "./pages/administration/Administraction";
-import SignUp from "./pages/SignUp";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Sidebar from "./pages/sidebar/Sidebar";
-import Edit from "./components/Edit";
+import Dashboard from "./pages/dashboard/Dashboard";
+import ViewATM from "./pages/administration/ViewATM";
+import Report from "./pages/Reports/GeneralTerminalReport";
+import TerminalReport from "./pages/Reports/TerminalReport";
+import GeneralTerminalReport from "./pages/Reports/GeneralTerminalReport";
+import Account from "./pages/account/Account";
+import UserProfile from "./pages/account/UserProfile";
+import ViewATMDetail from "./components/ViewATMDetail";
+import AddATM from "./pages/administration/AddATM";
+import EditATM from "./pages/administration/EditATM";
 import CreateUser from "./pages/administration/CreateUser";
+import Administration from "./pages/administration/Administration";
 import ViewUsers from "./pages/administration/ViewUsers";
 import ManageAtm from "./pages/administration/ManageAtm";
 import CreateCommands from "./pages/administration/CreateCommands";
 import ViewCommands from "./pages/administration/ViewCommands";
 import ForgotPassword from "./components/ForgotPassword";
-import Report from "./pages/Reports/GeneralTerminalReport";
 import Port from "./pages/administration/Port";
 import ViewPort from "./pages/administration/ViewPort";
-import { Toaster } from "react-hot-toast";
+import Logout from "./pages/Logout";
 import { Box } from "@mui/material";
-import TerminalReport from "./pages/Reports/TerminalReport";
-import GeneralTerminalReport from "./pages/Reports/GeneralTerminalReport";
-import Account from "./pages/account/Account";
-import UserProfile from "./pages/account/UserProfile";
-import ViewATM from "./pages/administration/ViewATM";
+import { Toaster } from "react-hot-toast";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 function App() {
-  return (
-    <Box>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
+  const { role, loading } = useAuthContext();
 
-          <Route exact path="/login" element={<Login />} />
-          <Route path="/add" element={<AddATM />} />
-          <Route path="/side" element={<Sidebar />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/view" element={<ViewATM />} />
-          <Route path="/edit" element={<Edit />} />
-          <Route path="/administration" element={<Administration />} />
-          <Route path="/createuser" element={<CreateUser />} />
-          <Route path="/viewuser" element={<ViewUsers />} />
-          <Route path="/manage_atm" element={<ManageAtm />} />
-          <Route path="/new_command" element={<CreateCommands />} />
-          <Route path="/commands" element={<ViewCommands />} />
-          <Route path="/setpassword" element={<ForgotPassword />} />
-          <Route path="/report" element={<Report />} />
-          <Route path="/ports" element={<Port />} />
-          <Route path="/viewports" element={<ViewPort />} />
-          <Route path="/terminalreport" element={<TerminalReport />} />
-          <Route path="/generalreport" element={<GeneralTerminalReport />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/profile" element={<UserProfile />} />
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  return (
+    <Layout>
+      <Box>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+
+          {/* Routes for All Users */}
+          {role ? (
+            <>
+              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/view" element={<ViewATM />} />
+              <Route path="/report" element={<Report />} />
+              <Route path="/terminalreport" element={<TerminalReport />} />
+              <Route
+                path="/generalreport"
+                element={<GeneralTerminalReport />}
+              />
+              <Route path="/account" element={<Account />} />
+              <Route path="/profile" element={<UserProfile />} />
+              <Route path="/viewdetail" element={<ViewATMDetail />} />
+              <Route path="/forgotpassword" element={<ForgotPassword />} />
+              <Route path="/logout" element={<Logout />} />
+            </>
+          ) : (
+            <Route path="/" element={<Navigate to="/login" />} />
+          )}
+          {/* Admin Routes */}
+          {role === "admin" && (
+            <>
+              <Route path="/add" element={<AddATM />} />
+              <Route path="/edit" element={<EditATM />} />
+              <Route path="/createuser" element={<CreateUser />} />
+              <Route path="/administration" element={<Administration />} />
+              <Route path="/viewuser" element={<ViewUsers />} />
+              <Route path="/manage_atm" element={<ManageAtm />} />
+              <Route path="/ports" element={<Port />} />
+              <Route path="/viewports" element={<ViewPort />} />
+              <Route path="/new_command" element={<CreateCommands />} />
+              <Route path="/commands" element={<ViewCommands />} />
+            </>
+          )}
+          {/* Catch-All Route */}
+          {/* <Route
+            path="*"
+            element={<Navigate to={role ? "/home" : "/login"} />}
+          /> */}
         </Routes>
-      </Layout>
-      <Toaster />
-    </Box>
+        <Toaster />
+      </Box>
+    </Layout>
   );
 }
 
