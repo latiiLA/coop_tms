@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -7,7 +8,15 @@ const Footer = () => {
       <Typography>
         {" "}
         &copy; 2024 Cooperative Bank of Oromia. All Rights Reserved | Designed,
-        Built and Maintained by Lata Amenu{" "}
+        Built and Maintained by{" "}
+        <a
+          href="https://www.linkedin.com/in/latiiLA/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          Lata Amenu
+        </a>
       </Typography>
     </Box>
   );
