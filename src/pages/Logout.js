@@ -2,11 +2,12 @@ import React, { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
+import axios from "axios";
 
 const Logout = () => {
   const navigate = useNavigate();
   const hasShownToast = useRef(false); // Use ref to track if the toast has been shown
-  const { role, setRole } = useAuthContext();
+  const { setRole } = useAuthContext();
 
   useEffect(() => {
     const handleLogout = async () => {
@@ -27,15 +28,20 @@ const Logout = () => {
       }
 
       try {
-        const response = await fetch("/logoutUser", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        });
+        const apiUrl = process.env.REACT_APP_API_URL;
+        const response = await axios.post(
+          `${apiUrl}/auth/logoutUser`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
 
-        if (response.ok) {
-          // Handle successful logout (e.g., clear user data, redirect)
+        if (response.status === 200) {
+          // Handle successful logout
           localStorage.removeItem("token"); // Example of clearing user data
           if (!hasShownToast.current) {
             // toast.success("Logout successful!");
@@ -55,7 +61,7 @@ const Logout = () => {
     };
 
     handleLogout();
-  }, [navigate, role, setRole]);
+  }, [navigate, setRole]);
 
   return null; // Return null since this component does not render anything
 };
