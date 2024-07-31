@@ -103,7 +103,6 @@ const Port = () => {
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
-          marginTop: 10,
         }}
       >
         <Card

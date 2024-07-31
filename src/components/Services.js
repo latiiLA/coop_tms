@@ -16,7 +16,7 @@ const Tile = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
-  padding: theme.spacing(3),
+  padding: theme.spacing(2),
   textAlign: "center",
   boxShadow: theme.shadows[4],
   transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
@@ -82,7 +82,7 @@ const Services = () => {
   ];
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" padding={4}>
+    <Box display="flex" flexDirection="column" alignItems="center" padding={2}>
       <Typography variant="h4" gutterBottom>
         Our Services
       </Typography>

@@ -26,8 +26,6 @@ const Home = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        mt: 5,
-        padding: 2,
       }}
     >
       <Box
@@ -36,7 +34,6 @@ const Home = () => {
           flexDirection: "column",
           alignItems: "center",
           textAlign: "center",
-          mb: 4,
         }}
       >
         <WelcomeText variant="h1">Welcome to COOP TMS.</WelcomeText>
