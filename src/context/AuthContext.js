@@ -18,15 +18,13 @@ export const AuthContextProvider = ({ children }) => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get(
-            "http://localhost:8000/auth/getUserRole",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-              withCredentials: true,
-            }
-          );
+          const apiUrl = process.env.REACT_APP_API_URL;
+          const response = await axios.get(`${apiUrl}/auth/getUserRole`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
           setRole(response.data.role);
         } catch (error) {
           console.error("Failed to fetch user information:", error);
