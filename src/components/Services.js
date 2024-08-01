@@ -84,7 +84,7 @@ const Services = () => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" padding={2}>
       <Typography variant="h4" gutterBottom>
-        Our Services
+        Things You Can Do
       </Typography>
       <Grid container spacing={3} justifyContent="center">
         {services.map((service, index) => (

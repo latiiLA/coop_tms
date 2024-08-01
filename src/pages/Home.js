@@ -40,9 +40,9 @@ const Home = () => {
       </Box>
       <Box>
         <IntroText variant="h4">
-          Automate your workflow effortlessly with our solutions. Simplify your
-          tasks, enhance clarity, and minimize errors with our comprehensive
-          tools.
+          Automate workflows effortlessly by centralizing data and enabling
+          seamless data sharing. Simplify tasks, enhance clarity, and minimize
+          errors with comprehensive tools.
         </IntroText>
       </Box>
       <Box>
