@@ -137,9 +137,7 @@ const ATMForm = ({
 
   const FORM_VALIDATION = Yup.object().shape({
     type: Yup.string().required("ATM Type is required"),
-    unitId: Yup.string()
-      .required("Unit ID is required")
-      .min(3, "Unit ID must be at least 3 characters"),
+    unitId: Yup.string().required("Unit ID is required"),
     terminalId: Yup.string()
       .required("Terminal ID is required")
       .min(8, "Terminal ID must be at least 8 characters"),
