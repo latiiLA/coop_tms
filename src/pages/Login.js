@@ -76,13 +76,13 @@ const Login = () => {
         data,
         data.data.status
       );
-
+      const token = response.data.token;
+      localStorage.setItem("token", token);
+      setRole(data.data.role);
+      console.log("role in login", data.data.role);
       if (data.data.status === "New") {
         navigate("/forgotpassword");
       } else {
-        const token = response.data.token;
-        localStorage.setItem("token", token);
-        setRole(data.data.role);
         navigate("/home");
       }
     } catch (error) {

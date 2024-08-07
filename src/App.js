@@ -36,15 +36,15 @@ function App() {
   }
 
   return (
-    <Layout>
-      <Box>
+    <Box>
+      <Layout>
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
 
           {/* Routes for All Users */}
-          {role === "user" ? (
+          {role === "user" || role === "admin" ? (
             <>
               <Route path="/" element={<Home />} />
               <Route path="/home" element={<Home />} />
@@ -80,6 +80,7 @@ function App() {
               <Route path="/commands" element={<ViewCommands />} />
             </>
           )}
+
           {/* Catch-All Route */}
           {/* <Route
             path="*"
@@ -87,8 +88,8 @@ function App() {
           /> */}
         </Routes>
         <Toaster />
-      </Box>
-    </Layout>
+      </Layout>
+    </Box>
   );
 }
 
