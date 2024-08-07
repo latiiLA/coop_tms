@@ -24,7 +24,7 @@ const Layout = ({ children }) => {
           minHeight: "100vh",
         }}
       >
-        {role && <Sidebar />}
+        {(role === "user" || role === "admin") && <Sidebar />}
       </Box>
 
       <Box
@@ -36,7 +36,7 @@ const Layout = ({ children }) => {
           minHeight: "100vh",
         }}
       >
-        {role && <Header />}
+        {(role === "user" || role === "admin") && <Header />}
 
         <Box sx={{ padding: 2, flexGrow: 1 }}>{children}</Box>
         <Box sx={{ padding: 2, display: "flex", justifyContent: "center" }}>

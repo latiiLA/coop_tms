@@ -55,8 +55,8 @@ const CreateUser = () => {
     password: Yup.string().required("Password is required"),
   });
   const role = [
-    { value: "user", label: "User" },
-    { value: "admin", label: "Admin" },
+    { value: "tempo_user", label: "User" },
+    { value: "tempo_admin", label: "Admin" },
     // Add more options as needed
   ];
 
