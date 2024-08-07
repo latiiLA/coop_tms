@@ -41,9 +41,10 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
 
           {/* Routes for All Users */}
-          {role ? (
+          {role === "user" ? (
             <>
               <Route path="/" element={<Home />} />
               <Route path="/home" element={<Home />} />
@@ -58,11 +59,11 @@ function App() {
               <Route path="/account" element={<Account />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/viewdetail" element={<ViewATMDetail />} />
-              <Route path="/forgotpassword" element={<ForgotPassword />} />
+
               <Route path="/logout" element={<Logout />} />
             </>
           ) : (
-            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/" element={<Navigate to="/home" />} />
           )}
           {/* Admin Routes */}
           {role === "admin" && (
