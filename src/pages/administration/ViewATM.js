@@ -30,7 +30,7 @@ export default function ViewATM() {
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const hasShownToast = useRef(false);
-  const apiUrl = process.env.API_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const columns = [
     { field: "id", headerName: "No", type: "number", width: 10 },
@@ -38,13 +38,13 @@ export default function ViewATM() {
     { field: "terminalId", headerName: "Terminal ID", flex: 1 },
     { field: "terminalName", headerName: "Terminal Name", flex: 1 },
     { field: "branchName", headerName: "Branch Name", flex: 1 },
-    { field: "acceptorLocation", headerName: "Acceptor Location", flex: 1 },
+    { field: "district", headerName: "District", flex: 1 },
     { field: "cbsAccount", headerName: "CBS Account", flex: 1 },
     { field: "port", headerName: "Port", flex: 1 },
     { field: "ipAddress", headerName: "IP Address", flex: 1 },
     { field: "type", headerName: "ATM TYPE" },
     { field: "site", headerName: "Terminal Site" },
-    { field: "createdAt", headerName: "CreatedAt", flex: 1 },
+    // { field: "createdAt", headerName: "CreatedAt", flex: 1 },
     { field: "status", headerName: "Status", flex: 1 },
     {
       field: "actions",
@@ -82,7 +82,7 @@ export default function ViewATM() {
               <Preview />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete Terminal">
+          {/* <Tooltip title="Delete Terminal">
             <IconButton
               color="secondary"
               size="small"
@@ -92,7 +92,7 @@ export default function ViewATM() {
             >
               <Delete />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </Box>
       ),
     },
@@ -111,7 +111,6 @@ export default function ViewATM() {
     }
 
     try {
-      const apiUrl = process.env.REACT_APP_API_URL;
       const response = await axios.get(`${apiUrl}/terminal/getTerminal`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -160,8 +159,10 @@ export default function ViewATM() {
           hasShownToast.current = true;
         }
         navigate("/home"); // Redirect to the home page
-        return []; // Exit the function and return an empty array
+        return; // Exit the function without making further requests
       }
+
+      // Send delete request
       await axios.patch(
         `${apiUrl}/terminal/deleteTerminal/${selectedRowId}`,
         {},
@@ -173,10 +174,10 @@ export default function ViewATM() {
         }
       );
 
-      // Refresh data after deletion
+      // Refresh data and show success message
       fetchRows();
       toast.success("Terminal successfully deleted.");
-      handleClose();
+      handleClose(); // Close any open dialogs or modals
     } catch (error) {
       console.error("Error deleting terminal:", error);
       toast.error("Failed to delete terminal.");
@@ -225,7 +226,7 @@ export default function ViewATM() {
               paginationModel: { page: 0, pageSize: 10 },
             },
           }}
-          pageSizeOptions={[10, 20]}
+          pageSizeOptions={[10, 20, 30]}
         />
       </Box>
       <Dialog open={open} onClose={handleClose}>

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <Box>
-      <Typography>
+      <Typography fontSize={10}>
         {" "}
         &copy; 2024 Cooperative Bank of Oromia. All Rights Reserved | Designed,
         Built and Maintained by{" "}

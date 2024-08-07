@@ -95,8 +95,9 @@ const Header = () => {
             <Tooltip title="Open setting">
               <IconButton onClick={handleOpenUserMenu}>
                 <Avatar
-                  alt="Remy Sharp"
-                  src="https://gravatar.com/avatar/27205e5c51cb03f862138b22bcb5dc20f94a342e744ff6df1b8dc8af3c865109"
+                  alt="User Photo"
+                  // src="https://gravatar.com/avatar/27205e5c51cb03f862138b22bcb5dc20f94a342e744ff6df1b8dc8af3c865109"
+                  src="https://media.gettyimages.com/id/1203239465/photo/woman-from-borana-tribe-holding-her-baby-ethiopia-africa.jpg?s=612x612&w=gi&k=20&c=y2HnpsGtq1BrR_vjKJpYRJR2GDc6YmJK_GEczfZjOPE="
                 />
               </IconButton>
             </Tooltip>

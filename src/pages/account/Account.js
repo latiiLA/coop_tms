@@ -39,7 +39,7 @@ const Account = () => {
             Change Password
           </Button>
         </Box>
-        <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+        {/* <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
           <Typography marginY="auto">Language Preference</Typography>
           <Box width="30%">
             <FormControl variant="outlined" fullWidth>
@@ -57,7 +57,7 @@ const Account = () => {
           <Button variant="contained" type="submit">
             Apply
           </Button>
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   );

@@ -197,7 +197,7 @@ const UserProfile = () => {
                   }}
                 >
                   <Typography variant="h5" sx={{ textAlign: "center" }}>
-                    Add New User
+                    {dataRows.firstName}
                   </Typography>
                   <Box
                     sx={{

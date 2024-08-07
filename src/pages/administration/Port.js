@@ -22,10 +22,12 @@ const Port = () => {
   const atm_type = [
     { value: "CRM", label: "CRM" },
     { value: "NCR", label: "NCR" },
+    { value: "BothType", label: "Both Type" },
   ];
   const sites = [
-    { value: "OFFSITE", label: "OFFSITE" },
-    { value: "ONSITE", label: "ONSITE" },
+    { value: "Offsite", label: "OFFSITE" },
+    { value: "Onsite", label: "ONSITE" },
+    { value: "BothSite", label: "Both Site" },
   ];
   const INITIAL_FORM_STATE = {
     portName: "",

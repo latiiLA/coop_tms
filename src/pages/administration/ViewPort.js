@@ -120,7 +120,7 @@ const ViewPort = () => {
 
   const rows =
     dataRows?.map((row, index) => ({
-      id: row._id, // Ensure each row has a unique ID
+      id: index, // Ensure each row has a unique ID
       ...row,
     })) ?? [];
 

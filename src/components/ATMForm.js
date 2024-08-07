@@ -104,13 +104,35 @@ const ATMForm = ({
   ];
 
   const sites = [
-    { value: "ONSITE", label: "ONSITE" },
-    { value: "OFFSITE", label: "OFFSITE" },
+    { value: "Onsite", label: "ONSITE" },
+    { value: "Offsite", label: "OFFSITE" },
   ];
 
   const atm_status = [
     { value: "New", label: "New" },
     { value: "Active", label: "Active" },
+    { value: "Relocated", label: "Relocated" },
+    { value: "InActive", label: "InActive" },
+    { value: "Stopped", label: "Stopped" },
+  ];
+  const districts = [
+    { value: "Nekemte", label: "Nekemte" },
+    { value: "Jimma", label: "Jimma" },
+    { value: "Shashemene", label: "Shashemene" },
+    { value: "Asella", label: "Asella" },
+    { value: "Adama", label: "Adama" },
+    { value: "Hawassa", label: "Hawassa" },
+    { value: "Hossana", label: "Hossana" },
+    { value: "Dire Dawa", label: "Dire Dawa" },
+    { value: "Chiro", label: "Chiro" },
+    { value: "Bale", label: "Bale" },
+    { value: "East Finfine", label: "East Finfine" },
+    { value: "Central Finfine", label: "Central Finfine" },
+    { value: "North Finfine", label: "North Finfine" },
+    { value: "South Finfine", label: "South Finfine" },
+    { value: "West Finfine", label: "West Finfine" },
+    { value: "Bahirdar", label: "Bahirdar" },
+    { value: "Mekelle", label: "Mekelle" },
   ];
 
   const FORM_VALIDATION = Yup.object().shape({
@@ -123,7 +145,7 @@ const ATMForm = ({
       .min(8, "Terminal ID must be at least 8 characters"),
     terminalName: Yup.string().required("Terminal Name is required"),
     branchName: Yup.string().required("Branch Name is required"),
-    acceptorLocation: Yup.string().required("Acceptor Location is required"),
+    district: Yup.string().required("District is required"),
     site: Yup.string().required("Terminal site assignment is required"),
     cbsAccount: Yup.string()
       .required("CBS Account is required")
@@ -222,9 +244,10 @@ const ATMForm = ({
                   <CustomTextField name="terminalId" label="Terminal ID" />
                   <CustomTextField name="terminalName" label="Terminal Name" />
                   <CustomTextField name="branchName" label="Branch Name" />
-                  <CustomTextField
-                    name="acceptorLocation"
-                    label="Acceptor Location"
+                  <CustomSelect
+                    name="district"
+                    label="District"
+                    options={districts}
                   />
                 </Box>
                 <Box
@@ -244,6 +267,7 @@ const ATMForm = ({
                       setAvailablePorts([]); // Clear ports on site change
                     }}
                   />
+
                   <CustomSelect
                     name="port"
                     label="Port"
@@ -263,15 +287,15 @@ const ATMForm = ({
                         No available ports for selected site and type.
                       </FormHelperText>
                     )}
+
                   <CustomTextField name="cbsAccount" label="CBS Account" />
                   <CustomTextField name="ipAddress" label="IP Address" />
-                  {isEdit && (
-                    <CustomSelect
-                      name="status"
-                      label="Status"
-                      options={atm_status}
-                    />
-                  )}
+
+                  <CustomSelect
+                    name="status"
+                    label="Status"
+                    options={atm_status}
+                  />
                 </Box>
               </Box>
             </Box>

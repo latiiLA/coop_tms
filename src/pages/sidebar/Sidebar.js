@@ -249,15 +249,15 @@ const Sidebar = () => {
                         />
                       ),
                     },
-                    {
-                      text: "Settings",
-                      path: "/settings",
-                      icon: (
-                        <SettingsApplications
-                          sx={{ color: theme.palette.primary.main }}
-                        />
-                      ),
-                    },
+                    // {
+                    //   text: "Settings",
+                    //   path: "/settings",
+                    //   icon: (
+                    //     <SettingsApplications
+                    //       sx={{ color: theme.palette.primary.main }}
+                    //     />
+                    //   ),
+                    // },
                   ].map((subItem) => (
                     <ListItem key={subItem.text} disablePadding>
                       <ListItemButton

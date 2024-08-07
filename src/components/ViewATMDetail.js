@@ -91,14 +91,14 @@ const ViewATMDetail = () => {
             defaultValue={row.branchName}
           />
           <TextField
-            name="acceptorLocation"
-            label="Acceptor Location"
+            name="district"
+            label="District"
             variant="outlined"
             fullWidth
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.acceptorLocation}
+            defaultValue={row.district}
           />
           <TextField
             name="site"
