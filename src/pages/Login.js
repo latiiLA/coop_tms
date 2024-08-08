@@ -71,17 +71,13 @@ const Login = () => {
       if (data.error) {
         throw new Error(data.error);
       }
-      console.log(
-        "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&",
-        data,
-        data.data.status
-      );
+      //
       const token = response.data.token;
       localStorage.setItem("token", token);
       setRole(data.data.role);
       console.log("role in login", data.data.role);
       if (data.data.status === "New") {
-        navigate("/forgotpassword");
+        navigate("/changepassword");
       } else {
         navigate("/home");
       }

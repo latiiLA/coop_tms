@@ -133,15 +133,15 @@ const Sidebar = () => {
                 <Collapse in={openReport} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {[
+                      // {
+                      //   text: "Terminal Report",
+                      //   path: "/terminalreport",
+                      //   icon: (
+                      //     <AddBox sx={{ color: theme.palette.primary.main }} />
+                      //   ),
+                      // },
                       {
-                        text: "Terminal Report",
-                        path: "/terminalreport",
-                        icon: (
-                          <AddBox sx={{ color: theme.palette.primary.main }} />
-                        ),
-                      },
-                      {
-                        text: "General Terminal Report",
+                        text: "General Report",
                         path: "/generalreport",
                         icon: (
                           <Summarize
@@ -223,8 +223,8 @@ const Sidebar = () => {
                       ),
                     },
                     {
-                      text: "Manage ATM",
-                      path: "/manage_atm",
+                      text: "Manage Terminal",
+                      path: "/manageterminal",
                       icon: (
                         <ManageSearch
                           sx={{ color: theme.palette.primary.main }}

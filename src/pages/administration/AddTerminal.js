@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import ATMForm from "../../components/ATMForm";
 import { useNavigate } from "react-router-dom";
 
-const AddATM = () => {
+const AddTerminal = () => {
   const navigate = useNavigate();
   const hasShownToast = useRef(false); // Use ref to track if the toast has been shown
 
@@ -65,4 +65,4 @@ const AddATM = () => {
   );
 };
 
-export default AddATM;
+export default AddTerminal;

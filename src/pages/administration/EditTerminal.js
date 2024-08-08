@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import ATMForm from "../../components/ATMForm";
 
-const EditATM = () => {
+const EditTerminal = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { row } = location.state;
@@ -70,4 +70,4 @@ const EditATM = () => {
   );
 };
 
-export default EditATM;
+export default EditTerminal;

@@ -10,7 +10,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -120,7 +120,7 @@ const ViewPort = () => {
 
   const rows =
     dataRows?.map((row, index) => ({
-      id: index, // Ensure each row has a unique ID
+      id: index + 1, // Ensure each row has a unique ID
       ...row,
     })) ?? [];
 
@@ -225,13 +225,14 @@ const ViewPort = () => {
         <DataGrid
           rows={rows}
           columns={columns}
-          getRowId={(row) => row.id} // Ensure unique row ID
+          slots={{ toolbar: GridToolbar }}
+          // getRowId={(row) => row.id} // Ensure unique row ID
           initialState={{
             pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
+              paginationModel: { page: 0, pageSize: 10 },
             },
           }}
-          pageSizeOptions={[5, 10]}
+          pageSizeOptions={[10, 20]}
           checkboxSelection
         />
       </Box>

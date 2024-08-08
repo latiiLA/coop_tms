@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
   Box,
   Button,
@@ -221,12 +221,13 @@ export default function ViewUsers() {
         <DataGrid
           rows={rows}
           columns={columns}
+          slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
+              paginationModel: { page: 0, pageSize: 15 },
             },
           }}
-          pageSizeOptions={[5, 10]}
+          pageSizeOptions={[15, 30, 50]}
           checkboxSelection
         />
       </Box>

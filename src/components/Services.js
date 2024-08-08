@@ -10,6 +10,7 @@ import {
   Assessment,
   ManageAccounts,
 } from "@mui/icons-material";
+import { useAuthContext } from "../context/AuthContext";
 
 // Styled components
 const Tile = styled(Box)(({ theme }) => ({
@@ -42,7 +43,8 @@ const Description = styled(Typography)(({ theme }) => ({
 }));
 
 const Services = () => {
-  const services = [
+  const { role } = useAuthContext();
+  const admin_services = [
     {
       title: "Terminal Creation",
       description:
@@ -81,21 +83,47 @@ const Services = () => {
     },
   ];
 
+  const user_services = [
+    {
+      title: "Terminal Management",
+      description:
+        "Oversee and control the operation and status of terminals within your system.",
+      icon: <Terminal style={{ fontSize: 60, color: "#0693e3" }} />,
+    },
+    {
+      title: "Report",
+      description:
+        "Generate and view detailed reports on various aspects of the system for better insights.",
+      icon: <Assessment style={{ fontSize: 60, color: "#0693e3" }} />,
+    },
+  ];
+
   return (
     <Box display="flex" flexDirection="column" alignItems="center" padding={2}>
       <Typography variant="h4" gutterBottom>
         Things You Can Do
       </Typography>
       <Grid container spacing={3} justifyContent="center">
-        {services.map((service, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Tile>
-              <IconWrapper>{service.icon}</IconWrapper>
-              <Title variant="h6">{service.title}</Title>
-              <Description>{service.description}</Description>
-            </Tile>
-          </Grid>
-        ))}
+        {role === "admin" &&
+          admin_services.map((service, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Tile>
+                <IconWrapper>{service.icon}</IconWrapper>
+                <Title variant="h6">{service.title}</Title>
+                <Description>{service.description}</Description>
+              </Tile>
+            </Grid>
+          ))}
+        {role === "user" &&
+          user_services.map((service, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Tile>
+                <IconWrapper>{service.icon}</IconWrapper>
+                <Title variant="h6">{service.title}</Title>
+                <Description>{service.description}</Description>
+              </Tile>
+            </Grid>
+          ))}
       </Grid>
     </Box>
   );

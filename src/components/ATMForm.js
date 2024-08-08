@@ -217,7 +217,7 @@ const ATMForm = ({
               <Typography variant="h5" sx={{ textAlign: "center" }}>
                 {isEdit
                   ? "Update Terminal Information"
-                  : "Add New ATM Terminal Information"}
+                  : "Add New Terminal Information"}
               </Typography>
               <Typography variant="h6">ATM Information</Typography>
               <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
@@ -288,12 +288,13 @@ const ATMForm = ({
 
                   <CustomTextField name="cbsAccount" label="CBS Account" />
                   <CustomTextField name="ipAddress" label="IP Address" />
-
-                  <CustomSelect
-                    name="status"
-                    label="Status"
-                    options={atm_status}
-                  />
+                  {isEdit && (
+                    <CustomSelect
+                      name="status"
+                      label="Status"
+                      options={atm_status}
+                    />
+                  )}
                 </Box>
               </Box>
             </Box>

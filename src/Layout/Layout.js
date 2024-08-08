@@ -10,6 +10,9 @@ const Layout = ({ children }) => {
   const theme = useTheme();
   const { role } = useAuthContext();
 
+  // Determine the width based on the role
+  const contentWidth = role === "user" || role === "admin" ? "82vw" : "100vw";
+
   return (
     <Box
       sx={{
@@ -18,18 +21,20 @@ const Layout = ({ children }) => {
         backgroundColor: theme.palette.background.default,
       }}
     >
-      <Box
-        sx={{
-          width: "18vw",
-          minHeight: "100vh",
-        }}
-      >
-        {(role === "user" || role === "admin") && <Sidebar />}
-      </Box>
+      {(role === "user" || role === "admin") && (
+        <Box
+          sx={{
+            width: "18vw",
+            minHeight: "100vh",
+          }}
+        >
+          <Sidebar />
+        </Box>
+      )}
 
       <Box
         sx={{
-          width: "82vw",
+          width: contentWidth,
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",

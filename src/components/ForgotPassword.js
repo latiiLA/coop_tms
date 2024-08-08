@@ -134,7 +134,7 @@ const ForgotPassword = () => {
           justifyContent: "center",
           borderRadius: 2,
           boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-          width: { xs: "100%", sm: "75%", md: "60%" },
+          width: { xs: "80%", sm: "70%", md: "40%" },
         }}
       >
         <Formik

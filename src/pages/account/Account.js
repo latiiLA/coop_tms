@@ -1,26 +1,14 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
-import React, { useState } from "react";
-import UserProfile from "./UserProfile";
+import { Box, Button, Typography } from "@mui/material";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Field, Form, Formik } from "formik";
 
 const Account = () => {
   const navigate = useNavigate();
-  const language = [
-    { value: "es", label: "English" },
-    { value: "or", label: "Afan Oromo" },
-  ];
+  // const language = [
+  //   { value: "es", label: "English" },
+  //   { value: "or", label: "Afan Oromo" },
+  // ];
 
-  const handleSubmit = () => {};
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 5 }}>
       <Typography variant="h4">Account Information</Typography>
@@ -35,7 +23,10 @@ const Account = () => {
       >
         <Box sx={{ display: "flex", gap: 2 }}>
           <Typography marginY="auto">Change password</Typography>
-          <Button variant="contained" onClick={() => navigate("/setpassword")}>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/changepassword")}
+          >
             Change Password
           </Button>
         </Box>

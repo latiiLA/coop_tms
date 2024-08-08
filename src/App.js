@@ -5,19 +5,19 @@ import Layout from "./Layout/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Dashboard from "./pages/dashboard/Dashboard";
-import ViewATM from "./pages/administration/ViewATM";
+import ViewATM from "./pages/administration/ViewTerminal";
 import Report from "./pages/Reports/GeneralTerminalReport";
 import TerminalReport from "./pages/Reports/TerminalReport";
 import GeneralTerminalReport from "./pages/Reports/GeneralTerminalReport";
 import Account from "./pages/account/Account";
 import UserProfile from "./pages/account/UserProfile";
 import ViewATMDetail from "./components/ViewATMDetail";
-import AddATM from "./pages/administration/AddATM";
-import EditATM from "./pages/administration/EditATM";
+import AddTerminal from "./pages/administration/AddTerminal";
+import EditTerminal from "./pages/administration/EditTerminal";
 import CreateUser from "./pages/administration/CreateUser";
 import Administration from "./pages/administration/Administration";
 import ViewUsers from "./pages/administration/ViewUsers";
-import ManageAtm from "./pages/administration/ManageAtm";
+import ManageTerminal from "./pages/administration/ManageTerminal";
 import CreateCommands from "./pages/administration/CreateCommands";
 import ViewCommands from "./pages/administration/ViewCommands";
 import ForgotPassword from "./components/ForgotPassword";
@@ -41,7 +41,7 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
-          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/changepassword" element={<ForgotPassword />} />
 
           {/* Routes for All Users */}
           {role === "user" || role === "admin" ? (
@@ -68,12 +68,12 @@ function App() {
           {/* Admin Routes */}
           {role === "admin" && (
             <>
-              <Route path="/add" element={<AddATM />} />
-              <Route path="/edit" element={<EditATM />} />
+              <Route path="/add" element={<AddTerminal />} />
+              <Route path="/edit" element={<EditTerminal />} />
               <Route path="/createuser" element={<CreateUser />} />
               <Route path="/administration" element={<Administration />} />
               <Route path="/viewuser" element={<ViewUsers />} />
-              <Route path="/manage_atm" element={<ManageAtm />} />
+              <Route path="/manageterminal" element={<ManageTerminal />} />
               <Route path="/ports" element={<Port />} />
               <Route path="/viewports" element={<ViewPort />} />
               <Route path="/new_command" element={<CreateCommands />} />
