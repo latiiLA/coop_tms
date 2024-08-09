@@ -1,11 +1,11 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useAuthContext } from "./context/AuthContext";
 import Layout from "./Layout/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Dashboard from "./pages/dashboard/Dashboard";
-import ViewATM from "./pages/administration/ViewTerminal";
+import ViewTerminal from "./pages/administration/ViewTerminal";
 import Report from "./pages/Reports/GeneralTerminalReport";
 import TerminalReport from "./pages/Reports/TerminalReport";
 import GeneralTerminalReport from "./pages/Reports/GeneralTerminalReport";
@@ -28,6 +28,43 @@ import { Box } from "@mui/material";
 import { Toaster } from "react-hot-toast";
 import LoadingSpinner from "./components/LoadingSpinner";
 
+// Protect routes based on role
+const ProtectedRoutes = ({ requiredRole }) => {
+  const { role } = useAuthContext();
+
+  if (role === null) {
+    // Not logged in
+    return <Navigate to="/login" replace />;
+  }
+
+  if (role === "tempo_user" || role === "tempo_admin") {
+    return <Navigate to="/changepassword" />;
+  }
+
+  if (requiredRole && requiredRole.includes(role) === false) {
+    // User doesn't have the required role
+    return <Navigate to="/home" replace />;
+  }
+
+  return <Outlet />;
+};
+
+// Protected Login Route
+const ProtectedLogin = () => {
+  const { role } = useAuthContext();
+  const navigate = useNavigate();
+  console.log("here protected login");
+  useEffect(() => {
+    if (role === "user" || role === "admin") {
+      navigate("/home", { replace: true });
+    } else if (role === "tempo_user" || role === "tempo_admin") {
+      navigate("/changepassword");
+    }
+  }, [role, navigate]);
+
+  return <Login />;
+};
+
 function App() {
   const { role, loading } = useAuthContext();
 
@@ -40,34 +77,27 @@ function App() {
       <Layout>
         <Routes>
           {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/changepassword" element={<ForgotPassword />} />
-
-          {/* Routes for All Users */}
-          {role === "user" || role === "admin" ? (
-            <>
-              <Route path="/" element={<Home />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/view" element={<ViewATM />} />
-              <Route path="/report" element={<Report />} />
-              <Route path="/terminalreport" element={<TerminalReport />} />
-              <Route
-                path="/generalreport"
-                element={<GeneralTerminalReport />}
-              />
-              <Route path="/account" element={<Account />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/viewdetail" element={<ViewATMDetail />} />
-
-              <Route path="/logout" element={<Logout />} />
-            </>
-          ) : (
-            <Route path="/" element={<Navigate to="/home" />} />
+          <Route path="/login" element={<ProtectedLogin />} />
+          {role !== null && (
+            <Route path="/changepassword" element={<ForgotPassword />} />
           )}
-          {/* Admin Routes */}
-          {role === "admin" && (
-            <>
+
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoutes requiredRole={["user", "admin"]} />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/view" element={<ViewTerminal />} />
+            <Route path="/report" element={<Report />} />
+            <Route path="/terminalreport" element={<TerminalReport />} />
+            <Route path="/generalreport" element={<GeneralTerminalReport />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/viewdetail" element={<ViewATMDetail />} />
+            <Route path="/logout" element={<Logout />} />
+
+            {/* Admin Routes */}
+            <Route element={<ProtectedRoutes requiredRole={["admin"]} />}>
               <Route path="/add" element={<AddTerminal />} />
               <Route path="/edit" element={<EditTerminal />} />
               <Route path="/createuser" element={<CreateUser />} />
@@ -78,14 +108,20 @@ function App() {
               <Route path="/viewports" element={<ViewPort />} />
               <Route path="/new_command" element={<CreateCommands />} />
               <Route path="/commands" element={<ViewCommands />} />
-            </>
-          )}
+            </Route>
+          </Route>
 
           {/* Catch-All Route */}
-          {/* <Route
+          <Route
             path="*"
-            element={<Navigate to={role ? "/home" : "/login"} />}
-          /> */}
+            element={
+              role === "tempo_user" || role === "tempo_admin" ? (
+                <Navigate to="/changepassword" replace />
+              ) : (
+                <Navigate to={role ? "/home" : "/login"} replace />
+              )
+            }
+          />
         </Routes>
         <Toaster />
       </Layout>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Box,
   TextField,
@@ -7,14 +7,10 @@ import {
   Card,
   FormControl,
   InputLabel,
-  Select,
-  MenuItem,
+  OutlinedInput,
   InputAdornment,
   IconButton,
-  OutlinedInput,
-  FilledInput,
 } from "@mui/material";
-
 import { Formik, Form, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -26,31 +22,16 @@ import { useAuthContext } from "../context/AuthContext";
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const { role, setRole } = useAuthContext();
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-  const [showPassword2, setShowPassword2] = React.useState(false);
-  const handleClickShowPassword2 = () => setShowPassword2((show) => !show);
-
-  const handleMouseDownPassword2 = (event) => {
-    event.preventDefault();
-  };
-  const [showPassword3, setShowPassword3] = React.useState(false);
-  const handleClickShowPassword3 = () => setShowPassword3((show) => !show);
-
-  const handleMouseDownPassword3 = (event) => {
-    event.preventDefault();
-  };
+  const handleMouseDownPassword = (event) => event.preventDefault();
 
   const handleSubmit = async (update_data) => {
     setLoading(true);
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("No authentication token found");
       toast.error("User is not authenticated");
       navigate("/login");
       return;
@@ -72,33 +53,17 @@ const ForgotPassword = () => {
         }
       );
 
-      console.log("Forgot password is successful:", response.data);
-
-      const data = response.data; // updated to directly access response data
-
-      if (data.error) {
-        throw new Error(data.error);
+      if (role === "tempo_user" || role === "tempo_admin") {
+        const token = response.data.token;
+        localStorage.setItem("token", token);
+        setRole(response.data.role);
+        console.log("role in login", response.data.role);
       }
-      // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$", data, data.data.status);
 
-      // // Store the token in localStorage
-      // const token = response.data.token; // Adjust this line based on your JSON structure
-      // localStorage.setItem("token", token);
-      // setRole(data.data.role);
-      // if (data.data.status === "New") {
-      //   navigate("/forgotpassword");
-      // } else {
-
-      toast.success("password changed successfully.");
+      toast.success("Password changed successfully.");
       navigate("/home");
-      // }
     } catch (error) {
-      console.error("Error changing password in:", error);
-      toast.error(
-        `Login Error: ${error.response?.data?.message || error.message}`
-      );
-      // setRole(null);
-      // navigate("/login");
+      toast.error(`Error: ${error.response?.data?.message || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -120,11 +85,7 @@ const ForgotPassword = () => {
 
   return (
     <Box
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-      }}
+      sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}
     >
       <Card
         sx={{
@@ -140,15 +101,13 @@ const ForgotPassword = () => {
         <Formik
           initialValues={INITIAL_FORM_STATE}
           validationSchema={FORM_VALIDATION}
-          onSubmit={(values) => {
-            handleSubmit(values);
-          }}
+          onSubmit={(values) => handleSubmit(values)}
         >
           {({ errors, touched }) => (
             <Form>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <Typography variant="h5" sx={{ textAlign: "center" }}>
-                  Update password
+                  Update Password
                 </Typography>
 
                 <FormControl
@@ -196,17 +155,17 @@ const ForgotPassword = () => {
                   <Field
                     as={OutlinedInput}
                     id="outlined-adornment-password2"
-                    type={showPassword2 ? "text" : "password"}
+                    type={showPassword ? "text" : "password"}
                     name="newPassword"
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
                           aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword2}
-                          onMouseDown={handleMouseDownPassword2}
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
                           edge="end"
                         >
-                          {showPassword2 ? <VisibilityOff /> : <Visibility />}
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
                     }
@@ -218,9 +177,12 @@ const ForgotPassword = () => {
                     style={{ color: "red" }}
                   />
                 </FormControl>
+
                 <FormControl
                   variant="outlined"
-                  error={touched.newPassword && !!errors.newPassword}
+                  error={
+                    touched.confirmNewPassword && !!errors.confirmNewPassword
+                  }
                   fullWidth
                 >
                   <InputLabel htmlFor="outlined-adornment-password3">
@@ -229,17 +191,17 @@ const ForgotPassword = () => {
                   <Field
                     as={OutlinedInput}
                     id="outlined-adornment-password3"
-                    type={showPassword3 ? "text" : "password"}
+                    type={showPassword ? "text" : "password"}
                     name="confirmNewPassword"
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
                           aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword3}
-                          onMouseDown={handleMouseDownPassword3}
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
                           edge="end"
                         >
-                          {showPassword3 ? <VisibilityOff /> : <Visibility />}
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
                     }

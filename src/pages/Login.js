@@ -71,15 +71,18 @@ const Login = () => {
       if (data.error) {
         throw new Error(data.error);
       }
-      //
+
       const token = response.data.token;
       localStorage.setItem("token", token);
       setRole(data.data.role);
       console.log("role in login", data.data.role);
+
       if (data.data.status === "New") {
-        navigate("/changepassword");
+        // window.history.back();
+        window.location.replace("/changepassword");
       } else {
-        navigate("/home");
+        // window.history.back();
+        window.location.replace("/home");
       }
     } catch (error) {
       console.error("Error logging in:", error);

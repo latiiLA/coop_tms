@@ -66,7 +66,7 @@ const CreateUser = () => {
     // Add more options as needed
   ];
 
-  const handleSubmit = async (data) => {
+  const handleSubmit = async (data, { resetForm }) => {
     console.log("handle submit", data.firstName);
     const token = localStorage.getItem("token");
     if (!token) {
@@ -100,7 +100,9 @@ const CreateUser = () => {
         }
       );
       console.log("New user is created:", response.data);
+      resetForm();
       toast.success(response.data.message);
+
       // setfirstName("");
       // setlastName("");
       // setEmail("");
@@ -148,11 +150,11 @@ const CreateUser = () => {
         <Formik
           initialValues={INITIAL_FORM_STATE}
           validationSchema={FORM_VALIDATION}
-          onSubmit={(values) => {
-            handleSubmit(values);
+          onSubmit={(values, formikHelpers) => {
+            handleSubmit(values, formikHelpers);
           }}
         >
-          {({ errors, touched }) => (
+          {({ errors, touched, resetForm }) => (
             <Form>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <Typography variant="h5" sx={{ textAlign: "center" }}>

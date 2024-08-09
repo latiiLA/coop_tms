@@ -113,6 +113,7 @@ export default function ViewUsers() {
     },
     { field: "department", headerName: "Department", flex: 1 },
     { field: "role", headerName: "Role", flex: 1 },
+    { field: "createdBy", headerName: "createdBy", flex: 1 },
     { field: "createdAt", headerName: "Date Created" },
     { field: "status", headerName: "Status", flex: 1 },
     { field: "wrongPasswordCount", headerName: "Reset Password", flex: 1 },
