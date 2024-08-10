@@ -11,9 +11,9 @@ const Logout = () => {
 
   useEffect(() => {
     const handleLogout = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
+      const recieved_token = localStorage.getItem("token");
+      localStorage.removeItem("token");
+      if (!recieved_token) {
         console.error("No authentication token found");
         if (!hasShownToast.current) {
           toast.error(
@@ -33,7 +33,7 @@ const Logout = () => {
           {},
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${recieved_token}`,
             },
             withCredentials: true,
           }

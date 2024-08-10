@@ -78,11 +78,11 @@ const Login = () => {
       console.log("role in login", data.data.role);
 
       if (data.data.status === "New") {
-        window.history.back();
-        window.location.replace("/changepassword");
+        // window.history.back();
+        navigate("/changepassword");
       } else {
-        window.history.back();
-        window.location.replace("/home");
+        // window.history.back();
+        navigate("/home");
       }
     } catch (error) {
       console.error("Error logging in:", error);
