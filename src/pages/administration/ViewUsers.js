@@ -18,9 +18,11 @@ import LockResetIcon from "@mui/icons-material/LockReset";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext";
 
 export default function ViewUsers() {
   const navigate = useNavigate();
+  const { role } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataRows, setDataRows] = useState([]);
@@ -66,7 +68,8 @@ export default function ViewUsers() {
       toast.success("User successfully deleted.");
     } catch (error) {
       console.error("Error deleting user:", error);
-      toast.error("Error: While deleting the user");
+      toast.error(error.response.data.message);
+      handleClose();
     }
   };
 
@@ -132,15 +135,18 @@ export default function ViewUsers() {
               <LockResetIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete User">
-            <IconButton
-              color="secondary"
-              size="small"
-              onClick={() => handleClickOpen(params.row._id)}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+
+          {role === "superadmin" && (
+            <Tooltip title="Delete User">
+              <IconButton
+                color="secondary"
+                size="small"
+                onClick={() => handleClickOpen(params.row._id)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          )}
         </Box>
       ),
     },

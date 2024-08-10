@@ -27,6 +27,7 @@ import Logout from "./pages/Logout";
 import { Box } from "@mui/material";
 import { Toaster } from "react-hot-toast";
 import LoadingSpinner from "./components/LoadingSpinner";
+import UserActivityLog from "../src/pages/administration/UserActivityLog";
 
 // Protect routes based on role
 const ProtectedRoutes = ({ requiredRole }) => {
@@ -37,11 +38,15 @@ const ProtectedRoutes = ({ requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (role === "tempo_user" || role === "tempo_admin") {
+  if (
+    role === "tempo_user" ||
+    role === "tempo_admin" ||
+    role === "tempo_superadmin"
+  ) {
     return <Navigate to="/changepassword" />;
   }
 
-  if (requiredRole && requiredRole.includes(role) === false) {
+  if (requiredRole && !requiredRole.includes(role)) {
     // User doesn't have the required role
     return <Navigate to="/home" replace />;
   }
@@ -53,11 +58,15 @@ const ProtectedRoutes = ({ requiredRole }) => {
 const ProtectedLogin = () => {
   const { role } = useAuthContext();
   const navigate = useNavigate();
-  console.log("here protected login");
+
   useEffect(() => {
-    if (role === "user" || role === "admin") {
+    if (role === "user" || role === "admin" || role === "superadmin") {
       navigate("/home", { replace: true });
-    } else if (role === "tempo_user" || role === "tempo_admin") {
+    } else if (
+      role === "tempo_user" ||
+      role === "tempo_admin" ||
+      role === "tempo_superadmin"
+    ) {
       navigate("/changepassword");
     }
   }, [role, navigate]);
@@ -78,12 +87,13 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<ProtectedLogin />} />
-          {role !== null && (
-            <Route path="/changepassword" element={<ForgotPassword />} />
-          )}
 
           {/* Protected Routes */}
-          <Route element={<ProtectedRoutes requiredRole={["user", "admin"]} />}>
+          <Route
+            element={
+              <ProtectedRoutes requiredRole={["user", "admin", "superadmin"]} />
+            }
+          >
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -95,27 +105,37 @@ function App() {
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/viewdetail" element={<ViewATMDetail />} />
             <Route path="/logout" element={<Logout />} />
+            <Route path="/changepassword" element={<ForgotPassword />} />
+          </Route>
 
-            {/* Admin Routes */}
-            <Route element={<ProtectedRoutes requiredRole={["admin"]} />}>
-              <Route path="/add" element={<AddTerminal />} />
-              <Route path="/edit" element={<EditTerminal />} />
-              <Route path="/createuser" element={<CreateUser />} />
-              <Route path="/administration" element={<Administration />} />
-              <Route path="/viewuser" element={<ViewUsers />} />
-              <Route path="/manageterminal" element={<ManageTerminal />} />
-              <Route path="/ports" element={<Port />} />
-              <Route path="/viewports" element={<ViewPort />} />
-              <Route path="/new_command" element={<CreateCommands />} />
-              <Route path="/commands" element={<ViewCommands />} />
-            </Route>
+          {/* Admin Routes */}
+          <Route
+            element={<ProtectedRoutes requiredRole={["admin", "superadmin"]} />}
+          >
+            <Route path="/add" element={<AddTerminal />} />
+            <Route path="/edit" element={<EditTerminal />} />
+            <Route path="/administration" element={<Administration />} />
+            <Route path="/viewuser" element={<ViewUsers />} />
+            <Route path="/manageterminal" element={<ManageTerminal />} />
+            <Route path="/ports" element={<Port />} />
+            <Route path="/viewports" element={<ViewPort />} />
+            <Route path="/new_command" element={<CreateCommands />} />
+            <Route path="/commands" element={<ViewCommands />} />
+          </Route>
+
+          {/* Super Admin Routes */}
+          <Route element={<ProtectedRoutes requiredRole={["superadmin"]} />}>
+            <Route path="/createuser" element={<CreateUser />} />
+            <Route path="/activitylog" element={<UserActivityLog />} />
           </Route>
 
           {/* Catch-All Route */}
           <Route
             path="*"
             element={
-              role === "tempo_user" || role === "tempo_admin" ? (
+              role === "tempo_user" ||
+              role === "tempo_admin" ||
+              role === "tempo_superadmin" ? (
                 <Navigate to="/changepassword" replace />
               ) : (
                 <Navigate to={role ? "/home" : "/login"} replace />

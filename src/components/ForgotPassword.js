@@ -53,11 +53,13 @@ const ForgotPassword = () => {
         }
       );
 
-      if (role === "tempo_user" || role === "tempo_admin") {
-        const token = response.data.token;
-        localStorage.setItem("token", token);
-        setRole(response.data.role);
-        console.log("role in login", response.data.role);
+      if (
+        role === "tempo_user" ||
+        role === "tempo_admin" ||
+        role === "tempo_superadmin"
+      ) {
+        localStorage.removeItem("token", token);
+        setRole(null);
       }
 
       toast.success("Password changed successfully.");

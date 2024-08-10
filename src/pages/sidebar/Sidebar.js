@@ -32,6 +32,7 @@ import {
   SettingsInputComposite,
   SettingsApplications,
   Home,
+  LocalActivity,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -180,7 +181,7 @@ const Sidebar = () => {
           )}
 
           {/* Render "Administration" section only if the role is "admin" */}
-          {role === "admin" && (
+          {(role === "admin" || role === "superadmin") && (
             <React.Fragment key="Administration">
               <ListItem disablePadding>
                 <ListItemButton onClick={handleAdminClick}>
@@ -208,13 +209,19 @@ const Sidebar = () => {
                       path: "/add",
                       icon: <Add sx={{ color: theme.palette.primary.main }} />,
                     },
-                    {
-                      text: "Create User",
-                      path: "/createuser",
-                      icon: (
-                        <PersonAdd sx={{ color: theme.palette.primary.main }} />
-                      ),
-                    },
+                    ...(role === "superadmin"
+                      ? [
+                          {
+                            text: "Create User",
+                            path: "/createuser",
+                            icon: (
+                              <PersonAdd
+                                sx={{ color: theme.palette.primary.main }}
+                              />
+                            ),
+                          },
+                        ]
+                      : []),
                     {
                       text: "Create Port",
                       path: "/ports",
@@ -249,6 +256,19 @@ const Sidebar = () => {
                         />
                       ),
                     },
+                    ...(role === "superadmin"
+                      ? [
+                          {
+                            text: "Activity Log",
+                            path: "/activitylog",
+                            icon: (
+                              <LocalActivity
+                                sx={{ color: theme.palette.primary.main }}
+                              />
+                            ),
+                          },
+                        ]
+                      : []),
                     // {
                     //   text: "Settings",
                     //   path: "/settings",

@@ -104,7 +104,7 @@ const Services = () => {
         Things You Can Do
       </Typography>
       <Grid container spacing={3} justifyContent="center">
-        {role === "admin" &&
+        {(role === "admin" || role === "superadmin") &&
           admin_services.map((service, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Tile>

@@ -11,7 +11,6 @@ const Logout = () => {
 
   useEffect(() => {
     const handleLogout = async () => {
-      // Get the token from local storage (or other storage mechanism)
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -41,16 +40,14 @@ const Logout = () => {
         );
 
         if (response.status === 200) {
-          // Handle successful logout
-          localStorage.removeItem("token"); // Example of clearing user data
+          localStorage.removeItem("token"); // Clear token from localStorage
           if (!hasShownToast.current) {
-            // toast.success("Logout successful!");
+            toast.success("Logout successful!");
             hasShownToast.current = true;
           }
           setRole(null);
           navigate("/login"); // Redirect to login page
         } else {
-          // Handle error response
           console.error("Logout failed");
           toast.error("Logout failed");
         }
@@ -63,7 +60,7 @@ const Logout = () => {
     handleLogout();
   }, [navigate, setRole]);
 
-  return null; // Return null since this component does not render anything
+  return null;
 };
 
 export default Logout;
