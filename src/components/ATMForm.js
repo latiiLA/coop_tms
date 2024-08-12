@@ -19,13 +19,15 @@ import toast from "react-hot-toast";
 const fetchAvailablePorts = async (portSiteAssignment, portAssignment) => {
   console.log(portSiteAssignment, portAssignment, "before fetch");
   try {
-    const apiUrl = process.env.REACT_APP_API_URL;
-    const response = await axios.get(`${apiUrl}/port/getAssignedPorts`, {
-      params: {
-        portSiteAssignment,
-        portAssignment,
-      },
-    });
+    const response = await axios.get(
+      "http://localhost:8000/port/getAssignedPorts",
+      {
+        params: {
+          portSiteAssignment,
+          portAssignment,
+        },
+      }
+    );
 
     // Handle response
     console.log(response.data.availablePorts);
@@ -95,8 +97,9 @@ const ATMForm = ({
 }) => {
   const [selectedType, setSelectedType] = useState(initialValues.type || "");
   const [selectedSite, setSelectedSite] = useState(initialValues.site || "");
-  const [availablePorts, setAvailablePorts] = useState([]);
+  // const [selectedPort, setSelectedPort] = useState(initialValues.site || "");
 
+  const [availablePorts, setAvailablePorts] = useState([]);
   const atm_types = [
     { value: "CRM", label: "CRM" },
     { value: "NCR", label: "NCR" },
@@ -110,9 +113,6 @@ const ATMForm = ({
   const atm_status = [
     { value: "New", label: "New" },
     { value: "Active", label: "Active" },
-    { value: "Relocated", label: "Relocated" },
-    { value: "InActive", label: "InActive" },
-    { value: "Stopped", label: "Stopped" },
   ];
 
   const districts = [
@@ -137,7 +137,7 @@ const ATMForm = ({
 
   const FORM_VALIDATION = Yup.object().shape({
     type: Yup.string().required("ATM Type is required"),
-    unitId: Yup.string().required("Unit ID is required"),
+    unitId: Yup.number().required("Unit ID is required"),
     terminalId: Yup.string()
       .required("Terminal ID is required")
       .min(8, "Terminal ID must be at least 8 characters"),
@@ -148,6 +148,11 @@ const ATMForm = ({
     cbsAccount: Yup.string()
       .required("CBS Account is required")
       .min(12, "CBS Account must be at least 12 characters"),
+    // port: Yup.number()
+    //   .required("Port is required")
+    //   .test("is-valid-port", "Port must be a valid selection", (value) =>
+    //     availablePorts.includes(value)
+    //   ),
     ipAddress: Yup.string()
       .required("IP Address is required")
       .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -180,6 +185,7 @@ const ATMForm = ({
           setAvailablePorts([]);
         }
       } else {
+        // Optionally handle cases where site or type is not selected yet
         setAvailablePorts([]);
       }
     };
@@ -197,8 +203,6 @@ const ATMForm = ({
         borderRadius: 2,
         boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
         width: { xs: "100%", sm: "95%", md: "90%" },
-        height: "100%",
-        overflow: "auto", // Ensure scrolling if content overflows
       }}
     >
       <Formik
@@ -215,7 +219,7 @@ const ATMForm = ({
                   ? "Update Terminal Information"
                   : "Add New Terminal Information"}
               </Typography>
-              <Typography variant="h6">ATM Information</Typography>
+
               <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
                 <Box
                   sx={{
@@ -254,7 +258,7 @@ const ATMForm = ({
                 >
                   <CustomSelect
                     name="site"
-                    label="Terminal Site Assignment"
+                    label="Terminal Site"
                     options={sites}
                     onChange={(e) => {
                       setSelectedSite(e.target.value);
@@ -262,25 +266,44 @@ const ATMForm = ({
                     }}
                   />
                   <CustomSelect
-                    name="portAssignment"
-                    label="Port Assignment"
+                    name="port"
+                    label="Port"
                     options={availablePorts.map((port) => ({
-                      value: port.id,
-                      label: port.name,
+                      value: port,
+                      label: port.toString(),
                     }))}
+                    // onChange={(e) => {
+                    //   setSelectedPort(e.target.value); // setAvailablePorts([]); // Clear ports on site change
+                    // }}
+                    disabled={!selectedSite} // Disable port selection if no site selected
                   />
+                  {availablePorts.length === 0 &&
+                    selectedSite &&
+                    selectedType && (
+                      <FormHelperText error>
+                        No available ports for selected site and type.
+                      </FormHelperText>
+                    )}
                   <CustomTextField name="cbsAccount" label="CBS Account" />
                   <CustomTextField name="ipAddress" label="IP Address" />
+                  {isEdit && (
+                    <CustomSelect
+                      name="status"
+                      label="Status"
+                      options={atm_status}
+                    />
+                  )}
                 </Box>
               </Box>
+            </Box>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
-                disabled={isSubmitting || !isValid}
-                sx={{ width: 150, display: "flex", margin: "auto" }}
+                disabled={!isValid || isSubmitting}
               >
-                {isEdit ? "Update Terminal" : "Add Terminal"}
+                {isEdit ? "Update" : "Submit"}
               </Button>
             </Box>
           </Form>

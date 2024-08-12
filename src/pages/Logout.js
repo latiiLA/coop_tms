@@ -42,7 +42,7 @@ const Logout = () => {
         if (response.status === 200) {
           localStorage.removeItem("token"); // Clear token from localStorage
           if (!hasShownToast.current) {
-            toast.success("Logout successful!");
+            // toast.success("Logout successful!");
             hasShownToast.current = true;
           }
           setRole(null);
