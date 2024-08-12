@@ -88,6 +88,22 @@ function App() {
           {/* Public Routes */}
           <Route path="/login" element={<ProtectedLogin />} />
 
+          {/* <Route
+            element={
+              <ProtectedRoutes
+                requiredRole={[
+                  "user",
+                  "admin",
+                  "superadmin",
+                  "tempo_user",
+                  "tempo_admin",
+                ]}
+              />
+            }
+          > */}
+          <Route path="/changepassword" element={<ForgotPassword />} />
+          {/* </Route> */}
+
           {/* Protected Routes */}
           <Route
             element={
@@ -105,7 +121,6 @@ function App() {
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/viewdetail" element={<ViewATMDetail />} />
             <Route path="/logout" element={<Logout />} />
-            <Route path="/changepassword" element={<ForgotPassword />} />
           </Route>
 
           {/* Admin Routes */}
