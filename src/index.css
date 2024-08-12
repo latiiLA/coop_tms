@@ -3,7 +3,16 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box; /* Ensure padding and borders are included in width/height */
 }
+
 /* body {
-  background-color: #ffffff;
+  zoom: 80%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 } */
+
+html {
+  font-size: 80%;
+}

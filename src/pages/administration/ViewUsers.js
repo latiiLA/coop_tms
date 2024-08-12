@@ -102,8 +102,8 @@ export default function ViewUsers() {
   };
 
   const columns = [
-    { field: "id", headerName: "No" },
-    { field: "username", headerName: "Username", flex: 1 },
+    { field: "id", headerName: "No", flex: 0.1 },
+    { field: "username", headerName: "Username", flex: 0.5 },
     {
       field: "fullName",
       headerName: "Full name",
@@ -114,16 +114,16 @@ export default function ViewUsers() {
         }`,
       flex: 1,
     },
-    { field: "department", headerName: "Department", flex: 1 },
-    { field: "role", headerName: "Role", flex: 1 },
+    { field: "department", headerName: "Department", flex: 0.5 },
+    { field: "role", headerName: "Role", flex: 0.5 },
     { field: "createdBy", headerName: "createdBy", flex: 1 },
-    { field: "createdAt", headerName: "Date Created" },
-    { field: "status", headerName: "Status", flex: 1 },
-    { field: "wrongPasswordCount", headerName: "Reset Password", flex: 1 },
+    { field: "createdAt", headerName: "Date Created", flex: 1 },
+    { field: "status", headerName: "Status", flex: 0.5 },
+    { field: "wrongPasswordCount", headerName: "Reset", flex: 0.5 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1,
+      flex: 0.5,
       renderCell: (params) => (
         <Box sx={{ display: "flex", justifyContent: "space-around" }}>
           <Tooltip title="Reset Password Count">
@@ -205,13 +205,21 @@ export default function ViewUsers() {
   }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    <Box
+    // sx={{
+    //   display: "flex",
+    //   flexDirection: "column",
+    //   gap: 2,
+    //   width: "100%",
+    //   boxSizing: "border-box",
+    // }}
+    >
       <Box>
         <Typography variant="h4">User Management</Typography>
       </Box>
       <Box
         sx={{
-          width: "auto",
+          width: "100%",
           "& .super-app-theme--header": {
             backgroundColor: "#0693e3",
           },
@@ -242,7 +250,7 @@ export default function ViewUsers() {
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this port?
+            Are you sure you want to delete this user?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

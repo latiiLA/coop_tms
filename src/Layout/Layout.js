@@ -10,11 +10,11 @@ const Layout = ({ children }) => {
   const theme = useTheme();
   const { role } = useAuthContext();
 
-  // Determine the width based on the role
-  const contentWidth =
-    role === "user" || role === "admin" || role === "superadmin"
-      ? "82vw"
-      : "100vw";
+  // Define the sidebar width as a percentage
+  const sidebarWidth = "15%";
+
+  // Calculate the content width based on sidebar presence
+  const contentWidth = role ? `calc(100% - ${sidebarWidth})` : "100%";
 
   return (
     <Box
@@ -27,8 +27,12 @@ const Layout = ({ children }) => {
       {(role === "user" || role === "admin" || role === "superadmin") && (
         <Box
           sx={{
-            width: "18vw",
+            width: sidebarWidth,
             minHeight: "100vh",
+            backgroundColor: theme.palette.background.paper,
+            flexShrink: 0, // Prevent shrinking
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <Sidebar />
@@ -37,10 +41,10 @@ const Layout = ({ children }) => {
 
       <Box
         sx={{
+          flex: 1, // Allow content area to grow
           width: contentWidth,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "flex-start",
           minHeight: "100vh",
         }}
       >
@@ -48,9 +52,26 @@ const Layout = ({ children }) => {
           <Header />
         )}
 
-        <Box sx={{ padding: 2, flexGrow: 1 }}>{children}</Box>
-        <Box sx={{ padding: 2, display: "flex", justifyContent: "center" }}>
-          <Footer />
+        {/* Container to handle content and footer positioning */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            flexGrow: 1, // Allow this container to grow and fill space
+          }}
+        >
+          <Box sx={{ padding: "1rem", flexGrow: 1 }}>{children}</Box>
+
+          <Box
+            sx={{
+              padding: "1rem",
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "auto", // Push footer to the bottom
+            }}
+          >
+            <Footer />
+          </Box>
         </Box>
       </Box>
     </Box>

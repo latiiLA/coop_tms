@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Drawer,
   Toolbar,
@@ -11,12 +11,15 @@ import {
   Typography,
   Box,
   Collapse,
+  IconButton,
 } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import { Link, useNavigate } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
-import coop from "../../assets/coop.gif";
+import HomeLink from "../../components/HomeLink";
 import {
   Dashboard,
   Atm,
@@ -30,29 +33,23 @@ import {
   ManageSearch,
   ManageAccounts,
   SettingsInputComposite,
-  SettingsApplications,
-  Home,
   LocalActivity,
+  Home,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import HomeLink from "../../components/HomeLink";
-
-const drawerWidth = "18%";
 
 const Sidebar = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [openAdmin, setOpenAdmin] = useState(true);
   const [openReport, setOpenReport] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   const { role, loading } = useAuthContext();
 
-  useEffect(() => {
-    console.log("Role updated:", role);
-  }, [role]);
-
   if (!role) {
-    return null; // Hide the sidebar if no role is present
+    return null;
   }
 
   const handleAdminClick = () => {
@@ -68,18 +65,25 @@ const Sidebar = () => {
   }
 
   return (
-    <Box>
+    <Box
+      sx={{
+        width: "100%", // Ensures the Box takes full width of the Drawer
+        // height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            bgcolor: theme.palette.background.paper, // Adapt to theme
-          },
-        }}
         variant="permanent"
         anchor="left"
+        sx={{
+          width: "15%", // This should match the sidebar width in Layout
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: "15%", // Ensure the Drawer paper is also set to the correct width
+            boxSizing: "border-box",
+          },
+        }}
       >
         <Toolbar>
           <HomeLink />
@@ -120,10 +124,12 @@ const Sidebar = () => {
                 <ListItem disablePadding>
                   <ListItemButton onClick={handleReportClick}>
                     <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText
-                      primary={item.text}
-                      sx={{ color: theme.palette.text.primary }}
-                    />
+                    {!isCollapsed && (
+                      <ListItemText
+                        primary={item.text}
+                        sx={{ color: theme.palette.text.primary }}
+                      />
+                    )}
                     {openReport ? (
                       <ExpandLess sx={{ color: theme.palette.text.primary }} />
                     ) : (
@@ -134,13 +140,6 @@ const Sidebar = () => {
                 <Collapse in={openReport} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {[
-                      // {
-                      //   text: "Terminal Report",
-                      //   path: "/terminalreport",
-                      //   icon: (
-                      //     <AddBox sx={{ color: theme.palette.primary.main }} />
-                      //   ),
-                      // },
                       {
                         text: "General Report",
                         path: "/generalreport",
@@ -157,10 +156,12 @@ const Sidebar = () => {
                           onClick={() => navigate(subItem.path)}
                         >
                           <ListItemIcon>{subItem.icon}</ListItemIcon>
-                          <ListItemText
-                            primary={subItem.text}
-                            sx={{ color: theme.palette.text.primary }}
-                          />
+                          {!isCollapsed && (
+                            <ListItemText
+                              primary={subItem.text}
+                              sx={{ color: theme.palette.text.primary }}
+                            />
+                          )}
                         </ListItemButton>
                       </ListItem>
                     ))}
@@ -171,16 +172,17 @@ const Sidebar = () => {
               <ListItem key={item.text} disablePadding>
                 <ListItemButton onClick={() => navigate(item.path)}>
                   <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText
-                    primary={item.text}
-                    sx={{ color: theme.palette.text.primary }}
-                  />
+                  {!isCollapsed && (
+                    <ListItemText
+                      primary={item.text}
+                      sx={{ color: theme.palette.text.primary }}
+                    />
+                  )}
                 </ListItemButton>
               </ListItem>
             )
           )}
 
-          {/* Render "Administration" section only if the role is "admin" */}
           {(role === "admin" || role === "superadmin") && (
             <React.Fragment key="Administration">
               <ListItem disablePadding>
@@ -190,10 +192,12 @@ const Sidebar = () => {
                       sx={{ color: theme.palette.primary.main }}
                     />
                   </ListItemIcon>
-                  <ListItemText
-                    primary="Administration"
-                    sx={{ color: theme.palette.text.primary }}
-                  />
+                  {!isCollapsed && (
+                    <ListItemText
+                      primary="Administration"
+                      sx={{ color: theme.palette.text.primary }}
+                    />
+                  )}
                   {openAdmin ? (
                     <ExpandLess sx={{ color: theme.palette.text.primary }} />
                   ) : (
@@ -230,7 +234,7 @@ const Sidebar = () => {
                       ),
                     },
                     {
-                      text: "Manage Terminal",
+                      text: "Manage ATM",
                       path: "/manageterminal",
                       icon: (
                         <ManageSearch
@@ -269,15 +273,6 @@ const Sidebar = () => {
                           },
                         ]
                       : []),
-                    // {
-                    //   text: "Settings",
-                    //   path: "/settings",
-                    //   icon: (
-                    //     <SettingsApplications
-                    //       sx={{ color: theme.palette.primary.main }}
-                    //     />
-                    //   ),
-                    // },
                   ].map((subItem) => (
                     <ListItem key={subItem.text} disablePadding>
                       <ListItemButton
@@ -285,10 +280,12 @@ const Sidebar = () => {
                         onClick={() => navigate(subItem.path)}
                       >
                         <ListItemIcon>{subItem.icon}</ListItemIcon>
-                        <ListItemText
-                          primary={subItem.text}
-                          sx={{ color: theme.palette.text.primary }}
-                        />
+                        {!isCollapsed && (
+                          <ListItemText
+                            primary={subItem.text}
+                            sx={{ color: theme.palette.text.primary }}
+                          />
+                        )}
                       </ListItemButton>
                     </ListItem>
                   ))}

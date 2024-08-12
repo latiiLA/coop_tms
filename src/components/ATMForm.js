@@ -95,9 +95,8 @@ const ATMForm = ({
 }) => {
   const [selectedType, setSelectedType] = useState(initialValues.type || "");
   const [selectedSite, setSelectedSite] = useState(initialValues.site || "");
-  // const [selectedPort, setSelectedPort] = useState(initialValues.site || "");
-
   const [availablePorts, setAvailablePorts] = useState([]);
+
   const atm_types = [
     { value: "CRM", label: "CRM" },
     { value: "NCR", label: "NCR" },
@@ -115,6 +114,7 @@ const ATMForm = ({
     { value: "InActive", label: "InActive" },
     { value: "Stopped", label: "Stopped" },
   ];
+
   const districts = [
     { value: "Nekemte", label: "Nekemte" },
     { value: "Jimma", label: "Jimma" },
@@ -148,11 +148,6 @@ const ATMForm = ({
     cbsAccount: Yup.string()
       .required("CBS Account is required")
       .min(12, "CBS Account must be at least 12 characters"),
-    // port: Yup.number()
-    //   .required("Port is required")
-    //   .test("is-valid-port", "Port must be a valid selection", (value) =>
-    //     availablePorts.includes(value)
-    //   ),
     ipAddress: Yup.string()
       .required("IP Address is required")
       .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -185,7 +180,6 @@ const ATMForm = ({
           setAvailablePorts([]);
         }
       } else {
-        // Optionally handle cases where site or type is not selected yet
         setAvailablePorts([]);
       }
     };
@@ -203,6 +197,8 @@ const ATMForm = ({
         borderRadius: 2,
         boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
         width: { xs: "100%", sm: "95%", md: "90%" },
+        height: "100%",
+        overflow: "auto", // Ensure scrolling if content overflows
       }}
     >
       <Formik
@@ -258,54 +254,33 @@ const ATMForm = ({
                 >
                   <CustomSelect
                     name="site"
-                    label="Terminal Site"
+                    label="Terminal Site Assignment"
                     options={sites}
                     onChange={(e) => {
                       setSelectedSite(e.target.value);
                       setAvailablePorts([]); // Clear ports on site change
                     }}
                   />
-
                   <CustomSelect
-                    name="port"
-                    label="Port"
+                    name="portAssignment"
+                    label="Port Assignment"
                     options={availablePorts.map((port) => ({
-                      value: port,
-                      label: port.toString(),
+                      value: port.id,
+                      label: port.name,
                     }))}
-                    // onChange={(e) => {
-                    //   setSelectedPort(e.target.value); // setAvailablePorts([]); // Clear ports on site change
-                    // }}
-                    disabled={!selectedSite} // Disable port selection if no site selected
                   />
-                  {availablePorts.length === 0 &&
-                    selectedSite &&
-                    selectedType && (
-                      <FormHelperText error>
-                        No available ports for selected site and type.
-                      </FormHelperText>
-                    )}
-
                   <CustomTextField name="cbsAccount" label="CBS Account" />
                   <CustomTextField name="ipAddress" label="IP Address" />
-                  {isEdit && (
-                    <CustomSelect
-                      name="status"
-                      label="Status"
-                      options={atm_status}
-                    />
-                  )}
                 </Box>
               </Box>
-            </Box>
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
-                disabled={!isValid || isSubmitting}
+                disabled={isSubmitting || !isValid}
+                sx={{ width: 150, display: "flex", margin: "auto" }}
               >
-                {isEdit ? "Update" : "Submit"}
+                {isEdit ? "Update Terminal" : "Add Terminal"}
               </Button>
             </Box>
           </Form>

@@ -54,10 +54,10 @@ const AddTerminal = () => {
   return (
     <Box
       sx={{
+        height: "100vh",
         display: "flex",
-        flexDirection: "row",
         justifyContent: "center",
-        width: "100%",
+        alignItems: "center",
       }}
     >
       <ATMForm initialValues={{}} onSubmit={handleSubmit} isEdit={false} />

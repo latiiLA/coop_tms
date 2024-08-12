@@ -1,27 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Divider,
-  IconButton,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { Edit, Preview, Delete } from "@mui/icons-material";
+import { Box, Typography, Tabs, Tab } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import toast from "react-hot-toast";
-import { jwtDecode } from "jwt-decode";
-import { useAuthContext } from "../../context/AuthContext";
 import ViewTerminalGridComponent from "../../components/ViewTerminalGridComponent";
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Box
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box>{children}</Box>}
+    </Box>
+  );
+}
 
 export default function ViewTerminal() {
   const navigate = useNavigate();
@@ -29,9 +28,7 @@ export default function ViewTerminal() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [role, setRole] = useState("user");
-  const [open, setOpen] = useState(false);
-  const [selectedRowId, setSelectedRowId] = useState(null);
-  const hasShownToast = useRef(false);
+  const [value, setValue] = useState(0); // State for the active tab
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const fetchRows = async () => {
@@ -39,10 +36,7 @@ export default function ViewTerminal() {
 
     if (!token) {
       console.error("No authentication token found");
-      if (!hasShownToast.current) {
-        toast.error("User is not authenticated");
-        hasShownToast.current = true;
-      }
+      toast.error("User is not authenticated");
       navigate("/home");
       return;
     }
@@ -59,66 +53,20 @@ export default function ViewTerminal() {
       setRole(response.data.role);
     } catch (error) {
       console.error("Error fetching terminals:", error);
-      setError(error.message); // Set the error state
-      if (!hasShownToast.current) {
-        toast.error(`Error: ${error.response?.data?.message || error.message}`);
-        hasShownToast.current = true;
-      }
+      setError(error.message);
+      toast.error(`Error: ${error.response?.data?.message || error.message}`);
       navigate("/home");
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchRows();
   }, []);
 
-  const handleClickOpen = (rowId) => {
-    setSelectedRowId(rowId);
-    console.log("selected port id", rowId);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedRowId(null);
-  };
-
-  const handleConfirmDelete = async (row) => {
-    if (!selectedRowId) return;
-
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No authentication token found");
-        if (!hasShownToast.current) {
-          toast.error("User is not authenticated");
-          hasShownToast.current = true;
-        }
-        navigate("/home"); // Redirect to the home page
-        return; // Exit the function without making further requests
-      }
-
-      // Send delete request
-      await axios.patch(
-        `${apiUrl}/terminal/deleteTerminal/${selectedRowId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-
-      // Refresh data and show success message
-      fetchRows();
-      toast.success("Terminal successfully deleted.");
-      handleClose(); // Close any open dialogs or modals
-    } catch (error) {
-      console.error("Error deleting terminal:", error);
-      toast.error("Failed to delete terminal.");
-    }
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
   };
 
   const rows =
@@ -127,8 +75,8 @@ export default function ViewTerminal() {
       ...row,
     })) ?? [];
 
-  const crmRows = "CRM" ? rows.filter((row) => row.type === "CRM") : rows;
-  const ncrRows = "ATM" ? rows.filter((row) => row.type === "NCR") : rows;
+  const crmRows = rows.filter((row) => row.type === "CRM");
+  const ncrRows = rows.filter((row) => row.type === "NCR");
 
   if (loading) {
     return <LoadingSpinner />;
@@ -140,26 +88,34 @@ export default function ViewTerminal() {
 
   return (
     <Box
-      sx={{
-        display: "flex",
-        flexDirection: "Column",
-        gap: 2,
-      }}
+      sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}
     >
-      <Typography variant="h4" gutterBottom>
-        All Terminals
-      </Typography>
-      <ViewTerminalGridComponent rows={rows} />
-      {/* <Divider /> */}
-      <Typography variant="h4" gutterBottom>
-        CRM Terminals
-      </Typography>
-      <ViewTerminalGridComponent rows={crmRows} />
-      {/* <Divider /> */}
-      <Typography variant="h4" gutterBottom>
-        NCR Terminals
-      </Typography>
-      <ViewTerminalGridComponent rows={ncrRows} />
+      <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
+        <Tab label="All Terminals" />
+        <Tab label="CRM Terminals" />
+        <Tab label="NCR Terminals" />
+      </Tabs>
+
+      <TabPanel value={value} index={0}>
+        <Typography variant="h4" gutterBottom>
+          All Terminals
+        </Typography>
+        <ViewTerminalGridComponent rows={rows} />
+      </TabPanel>
+
+      <TabPanel value={value} index={1}>
+        <Typography variant="h4" gutterBottom>
+          CRM Terminals
+        </Typography>
+        <ViewTerminalGridComponent rows={crmRows} />
+      </TabPanel>
+
+      <TabPanel value={value} index={2}>
+        <Typography variant="h4" gutterBottom>
+          NCR Terminals
+        </Typography>
+        <ViewTerminalGridComponent rows={ncrRows} />
+      </TabPanel>
     </Box>
   );
 }
