@@ -86,10 +86,24 @@ const ForgotPassword = () => {
 
   const FORM_VALIDATION = Yup.object().shape({
     password: Yup.string().required("Current password is required"),
-    newPassword: Yup.string().required("New password is required"),
-    confirmNewPassword: Yup.string().required(
-      "Confirm new password is required"
-    ),
+    newPassword: Yup.string()
+      .required("New password is required")
+      .min(8, "Password must be at least 8 characters long")
+      .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+      .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .matches(/\d/, "Password must contain at least one number")
+      .matches(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        "Password must contain at least one special character"
+      )
+      .notOneOf(
+        [Yup.ref("password")],
+        "New password must be different from the current password"
+      ),
+
+    confirmNewPassword: Yup.string()
+      .required("Confirm new password is required")
+      .oneOf([Yup.ref("newPassword"), null], "Passwords must match"),
   });
 
   return (

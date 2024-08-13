@@ -160,7 +160,7 @@ const CreateUser = () => {
                 <Typography variant="h5" sx={{ textAlign: "center" }}>
                   Add New User
                 </Typography>
-                <Typography variant="h6">User Information</Typography>
+
                 <Box
                   sx={{
                     display: "flex",
@@ -329,8 +329,12 @@ const CreateUser = () => {
                     </FormControl>
                   </Box>
                 </Box>
-                <Button variant="contained" type="submit" width="auto">
-                  Submit
+                <Button
+                  variant="contained"
+                  type="submit"
+                  sx={{ width: "25%", margin: "auto" }}
+                >
+                  Add User
                 </Button>
               </Box>
             </Form>
