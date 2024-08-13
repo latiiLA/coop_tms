@@ -19,15 +19,13 @@ import toast from "react-hot-toast";
 const fetchAvailablePorts = async (portSiteAssignment, portAssignment) => {
   console.log(portSiteAssignment, portAssignment, "before fetch");
   try {
-    const response = await axios.get(
-      "http://localhost:8000/port/getAssignedPorts",
-      {
-        params: {
-          portSiteAssignment,
-          portAssignment,
-        },
-      }
-    );
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const response = await axios.get(`${apiUrl}/port/getAssignedPorts`, {
+      params: {
+        portSiteAssignment,
+        portAssignment,
+      },
+    });
 
     // Handle response
     console.log(response.data.availablePorts);
