@@ -18,12 +18,12 @@ const columns = [
     flex: 1,
   },
   {
-    field: "Onsite",
+    field: "onsite",
     headerName: "Onsite Terminals",
     flex: 1,
   },
   {
-    field: "Offsite",
+    field: "offsite",
     headerName: "Offsite Terminals",
     flex: 1,
   },
@@ -63,6 +63,7 @@ const TerminalSiteReport = () => {
         },
         withCredentials: true,
       });
+      console.log(response.data.data, "inside site report");
       return response.data.data; // Adjust this line based on your JSON structure
     } catch (error) {
       console.error("Error fetching data:", error);
