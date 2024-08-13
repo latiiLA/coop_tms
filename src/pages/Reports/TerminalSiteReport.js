@@ -108,7 +108,7 @@ const TerminalSiteReport = () => {
 
   return (
     <Box>
-      <Typography variant="h4">Terminal Site Report</Typography>
+      <Typography variant="h4">Total Terminal Site Report</Typography>
       <Box
         sx={{
           width: "100%",
