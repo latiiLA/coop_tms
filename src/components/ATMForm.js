@@ -57,7 +57,6 @@ const CustomTextField = ({ label, ...props }) => {
 
 const CustomSelect = ({ label, options, ...props }) => {
   const [field, meta] = useField(props);
-
   return (
     <FormControl
       variant="outlined"
@@ -97,7 +96,7 @@ const ATMForm = ({
 }) => {
   const [selectedType, setSelectedType] = useState(initialValues.type || "");
   const [selectedSite, setSelectedSite] = useState(initialValues.site || "");
-  // const [selectedPort, setSelectedPort] = useState(initialValues.site || "");
+  // const [selectedPort, setSelectedPort] = useState(initialValues.port || "");
 
   const [availablePorts, setAvailablePorts] = useState([]);
   const atm_types = [
@@ -113,6 +112,9 @@ const ATMForm = ({
   const atm_status = [
     { value: "New", label: "New" },
     { value: "Active", label: "Active" },
+    { value: "InActive", label: "InActive" },
+    { value: "Relocated", label: "Relocated" },
+    { value: "Stopped", label: "Stopped" },
   ];
 
   const districts = [
@@ -148,11 +150,11 @@ const ATMForm = ({
     cbsAccount: Yup.string()
       .required("CBS Account is required")
       .min(12, "CBS Account must be at least 12 characters"),
-    // port: Yup.number()
-    //   .required("Port is required")
-    //   .test("is-valid-port", "Port must be a valid selection", (value) =>
-    //     availablePorts.includes(value)
-    //   ),
+    port: Yup.number()
+      .required("Port is required")
+      .test("is-valid-port", "Port must be a valid selection", (value) =>
+        availablePorts.includes(value)
+      ),
     ipAddress: Yup.string()
       .required("IP Address is required")
       .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -178,6 +180,10 @@ const ATMForm = ({
       if (selectedSite && selectedType) {
         try {
           const ports = await fetchAvailablePorts(selectedSite, selectedType);
+          // If the initial value is not in the fetched ports, add it to the list
+          if (initialValues.port && !ports.includes(initialValues.port)) {
+            ports.unshift(initialValues.port);
+          }
           console.log("Fetched ports:", ports);
           setAvailablePorts(ports);
         } catch (error) {
@@ -268,6 +274,7 @@ const ATMForm = ({
                   <CustomSelect
                     name="port"
                     label="Port"
+                    // values={selectedPort}
                     options={availablePorts.map((port) => ({
                       value: port,
                       label: port.toString(),
