@@ -18,12 +18,12 @@ const columns = [
     flex: 1,
   },
   {
-    field: "onsite",
+    field: "Onsite",
     headerName: "Onsite Terminals",
     flex: 1,
   },
   {
-    field: "offsite",
+    field: "Offsite",
     headerName: "Offsite Terminals",
     flex: 1,
   },

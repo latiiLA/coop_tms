@@ -14,7 +14,6 @@ const GeneralTerminalReport = () => {
       }}
     >
       <Typography variant="h4">Reports</Typography>
-      <TerminalTypeReports />
       <TerminalSiteReport />
     </Box>
   );
