@@ -19,6 +19,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
+import { LockOpen } from "@mui/icons-material";
 
 export default function ViewUsers() {
   const navigate = useNavigate();
@@ -96,8 +97,36 @@ export default function ViewUsers() {
       setDataRows(updatedData);
       toast.success("Password count is successfully reset.");
     } catch (error) {
+      console.error("Error resetting wrong password count", error);
+      toast.error("Error: while resetting wrong password count.");
+    }
+  };
+
+  const handleResetPassword = async (rowId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No authentication token found");
+      toast.error("User is not an authenticated user.");
+      navigate("/home");
+      return;
+    }
+    try {
+      await axios.patch(
+        `${apiUrl}/auth/resetPassword/${rowId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      const updatedData = await fetchRows();
+      setDataRows(updatedData);
+      toast.success("Password reset is successfull.");
+    } catch (error) {
       console.error("Error resetting user password:", error);
-      toast.error("Error: while resetting password count.");
+      toast.error("Error: while resetting user password.");
     }
   };
 
@@ -119,33 +148,54 @@ export default function ViewUsers() {
     { field: "createdBy", headerName: "createdBy", flex: 1 },
     { field: "createdAt", headerName: "Date Created", flex: 1 },
     { field: "status", headerName: "Status", flex: 0.5 },
-    { field: "wrongPasswordCount", headerName: "Reset", flex: 0.5 },
+    { field: "wrongPasswordCount", headerName: "Login Failure", flex: 0.5 },
     {
       field: "actions",
       headerName: "Actions",
       flex: 0.5,
       renderCell: (params) => (
-        <Box sx={{ display: "flex", justifyContent: "space-around" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-around",
+            alignItems: "center",
+            height: "100%", // Ensure the Box takes the full height of the cell
+            width: "100%",
+            margin: "auto",
+          }}
+        >
           <Tooltip title="Reset Password Count">
             <IconButton
               color="primary"
               size="small"
               onClick={() => handleReset(params.row._id)}
+              margin="auto"
             >
-              <LockResetIcon />
+              <LockOpen />
             </IconButton>
           </Tooltip>
 
           {role === "superadmin" && (
-            <Tooltip title="Delete User">
-              <IconButton
-                color="secondary"
-                size="small"
-                onClick={() => handleClickOpen(params.row._id)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
+            <>
+              <Tooltip title="Reset Password">
+                <IconButton
+                  color="primary"
+                  size="small"
+                  onClick={() => handleResetPassword(params.row._id)}
+                >
+                  <LockResetIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete User">
+                <IconButton
+                  color="secondary"
+                  size="small"
+                  onClick={() => handleClickOpen(params.row._id)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </>
           )}
         </Box>
       ),
