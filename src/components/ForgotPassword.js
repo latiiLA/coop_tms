@@ -28,12 +28,12 @@ const ForgotPassword = () => {
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => event.preventDefault();
 
-  useEffect(() => {
-    // Handle redirection or other logic if necessary
-    if (!["tempo_user", "tempo_admin", "tempo_superadmin"].includes(role)) {
-      window.location.href = "/home";
-    }
-  }, [role]);
+  // useEffect(() => {
+  //   // Handle redirection or other logic if necessary
+  //   if (!["tempo_user", "tempo_admin", "tempo_superadmin"].includes(role)) {
+  //     window.location.href = "/home";
+  //   }
+  // }, [role]);
 
   const handleSubmit = async (update_data) => {
     setLoading(true);
@@ -70,7 +70,8 @@ const ForgotPassword = () => {
       }
 
       toast.success("Password changed successfully.");
-      navigate("/home");
+      window.location.href = "/home";
+      // navigate("/home");
     } catch (error) {
       toast.error(`Error: ${error.response?.data?.message || error.message}`);
     } finally {
