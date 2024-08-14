@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Divider,
+  CircularProgress,
+} from "@mui/material";
 import axios from "axios";
 
 const UserActivityLog = () => {
   const [logs, setLogs] = useState([]);
   const [users, setUsers] = useState({});
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const apiUrl = process.env.REACT_APP_API_URL;
 
   // Function to fetch logs
@@ -18,9 +26,11 @@ const UserActivityLog = () => {
         },
       });
       setLogs(response.data);
+      setLoading(false);
     } catch (err) {
       console.error("Error fetching logs:", err);
       setError("Failed to fetch logs.");
+      setLoading(false);
     }
   };
 
@@ -58,35 +68,52 @@ const UserActivityLog = () => {
         width: "100%",
         height: "100%",
         maxHeight: "600px",
-        overflowY: "scroll",
-        backgroundColor: (theme) => theme.palette.background.default,
+        overflowY: "auto",
+        backgroundColor: (theme) => theme.palette.background.paper,
         color: (theme) => theme.palette.text.primary,
-        fontFamily: "monospace",
         padding: "16px",
-        borderRadius: "4px",
+        borderRadius: "8px",
         border: (theme) => `1px solid ${theme.palette.divider}`,
       }}
     >
-      {error && <Typography color="error">{error}</Typography>}
-      {logs.length === 0 ? (
+      {loading ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : error ? (
+        <Typography color="error">{error}</Typography>
+      ) : logs.length === 0 ? (
         <Typography>No logs available.</Typography>
       ) : (
         logs.map((log, index) => {
           const user = users[log.userId];
           return (
-            <Typography key={index}>
-              {user
-                ? `${user.username} (${user.firstName}) - ${log.action} - ${
-                    log.description
-                  } - ${log.ipAddress} - ${log.userAgent} - ${new Date(
-                    log.createdAt
-                  ).toLocaleString()}`
-                : `User not found - ${log.action} - ${log.description} - ${
-                    log.ipAddress
-                  } - ${log.userAgent} - ${new Date(
-                    log.createdAt
-                  ).toLocaleString()}`}
-            </Typography>
+            <Card key={index} sx={{ marginBottom: "8px", boxShadow: 3 }}>
+              <CardContent>
+                <Typography variant="subtitle1">
+                  {user
+                    ? `${user.username} (${user.firstName})`
+                    : "User not found"}
+                </Typography>
+                <Divider sx={{ my: 1 }} />
+                <Typography variant="body2">
+                  {log.action} - {log.description}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  IP Address: {log.ipAddress} - User Agent: {log.userAgent}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {new Date(log.createdAt).toLocaleString()}
+                </Typography>
+              </CardContent>
+            </Card>
           );
         })
       )}
