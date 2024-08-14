@@ -22,11 +22,21 @@ import { useAuthContext } from "../context/AuthContext";
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const { role, setRole } = useAuthContext();
-  const [showPassword, setShowPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
+  const [showPassword3, setShowPassword3] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => event.preventDefault();
+
+  const handleClickShowPassword2 = () => setShowPassword2((show) => !show);
+  const handleMouseDownPassword2 = (event) => event.preventDefault();
+
+  const handleClickShowPassword3 = () => setShowPassword3((show) => !show);
+  const handleMouseDownPassword3 = (event) => event.preventDefault();
 
   // useEffect(() => {
   //   // Handle redirection or other logic if necessary
@@ -179,17 +189,17 @@ const ForgotPassword = () => {
                   <Field
                     as={OutlinedInput}
                     id="outlined-adornment-password2"
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword2 ? "text" : "password"}
                     name="newPassword"
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
                           aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
+                          onClick={handleClickShowPassword2}
+                          onMouseDown={handleMouseDownPassword2}
                           edge="end"
                         >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                          {showPassword2 ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
                     }
@@ -215,17 +225,17 @@ const ForgotPassword = () => {
                   <Field
                     as={OutlinedInput}
                     id="outlined-adornment-password3"
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword3 ? "text" : "password"}
                     name="confirmNewPassword"
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
                           aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
+                          onClick={handleClickShowPassword3}
+                          onMouseDown={handleMouseDownPassword3}
                           edge="end"
                         >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                          {showPassword3 ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
                     }
