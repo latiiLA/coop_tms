@@ -15,6 +15,7 @@ import { Formik, Form, useField } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const fetchAvailablePorts = async (portSiteAssignment, portAssignment) => {
   console.log(portSiteAssignment, portAssignment, "before fetch");
@@ -94,6 +95,7 @@ const ATMForm = ({
 }) => {
   const [selectedType, setSelectedType] = useState(initialValues.type || "");
   const [selectedSite, setSelectedSite] = useState(initialValues.site || "");
+  const navigate = useNavigate();
   // const [selectedPort, setSelectedPort] = useState(initialValues.port || "");
 
   const [availablePorts, setAvailablePorts] = useState([]);
@@ -301,7 +303,9 @@ const ATMForm = ({
                 </Box>
               </Box>
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Box
+              sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}
+            >
               <Button
                 type="submit"
                 variant="contained"
@@ -310,6 +314,11 @@ const ATMForm = ({
               >
                 {isEdit ? "Update" : "Submit"}
               </Button>
+              {isEdit && (
+                <Button onClick={() => navigate("/view")}>
+                  View Terminals
+                </Button>
+              )}
             </Box>
           </Form>
         )}
