@@ -104,16 +104,10 @@ export default function ViewTerminal() {
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        {/* <Typography variant="h4" gutterBottom>
-          CRM Terminals
-        </Typography> */}
         <ViewTerminalGridComponent rows={crmRows} />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        {/* <Typography variant="h4" gutterBottom>
-          NCR Terminals
-        </Typography> */}
         <ViewTerminalGridComponent rows={ncrRows} />
       </TabPanel>
     </Box>

@@ -9,17 +9,17 @@ const ViewTerminalGridComponent = ({ rows }) => {
   const navigate = useNavigate();
   const { role } = useAuthContext();
   const columns = [
-    { field: "id", headerName: "No", type: "number", width: 10 },
-    { field: "unitId", headerName: "Unit ID", type: "number", flex: 1 },
+    // { field: "id", headerName: "No", type: "number", width: 10 },
+    { field: "unitId", headerName: "Unit ID", type: "number", flex: 0.5 },
     { field: "terminalId", headerName: "Terminal ID", flex: 1 },
     { field: "terminalName", headerName: "Terminal Name", flex: 1 },
     { field: "branchName", headerName: "Branch Name", flex: 1 },
     { field: "district", headerName: "District", flex: 1 },
     { field: "cbsAccount", headerName: "CBS Account", flex: 1 },
-    { field: "port", headerName: "Port", flex: 1 },
+    { field: "port", headerName: "Port", flex: 0.5 },
     { field: "ipAddress", headerName: "IP Address", flex: 1 },
-    { field: "type", headerName: "ATM TYPE" },
-    { field: "site", headerName: "Terminal Site" },
+    { field: "type", headerName: "ATM TYPE", flex: 0.5 },
+    { field: "site", headerName: "Terminal Site", flex: 0.5 },
     { field: "status", headerName: "Status", flex: 1 },
     {
       field: "actions",
