@@ -17,6 +17,7 @@ import { ErrorMessage, Field, Formik, Form } from "formik";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
+import propicture from "../../assets/profile_avatar.jpg";
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -145,7 +146,12 @@ const UserProfile = () => {
             gap: 2,
           }}
         >
-          <Tooltip title="Update Photo" arrow>
+          <Avatar
+            alt="Profile Photo"
+            src={propicture}
+            sx={{ width: 150, height: 150, cursor: "pointer" }}
+          />
+          {/* <Tooltip title="Update Photo" arrow>
             <label htmlFor="profilePhotoInput">
               <Avatar
                 alt="Profile Photo"
@@ -157,14 +163,14 @@ const UserProfile = () => {
                 sx={{ width: 150, height: 150, cursor: "pointer" }}
               />
             </label>
-          </Tooltip>
-          <Input
+          </Tooltip> */}
+          {/* <Input
             accept="image/*"
             id="profilePhotoInput"
             type="file"
             onChange={handleFileChange}
             sx={{ display: "none" }}
-          />
+          /> */}
           <Formik
             initialValues={dataRows} // Initialize with fetched data
             validationSchema={FORM_VALIDATION}
