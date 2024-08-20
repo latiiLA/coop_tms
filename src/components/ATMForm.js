@@ -17,7 +17,11 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const fetchAvailablePorts = async (portSiteAssignment, portAssignment) => {
+const fetchAvailablePorts = async (
+  portSiteAssignment,
+  portAssignment,
+  currentPort
+) => {
   console.log(portSiteAssignment, portAssignment, "before fetch");
   try {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -25,6 +29,7 @@ const fetchAvailablePorts = async (portSiteAssignment, portAssignment) => {
       params: {
         portSiteAssignment,
         portAssignment,
+        currentPort,
       },
     });
 
@@ -151,7 +156,7 @@ const ATMForm = ({
       .required("CBS Account is required")
       .min(12, "CBS Account must be at least 12 characters"),
     port: Yup.number()
-      .required("Port is required")
+      // .required("Port is required")
       .test("is-valid-port", "Port must be a valid selection", (value) =>
         availablePorts.includes(value)
       ),
@@ -179,11 +184,11 @@ const ATMForm = ({
     const fetchPorts = async () => {
       if (selectedSite && selectedType) {
         try {
-          const ports = await fetchAvailablePorts(selectedSite, selectedType);
-          // If the initial value is not in the fetched ports, add it to the list
-          if (initialValues.port && !ports.includes(initialValues.port)) {
-            ports.unshift(initialValues.port);
-          }
+          const ports = await fetchAvailablePorts(
+            selectedSite,
+            selectedType,
+            initialValues.port
+          );
           console.log("Fetched ports:", ports);
           setAvailablePorts(ports);
         } catch (error) {
@@ -253,6 +258,15 @@ const ATMForm = ({
                     label="District"
                     options={districts}
                   />
+                  <CustomSelect
+                    name="site"
+                    label="Terminal Site"
+                    options={sites}
+                    onChange={(e) => {
+                      setSelectedSite(e.target.value);
+                      setAvailablePorts([]); // Clear ports on site change
+                    }}
+                  />
                 </Box>
                 <Box
                   sx={{
@@ -271,9 +285,15 @@ const ATMForm = ({
                       setAvailablePorts([]); // Clear ports on site change
                     }}
                   />
+                  <CustomTextField
+                    name="prevport"
+                    label="Previous Port"
+                    value={initialValues.port || "No previous port"}
+                    disabled
+                  />
                   <CustomSelect
                     name="port"
-                    label="Port"
+                    label="UpdatePort"
                     // values={selectedPort}
                     options={availablePorts.map((port) => ({
                       value: port,
@@ -310,7 +330,7 @@ const ATMForm = ({
                 type="submit"
                 variant="contained"
                 color="primary"
-                disabled={!isValid || isSubmitting}
+                // disabled={!isValid || isSubmitting}
               >
                 {isEdit ? "Update" : "Submit"}
               </Button>
