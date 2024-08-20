@@ -1,8 +1,8 @@
-import React from "react";
-import { Box } from "@mui/material";
+import React, { useState } from "react";
+import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -12,14 +12,12 @@ import {
 } from "recharts";
 
 // Function to transform and filter data
-const transformData = (data) => {
+const transformData = (data, selectedType) => {
   const districtData = {};
-  const totalCounts = {};
 
   data.forEach(({ district, type }) => {
     if (!districtData[district]) {
       districtData[district] = {};
-      totalCounts[district] = 0;
     }
 
     if (!districtData[district][type]) {
@@ -27,58 +25,113 @@ const transformData = (data) => {
     }
 
     districtData[district][type] += 1;
-    totalCounts[district] += 1;
   });
 
   const chartData = Object.keys(districtData).map((district) => {
     const entry = { district };
+    let total = 0;
     Object.keys(districtData[district]).forEach((type) => {
-      entry[type] = districtData[district][type];
+      if (selectedType === "All" || selectedType === type) {
+        entry[type] = districtData[district][type];
+        total += districtData[district][type];
+      }
     });
-    entry["Total"] = totalCounts[district];
+    entry["Total"] = total;
     return entry;
   });
 
-  const types = [...new Set(data.map((item) => item.type)), "Total"];
+  // Sort districts by total counts (sum of all types) from highest to lowest
+  chartData.sort((a, b) => b["Total"] - a["Total"]); // Sort in descending order
+
+  const types = selectedType === "All" ? ["CRM", "NCR"] : [selectedType];
 
   return { chartData, types };
 };
 
-// Line Chart Component
+// Tooltip Component
+const CustomTooltip = ({ payload, label }) => {
+  if (payload && payload.length) {
+    const { district, ...typeCounts } = payload[0].payload;
+    const total = payload[0].payload["Total"];
+
+    return (
+      <div className="custom-tooltip">
+        <p>{`District: ${district}`}</p>
+        {Object.keys(typeCounts).map(
+          (type) =>
+            type !== "Total" && (
+              <p key={type}>{`${type}: ${typeCounts[type]}`}</p>
+            )
+        )}
+        <p>{`Total: ${total}`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Bar Chart Component
 const TerminalCountPerDistrict = ({ data }) => {
-  const { chartData, types } = transformData(data);
+  const [selectedType, setSelectedType] = useState("All");
+
+  const { chartData, types } = transformData(data, selectedType);
 
   const getColorForType = (type) => {
     const colors = {
-      NCR: "#8884d8",
-      CRM: "#82ca9d",
-      "Type 1": "#ff7300",
-      "Type 2": "#ffc658",
-      "Type 3": "#d84c8e",
-      Total: "#ff7300",
+      CRM: "#00bcd4", // Cyan
+      NCR: "#ff9800", // Orange
     };
-    return colors[type] || "#000";
+    return colors[type] || "#8884d8"; // Default color if type is not CRM or NCR
+  };
+
+  const formatDistrictName = (name) => {
+    const nameMap = {
+      "Central Finfine": "C. Finfine",
+      "South Finfine": "S. Finfine",
+      "North Finfine": "N. Finfine",
+      "West Finfine": "W. Finfine",
+      "East Finfine": "E. Finfine",
+      // Add more mappings as needed
+    };
+    return nameMap[name] || name;
   };
 
   return (
-    <Box sx={{ width: "100%", height: 400 }}>
+    <Box sx={{ width: "95%", height: 350, margin: "auto", paddingBottom: 2 }}>
+      <FormControl fullWidth sx={{ mb: 1 }}>
+        <InputLabel id="terminal-type-select-label">Terminal Type</InputLabel>
+        <Select
+          labelId="terminal-type-select-label"
+          id="terminal-type-select"
+          value={selectedType}
+          label="Terminal Type"
+          onChange={(e) => setSelectedType(e.target.value)}
+        >
+          <MenuItem value="All">All</MenuItem>
+          <MenuItem value="CRM">CRM</MenuItem>
+          <MenuItem value="NCR">NCR</MenuItem>
+        </Select>
+      </FormControl>
+
       <ResponsiveContainer>
-        <LineChart data={chartData}>
+        <BarChart data={chartData} stackOffset="sign">
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="district" />
+          <XAxis
+            dataKey="district"
+            tickFormatter={formatDistrictName} // Format district names
+          />
           <YAxis />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
           <Legend />
           {types.map((type) => (
-            <Line
+            <Bar
               key={type}
-              type="monotone"
               dataKey={type}
-              stroke={getColorForType(type)}
-              dot={false} // Hide dots for better line visibility
+              stackId="a"
+              fill={getColorForType(type)}
             />
           ))}
-        </LineChart>
+        </BarChart>
       </ResponsiveContainer>
     </Box>
   );
