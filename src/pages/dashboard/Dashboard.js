@@ -9,6 +9,7 @@ import TerminalCountPerDistrict from "./TerminalCountPerDistrict";
 import PortGraph from "./PortGraph";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import NCRData from "./NCRData";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -83,9 +84,12 @@ const Dashboard = () => {
       }}
     >
       <Typography variant="h4">Dashboard</Typography>
-      <TotalTerminalPieChart data={dataRows} />
+      <Box sx={{ display: "flex", flexDirection: "row", gap: 5 }}>
+        <TotalTerminalPieChart data={dataRows} />
+        <NCRData />
+      </Box>
       {/* <PortGraph data={dataRows} /> */}
-      {/* <TerminalCountPerDistrict data={dataRows} /> */}
+      <TerminalCountPerDistrict data={dataRows} />
     </Box>
   );
 };
