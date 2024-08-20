@@ -1,68 +1,87 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { BarChart } from "@mui/x-charts/BarChart";
-import { Box, Typography } from "@mui/material";
+import React from "react";
+import { Box } from "@mui/material";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
-const TerminalCountPerType = () => {
-  const [terminalData, setTerminalData] = useState([]);
-  const apiUrl = process.env.REACT_APP_API_URL;
+// Function to transform and filter data
+const transformData = (data) => {
+  const districtData = {};
+  const totalCounts = {};
 
-  useEffect(() => {
-    async function fetchTerminals() {
-      try {
-        const response = await axios.get(`${apiUrl}/terminal/getTerminal`);
-        setTerminalData(response.data.terminals);
-      } catch (error) {
-        console.error("Failed to fetch terminals:", error);
-      }
+  data.forEach(({ district, type }) => {
+    if (!districtData[district]) {
+      districtData[district] = {};
+      totalCounts[district] = 0;
     }
-    fetchTerminals();
-  }, []);
 
-  // Function to count CRM and NCR terminals by the first three digits of terminalId
-  function countTerminalsByType(terminals) {
-    const terminalCounts = {};
+    if (!districtData[district][type]) {
+      districtData[district][type] = 0;
+    }
 
-    terminals.forEach((terminal) => {
-      if (terminal.terminalId && terminal.type) {
-        const type = terminal.terminalId.substring(0, 3); // Extract the first three digits
-        const terminalType = terminal.type.toUpperCase(); // Normalize type to uppercase
+    districtData[district][type] += 1;
+    totalCounts[district] += 1;
+  });
 
-        if (terminalType === "CRM" || terminalType === "NCR") {
-          if (!terminalCounts[type]) {
-            terminalCounts[type] = { CRM: 0, NCR: 0 };
-          }
-
-          terminalCounts[type][terminalType]++;
-        }
-      }
+  const chartData = Object.keys(districtData).map((district) => {
+    const entry = { district };
+    Object.keys(districtData[district]).forEach((type) => {
+      entry[type] = districtData[district][type];
     });
+    entry["Total"] = totalCounts[district];
+    return entry;
+  });
 
-    return terminalCounts;
-  }
+  const types = [...new Set(data.map((item) => item.type)), "Total"];
 
-  // Calculate terminal counts once data is fetched
-  const terminalCounts = countTerminalsByType(terminalData);
-  console.log("terminal counts", terminalCounts);
+  return { chartData, types };
+};
 
-  // Prepare data for chart
-  const labels = Object.keys(terminalCounts);
-  const crmData = labels.map((label) => terminalCounts[label].CRM || 0);
-  const ncrData = labels.map((label) => terminalCounts[label].NCR || 0);
+// Line Chart Component
+const TerminalCountPerDistrict = ({ data }) => {
+  const { chartData, types } = transformData(data);
+
+  const getColorForType = (type) => {
+    const colors = {
+      NCR: "#8884d8",
+      CRM: "#82ca9d",
+      "Type 1": "#ff7300",
+      "Type 2": "#ffc658",
+      "Type 3": "#d84c8e",
+      Total: "#ff7300",
+    };
+    return colors[type] || "#000";
+  };
 
   return (
-    <Box>
-      <Typography variant="h6">Terminal Count per Type</Typography>
-      <BarChart
-        xAxis={{ categories: labels }}
-        series={[
-          { name: "CRM", data: crmData },
-          { name: "NCR", data: ncrData },
-        ]}
-        height={400}
-      />
+    <Box sx={{ width: "100%", height: 400 }}>
+      <ResponsiveContainer>
+        <LineChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="district" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          {types.map((type) => (
+            <Line
+              key={type}
+              type="monotone"
+              dataKey={type}
+              stroke={getColorForType(type)}
+              dot={false} // Hide dots for better line visibility
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
     </Box>
   );
 };
 
-export default TerminalCountPerType;
+export default TerminalCountPerDistrict;
