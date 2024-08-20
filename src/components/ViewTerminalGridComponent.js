@@ -1,15 +1,20 @@
+import React, { useState } from "react";
 import { Edit, Preview } from "@mui/icons-material";
-import { Box, Divider, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, Tooltip, TextField, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 
 const ViewTerminalGridComponent = ({ rows }) => {
   const navigate = useNavigate();
   const { role } = useAuthContext();
+
+  // State for search text and filtered rows
+  const [searchText, setSearchText] = useState("");
+  const [filteredRows, setFilteredRows] = useState(rows);
+
+  // Columns configuration
   const columns = [
-    // { field: "id", headerName: "No", type: "number", width: 10 },
     { field: "unitId", headerName: "Unit ID", type: "number", flex: 0.1 },
     { field: "terminalId", headerName: "Terminal ID", flex: 0.6 },
     { field: "terminalName", headerName: "Terminal Name", flex: 1 },
@@ -33,7 +38,6 @@ const ViewTerminalGridComponent = ({ rows }) => {
             justifyContent: "space-between",
             width: "100%",
             height: "100%",
-
             margin: "auto",
             alignItems: "center",
           }}
@@ -65,8 +69,58 @@ const ViewTerminalGridComponent = ({ rows }) => {
     },
   ];
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
+  };
+
+  // Handle search button click
+  const handleSearchClick = () => {
+    const lowercasedFilter = searchText.toLowerCase();
+    const filteredData = rows.filter((item) => {
+      return Object.keys(item).some((key) =>
+        String(item[key]).toLowerCase().includes(lowercasedFilter)
+      );
+    });
+    setFilteredRows(filteredData);
+  };
+
+  // Handle reset button click
+  const handleResetClick = () => {
+    setSearchText(""); // Clear the search input
+    setFilteredRows(rows); // Reset the DataGrid to show all rows
+  };
+
   return (
     <Box>
+      <Box
+        sx={{
+          marginBottom: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          width: "50%",
+        }}
+      >
+        <TextField
+          label="Search"
+          value={searchText}
+          onChange={handleSearchChange}
+          variant="outlined"
+          size="small"
+          style={{ marginRight: "10px", width: "250px" }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSearchClick}
+          style={{ marginRight: "10px" }}
+        >
+          Search
+        </Button>
+        <Button variant="outlined" color="secondary" onClick={handleResetClick}>
+          Reset
+        </Button>
+      </Box>
       <Box
         sx={{
           width: "auto",
@@ -96,7 +150,7 @@ const ViewTerminalGridComponent = ({ rows }) => {
         }}
       >
         <DataGrid
-          rows={rows}
+          rows={filteredRows}
           columns={columns}
           slots={{ toolbar: GridToolbar }}
           initialState={{
