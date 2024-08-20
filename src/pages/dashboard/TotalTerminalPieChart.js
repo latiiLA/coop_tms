@@ -22,7 +22,7 @@ const TotalTerminalPieChart = ({ data }) => {
   const counts = countTerminalTypes(data);
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
+    <Box sx={{ display: "flex", alignItems: "center", marginTop: 5 }}>
       <Box>
         <Typography>Total Active Terminals</Typography>
         <PieChart

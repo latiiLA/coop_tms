@@ -79,14 +79,22 @@ const Dashboard = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: 5,
+        gap: 1,
         padding: "inherit",
       }}
     >
       <Typography variant="h4">Dashboard</Typography>
-      <Box sx={{ display: "flex", flexDirection: "row", gap: 5 }}>
-        <TotalTerminalPieChart data={dataRows} />
+      <Box
+        sx={{
+          width: "95%",
+          margin: "auto",
+          display: "flex",
+          flexDirection: "row",
+          gap: 5,
+        }}
+      >
         <NCRData />
+        <TotalTerminalPieChart data={dataRows} />
       </Box>
       {/* <PortGraph data={dataRows} /> */}
       <TerminalCountPerDistrict data={dataRows} />
