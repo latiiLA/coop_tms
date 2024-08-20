@@ -41,8 +41,8 @@ const TotalTerminalPieChart = ({ data }) => {
                 ],
               },
             ]}
-            width={600}
-            height={300}
+            width={400}
+            height={200}
           />
         </Box>
       </Box>
