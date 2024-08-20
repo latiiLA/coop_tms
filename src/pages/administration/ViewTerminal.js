@@ -148,21 +148,6 @@ export default function ViewTerminal() {
       <TabPanel value={value} index={2}>
         <ViewTerminalGridComponent rows={ncrRows} />
       </TabPanel>
-      <TextField
-        label="Search"
-        value={searchText}
-        onChange={handleSearchChange}
-        variant="outlined"
-        size="small"
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <Search />
-            </InputAdornment>
-          ),
-        }}
-        style={{ marginY: "auto", height: "100%" }}
-      />
     </Box>
   );
 }
