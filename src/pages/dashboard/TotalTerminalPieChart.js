@@ -1,8 +1,6 @@
 import { PieChart } from "@mui/x-charts/PieChart";
 import { Box, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import LoadingSpinner from "../../components/LoadingSpinner";
-import axios from "axios";
+import React from "react";
 
 function countTerminalTypes(data) {
   let ncrCount = 0;
@@ -21,30 +19,36 @@ function countTerminalTypes(data) {
 }
 
 const TotalTerminalPieChart = ({ data }) => {
-  console.log("piechart", data);
-
   const counts = countTerminalTypes(data);
-  console.log(counts, counts[0]);
 
   return (
-    <Box>
+    <Box sx={{ display: "flex", alignItems: "center" }}>
       <Box>
-        <Typography>Terminals Count by Type</Typography>
-        <Box>
-          <PieChart
-            colors={["orange", "#00AEEF"]}
-            series={[
-              {
-                data: [
-                  { id: 0, value: counts.ncrCount, label: "NCR" },
-                  { id: 1, value: counts.crmCount, label: "CRM" },
-                ],
-              },
-            ]}
-            width={400}
-            height={200}
-          />
-        </Box>
+        <Typography>Total Active Terminals</Typography>
+        <PieChart
+          colors={["#FF6F00", "#00AEEF"]}
+          series={[
+            {
+              data: [
+                { id: 0, value: counts.ncrCount, label: "NCR" },
+                { id: 1, value: counts.crmCount, label: "CRM" },
+              ],
+            },
+          ]}
+          width={300}
+          height={200}
+          // legend={{
+          //   position: "right",
+          //   itemStyle: { color: "#333" },
+          // }}
+        />
+      </Box>
+      <Box sx={{ maxWidth: 250 }}>
+        <Typography variant="body2" color="textSecondary">
+          The chart displays the count of NCR and CRM terminals. Each slice
+          represents the proportion of terminals of each type, providing a quick
+          overview of the terminal distribution.
+        </Typography>
       </Box>
     </Box>
   );
