@@ -1,6 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Box, Typography, Tabs, Tab } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Typography,
+  Tabs,
+  Tab,
+  TextField,
+  InputAdornment,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Search } from "@mui/icons-material";
 import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import toast from "react-hot-toast";
@@ -29,6 +37,7 @@ export default function ViewTerminal() {
   const [error, setError] = useState(null);
   const [role, setRole] = useState("user");
   const [value, setValue] = useState(0); // State for the active tab
+  const [searchText, setSearchText] = useState(""); // State for search input
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const fetchRows = async () => {
@@ -69,14 +78,24 @@ export default function ViewTerminal() {
     setValue(newValue);
   };
 
+  const handleSearchChange = (event) => {
+    setSearchText(event.target.value);
+  };
+
   const rows =
     dataRows?.map((row, index) => ({
       id: index + 1,
       ...row,
     })) ?? [];
 
-  const crmRows = rows.filter((row) => row.type === "CRM");
-  const ncrRows = rows.filter((row) => row.type === "NCR");
+  const filteredRows = rows.filter((row) =>
+    Object.keys(row).some((key) =>
+      String(row[key]).toLowerCase().includes(searchText.toLowerCase())
+    )
+  );
+
+  const crmRows = filteredRows.filter((row) => row.type === "CRM");
+  const ncrRows = filteredRows.filter((row) => row.type === "NCR");
 
   if (loading) {
     return <LoadingSpinner />;
@@ -90,17 +109,36 @@ export default function ViewTerminal() {
     <Box
       sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}
     >
-      <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
-        <Tab label="All Terminals" />
-        <Tab label="CRM Terminals" />
-        <Tab label="NCR Terminals" />
-      </Tabs>
-
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          // justifyContent: "space-around",
+          gap: 5,
+        }}
+      >
+        <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
+          <Tab label="All Terminals" />
+          <Tab label="CRM Terminals" />
+          <Tab label="NCR Terminals" />
+        </Tabs>
+        <TextField
+          label="Search"
+          value={searchText}
+          onChange={handleSearchChange}
+          variant="outlined"
+          size="small"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
       <TabPanel value={value} index={0}>
-        {/* <Typography variant="h4" gutterBottom>
-          All Terminals
-        </Typography> */}
-        <ViewTerminalGridComponent rows={rows} />
+        <ViewTerminalGridComponent rows={filteredRows} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
@@ -110,6 +148,21 @@ export default function ViewTerminal() {
       <TabPanel value={value} index={2}>
         <ViewTerminalGridComponent rows={ncrRows} />
       </TabPanel>
+      <TextField
+        label="Search"
+        value={searchText}
+        onChange={handleSearchChange}
+        variant="outlined"
+        size="small"
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Search />
+            </InputAdornment>
+          ),
+        }}
+        style={{ marginY: "auto", height: "100%" }}
+      />
     </Box>
   );
 }
