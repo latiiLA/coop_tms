@@ -258,15 +258,6 @@ const ATMForm = ({
                     label="District"
                     options={districts}
                   />
-                  <CustomSelect
-                    name="site"
-                    label="Terminal Site"
-                    options={sites}
-                    onChange={(e) => {
-                      setSelectedSite(e.target.value);
-                      setAvailablePorts([]); // Clear ports on site change
-                    }}
-                  />
                 </Box>
                 <Box
                   sx={{
