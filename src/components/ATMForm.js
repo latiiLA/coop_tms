@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  Card,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-  Button,
-  FormHelperText,
-} from "@mui/material";
-import { Formik, Form, useField } from "formik";
+import { Box, Typography, Card, Button, FormHelperText } from "@mui/material";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { atm_types, atm_status, sites, districts } from "./DropDownFormData";
+import { CustomSelect, CustomTextField } from "./CustomFields";
 
 const fetchAvailablePorts = async (
   portSiteAssignment,
@@ -43,104 +34,27 @@ const fetchAvailablePorts = async (
   }
 };
 
-const CustomTextField = ({ label, ...props }) => {
-  const [field, meta] = useField(props);
-
-  return (
-    <TextField
-      {...field}
-      {...props}
-      label={label}
-      error={meta.touched && Boolean(meta.error)}
-      helperText={meta.touched && meta.error}
-      variant="outlined"
-      fullWidth
-    />
-  );
-};
-
-const CustomSelect = ({ label, options, ...props }) => {
-  const [field, meta] = useField(props);
-  return (
-    <FormControl
-      variant="outlined"
-      fullWidth
-      error={meta.touched && Boolean(meta.error)}
-    >
-      <InputLabel>{label}</InputLabel>
-      <Select
-        {...field}
-        {...props}
-        label={label}
-        value={field.value || ""} // Ensure value prop is not undefined
-        onChange={(e) => {
-          field.onChange(e);
-          props.onChange && props.onChange(e);
-        }}
-      >
-        {options.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </Select>
-      {meta.touched && meta.error ? (
-        <FormHelperText>{meta.error}</FormHelperText>
-      ) : null}
-    </FormControl>
-  );
-};
-
 const ATMForm = ({
-  initialValues = {},
+  initialValues = {
+    type: "",
+    unitId: "",
+    terminalId: "",
+    terminalName: "",
+    branchName: "",
+    district: "",
+    site: "",
+    cbsAccount: "",
+    port: "",
+    ipAddress: "",
+  },
   onSubmit,
-  onChange,
-  changedData = {},
   isEdit,
 }) => {
   const [selectedType, setSelectedType] = useState(initialValues.type || "");
   const [selectedSite, setSelectedSite] = useState(initialValues.site || "");
   const navigate = useNavigate();
-  // const [selectedPort, setSelectedPort] = useState(initialValues.port || "");
 
   const [availablePorts, setAvailablePorts] = useState([]);
-  const atm_types = [
-    { value: "CRM", label: "CRM" },
-    { value: "NCR", label: "NCR" },
-  ];
-
-  const sites = [
-    { value: "Onsite", label: "ONSITE" },
-    { value: "Offsite", label: "OFFSITE" },
-  ];
-
-  const atm_status = [
-    { value: "New", label: "New" },
-    { value: "Active", label: "Active" },
-    { value: "InActive", label: "InActive" },
-    { value: "Relocated", label: "Relocated" },
-    { value: "Stopped", label: "Stopped" },
-  ];
-
-  const districts = [
-    { value: "Nekemte", label: "Nekemte" },
-    { value: "Jimma", label: "Jimma" },
-    { value: "Shashemene", label: "Shashemene" },
-    { value: "Asella", label: "Asella" },
-    { value: "Adama", label: "Adama" },
-    { value: "Hawassa", label: "Hawassa" },
-    { value: "Hossana", label: "Hossana" },
-    { value: "Dire Dawa", label: "Dire Dawa" },
-    { value: "Chiro", label: "Chiro" },
-    { value: "Bale", label: "Bale" },
-    { value: "East Finfine", label: "East Finfine" },
-    { value: "Central Finfine", label: "Central Finfine" },
-    { value: "North Finfine", label: "North Finfine" },
-    { value: "South Finfine", label: "South Finfine" },
-    { value: "West Finfine", label: "West Finfine" },
-    { value: "Bahirdar", label: "Bahirdar" },
-    { value: "Mekelle", label: "Mekelle" },
-  ];
 
   const FORM_VALIDATION = Yup.object().shape({
     type: Yup.string().required("ATM Type is required"),
@@ -155,11 +69,11 @@ const ATMForm = ({
     cbsAccount: Yup.string()
       .required("CBS Account is required")
       .min(12, "CBS Account must be at least 12 characters"),
-    port: Yup.number()
-      // .required("Port is required")
-      .test("is-valid-port", "Port must be a valid selection", (value) =>
-        availablePorts.includes(value)
-      ),
+    port: Yup.number().test(
+      "is-valid-port",
+      "Port must be a valid selection",
+      (value) => availablePorts.includes(value)
+    ),
     ipAddress: Yup.string()
       .required("IP Address is required")
       .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -202,7 +116,7 @@ const ATMForm = ({
     };
 
     fetchPorts();
-  }, [selectedSite, selectedType]);
+  }, [selectedSite, selectedType, initialValues.port]);
 
   return (
     <Card
@@ -221,8 +135,10 @@ const ATMForm = ({
         validationSchema={FORM_VALIDATION}
         onSubmit={onSubmit}
         validateOnMount
+        validateOnChange
+        validateOnBlur
       >
-        {({ isValid, isSubmitting, handleChange }) => (
+        {({ isValid, isSubmitting, validateForm, handleChange }) => (
           <Form>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Typography variant="h5" sx={{ textAlign: "center" }}>
@@ -247,6 +163,8 @@ const ATMForm = ({
                     onChange={(e) => {
                       setSelectedType(e.target.value);
                       setAvailablePorts([]); // Clear ports on type change
+                      handleChange(e);
+                      validateForm();
                     }}
                   />
                   <CustomTextField name="unitId" label="Unit ID" />
@@ -274,6 +192,8 @@ const ATMForm = ({
                     onChange={(e) => {
                       setSelectedSite(e.target.value);
                       setAvailablePorts([]); // Clear ports on site change
+                      handleChange(e);
+                      validateForm();
                     }}
                   />
                   <CustomTextField
@@ -285,14 +205,14 @@ const ATMForm = ({
                   <CustomSelect
                     name="port"
                     label="UpdatePort"
-                    // values={selectedPort}
                     options={availablePorts.map((port) => ({
                       value: port,
                       label: port.toString(),
                     }))}
-                    // onChange={(e) => {
-                    //   setSelectedPort(e.target.value); // setAvailablePorts([]); // Clear ports on site change
-                    // }}
+                    onChange={(e) => {
+                      handleChange(e);
+                      validateForm(); // Trigger form validation after port selection
+                    }}
                     disabled={!selectedSite} // Disable port selection if no site selected
                   />
                   {availablePorts.length === 0 &&
