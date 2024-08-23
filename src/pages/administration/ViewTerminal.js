@@ -88,14 +88,24 @@ export default function ViewTerminal() {
       ...row,
     })) ?? [];
 
-  const filteredRows = rows.filter((row) =>
-    Object.keys(row).some((key) =>
-      String(row[key]).toLowerCase().includes(searchText.toLowerCase())
+  // Filtered rows
+  const filteredRows = rows
+    .filter((row) =>
+      Object.keys(row).some((key) =>
+        String(row[key]).toLowerCase().includes(searchText.toLowerCase())
+      )
     )
-  );
-
-  const crmRows = filteredRows.filter((row) => row.type === "CRM");
-  const ncrRows = filteredRows.filter((row) => row.type === "NCR");
+    .sort((a, b) => {
+      // First sort by type (CRM should come first)
+      if (a.type !== b.type) {
+        return a.type.localeCompare(b.type);
+      }
+      // Sort by unitId numerically or by localeCompare for strings
+      if (typeof a.unitId === "string" && typeof b.unitId === "string") {
+        return a.unitId.localeCompare(b.unitId);
+      }
+      return (a.unitId || 0) - (b.unitId || 0); // Handle cases where unitId might be missing or non-numeric
+    });
 
   if (loading) {
     return <LoadingSpinner />;
@@ -105,6 +115,10 @@ export default function ViewTerminal() {
     return <Typography>Error: {error}</Typography>;
   }
 
+  // Split sorted rows into CRM and NCR
+  const crmRows = filteredRows.filter((row) => row.type === "CRM");
+  const ncrRows = filteredRows.filter((row) => row.type === "NCR");
+
   return (
     <Box
       sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}
@@ -113,7 +127,6 @@ export default function ViewTerminal() {
         sx={{
           display: "flex",
           alignItems: "center",
-          // justifyContent: "space-around",
           gap: 5,
         }}
       >
