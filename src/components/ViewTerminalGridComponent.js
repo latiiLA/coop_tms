@@ -5,7 +5,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 
-const ViewTerminalGridComponent = ({ rows }) => {
+const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
   const navigate = useNavigate();
   const { role } = useAuthContext();
   const columns = [
@@ -38,17 +38,21 @@ const ViewTerminalGridComponent = ({ rows }) => {
             alignItems: "center",
           }}
         >
-          <Tooltip title="Edit Terminal">
-            <IconButton
-              color="primary"
-              size="small"
-              disabled={role === "user"}
-              style={{ display: role === "user" ? "none" : "inline-flex" }}
-              onClick={() => navigate("/edit", { state: { row: params.row } })}
-            >
-              <Edit />
-            </IconButton>
-          </Tooltip>
+          {!isRelocated && (
+            <Tooltip title="Edit Terminal">
+              <IconButton
+                color="primary"
+                size="small"
+                disabled={role === "user"}
+                style={{ display: role === "user" ? "none" : "inline-flex" }}
+                onClick={() =>
+                  navigate("/edit", { state: { row: params.row } })
+                }
+              >
+                <Edit />
+              </IconButton>
+            </Tooltip>
+          )}
           <Tooltip title="View Terminal">
             <IconButton
               color="primary"
