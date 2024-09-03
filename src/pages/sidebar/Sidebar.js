@@ -243,6 +243,15 @@ const Sidebar = () => {
                       ),
                     },
                     {
+                      text: "Relocated ATM",
+                      path: "/relocatedterminal",
+                      icon: (
+                        <ManageSearch
+                          sx={{ color: theme.palette.primary.main }}
+                        />
+                      ),
+                    },
+                    {
                       text: "Manage User",
                       path: "/viewuser",
                       icon: (
