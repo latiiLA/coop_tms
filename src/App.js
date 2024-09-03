@@ -28,6 +28,7 @@ import { Box } from "@mui/material";
 import { Toaster } from "react-hot-toast";
 import LoadingSpinner from "./components/LoadingSpinner";
 import UserActivityLog from "../src/pages/administration/UserActivityLog";
+import ViewRelocated from "./pages/administration/ViewRelocated";
 
 // Protect routes based on role
 const ProtectedRoutes = ({ requiredRole }) => {
@@ -136,6 +137,7 @@ function App() {
             <Route path="/viewports" element={<ViewPort />} />
             <Route path="/new_command" element={<CreateCommands />} />
             <Route path="/commands" element={<ViewCommands />} />
+            <Route path="/relocatedterminal" element={<ViewRelocated />} />
           </Route>
 
           {/* Super Admin Routes */}
