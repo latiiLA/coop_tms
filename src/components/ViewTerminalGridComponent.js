@@ -1,9 +1,11 @@
-import { Edit, Preview } from "@mui/icons-material";
+import { ContentCopy, Edit, Preview } from "@mui/icons-material";
 import { Box, Divider, IconButton, Tooltip, Typography } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
+import toast from "react-hot-toast";
+import CustomToolbar from "./CustomToolbar";
 
 const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
   const navigate = useNavigate();
@@ -15,25 +17,24 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     { field: "terminalName", headerName: "Terminal Name", flex: 1 },
     { field: "branchName", headerName: "Branch Name", flex: 1 },
     { field: "district", headerName: "District", flex: 0.8 },
-    { field: "cbsAccount", headerName: "CBS Account", flex: 1 },
+    { field: "cbsAccount", headerName: "CBS Account", flex: 0.8 },
     { field: "port", headerName: "Port", flex: 0.1 },
     { field: "ipAddress", headerName: "IP Address", flex: 1 },
-    { field: "type", headerName: "Type", flex: 0.5 },
+    { field: "type", headerName: "Type", flex: 0.1 },
     { field: "site", headerName: "Site", flex: 0.5 },
     { field: "status", headerName: "Status", flex: 0.5 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 0.6,
+      flex: 0.8,
       renderCell: (params) => (
         <Box
           sx={{
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-between",
+            justifyContent: "space-around",
             width: "100%",
             height: "100%",
-
             margin: "auto",
             alignItems: "center",
           }}
@@ -64,10 +65,46 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
               <Preview />
             </IconButton>
           </Tooltip>
+          <Tooltip title="Copy Terminal Information">
+            <IconButton
+              color="primary"
+              size="small"
+              onClick={() => handleCopy(params.row)}
+            >
+              <ContentCopy />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },
   ];
+
+  const handleCopy = (rowData) => {
+    // Format the row data into a string
+    const rowText = `
+    ${rowData.unitId}
+    ${rowData.terminalId}
+    ${rowData.terminalName}
+    ${rowData.branchName}
+    ${rowData.district}
+    ${rowData.cbsAccount}
+    ${rowData.port}
+    ${rowData.ipAddress}
+    ${rowData.type}
+    ${rowData.site}
+    ${rowData.status}
+  `;
+
+    navigator.clipboard
+      .writeText(rowText)
+      .then(() => {
+        toast.success("Terminal details copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy:", err);
+        toast.error("Failed to copy branch details.");
+      });
+  };
 
   return (
     <Box>
@@ -104,13 +141,18 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
         <DataGrid
           rows={rows}
           columns={columns}
-          slots={{ toolbar: GridToolbar }}
+          slots={
+            role !== "user"
+              ? { toolbar: GridToolbar }
+              : { toolbar: CustomToolbar }
+          }
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },
             },
           }}
           pageSizeOptions={[20, 50, 100]}
+          autoHeight
           checkboxSelection
         />
       </Box>
