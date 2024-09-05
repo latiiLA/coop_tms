@@ -35,6 +35,9 @@ import {
   SettingsInputComposite,
   LocalActivity,
   Home,
+  ListAlt,
+  ChangeCircle,
+  Archive,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -246,9 +249,7 @@ const Sidebar = () => {
                       text: "Relocated ATM",
                       path: "/relocatedterminal",
                       icon: (
-                        <ManageSearch
-                          sx={{ color: theme.palette.primary.main }}
-                        />
+                        <Archive sx={{ color: theme.palette.primary.main }} />
                       ),
                     },
                     {
@@ -267,6 +268,13 @@ const Sidebar = () => {
                         <SettingsInputComposite
                           sx={{ color: theme.palette.primary.main }}
                         />
+                      ),
+                    },
+                    {
+                      text: "Branch Code",
+                      path: "/viewbranch",
+                      icon: (
+                        <ListAlt sx={{ color: theme.palette.primary.main }} />
                       ),
                     },
                     ...(role === "superadmin"

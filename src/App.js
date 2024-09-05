@@ -29,6 +29,7 @@ import { Toaster } from "react-hot-toast";
 import LoadingSpinner from "./components/LoadingSpinner";
 import UserActivityLog from "../src/pages/administration/UserActivityLog";
 import ViewRelocated from "./pages/administration/ViewRelocated";
+import ViewBranch from "./components/ViewBranch";
 
 // Protect routes based on role
 const ProtectedRoutes = ({ requiredRole }) => {
@@ -138,6 +139,7 @@ function App() {
             <Route path="/new_command" element={<CreateCommands />} />
             <Route path="/commands" element={<ViewCommands />} />
             <Route path="/relocatedterminal" element={<ViewRelocated />} />
+            <Route path="/viewbranch" element={<ViewBranch />} />
           </Route>
 
           {/* Super Admin Routes */}
