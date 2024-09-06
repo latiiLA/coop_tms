@@ -95,15 +95,42 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     ${rowData.status}
   `;
 
-    navigator.clipboard
-      .writeText(rowText)
-      .then(() => {
-        toast.success("Terminal details copied to clipboard!");
-      })
-      .catch((err) => {
-        console.error("Failed to copy:", err);
-        toast.error("Failed to copy branch details.");
-      });
+    // Check if the Clipboard API is available
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(rowText)
+        .then(() => {
+          toast.success("Terminal details copied to clipboard!");
+        })
+        .catch((err) => {
+          console.error("Failed to copy:", err);
+          toast.error("Failed to copy terminal details.");
+        });
+    } else {
+      // Fallback for HTTP or unsupported browsers
+      fallbackCopyText(rowText);
+    }
+  };
+
+  // Fallback method using a temporary textarea for older browsers or HTTP
+  const fallbackCopyText = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed"; // Prevent scrolling to the bottom
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand("copy"); // Fallback to execCommand for unsupported environments
+      toast.success("Terminal details copied to clipboard!");
+    } catch (err) {
+      console.error("Fallback: Failed to copy:", err);
+      toast.error("Failed to copy terminal details.");
+    }
+
+    // Remove the textarea element after copying
+    document.body.removeChild(textArea);
   };
 
   return (
