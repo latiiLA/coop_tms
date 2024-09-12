@@ -38,6 +38,7 @@ import {
   ListAlt,
   ChangeCircle,
   Archive,
+  Analytics,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -148,6 +149,15 @@ const Sidebar = () => {
                         path: "/generalreport",
                         icon: (
                           <Summarize
+                            sx={{ color: theme.palette.primary.main }}
+                          />
+                        ),
+                      },
+                      {
+                        text: "Analytics",
+                        path: "/analytics",
+                        icon: (
+                          <Analytics
                             sx={{ color: theme.palette.primary.main }}
                           />
                         ),
