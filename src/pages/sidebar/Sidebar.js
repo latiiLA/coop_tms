@@ -153,15 +153,19 @@ const Sidebar = () => {
                           />
                         ),
                       },
-                      {
-                        text: "Analytics",
-                        path: "/analytics",
-                        icon: (
-                          <Analytics
-                            sx={{ color: theme.palette.primary.main }}
-                          />
-                        ),
-                      },
+                      ...(role === "admin" || role === "superadmin"
+                        ? [
+                            {
+                              text: "Analytics",
+                              path: "/analytics",
+                              icon: (
+                                <Analytics
+                                  sx={{ color: theme.palette.primary.main }}
+                                />
+                              ),
+                            },
+                          ]
+                        : []),
                     ].map((subItem) => (
                       <ListItem key={subItem.text} disablePadding>
                         <ListItemButton
