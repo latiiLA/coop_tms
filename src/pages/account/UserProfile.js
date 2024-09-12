@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import propicture from "../../assets/profile_avatar.jpg";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const UserProfile = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       // if (!hasShownToast.current) {
       toast.error("User is not authenticated");
       //   hasShownToast.current = true;
@@ -61,10 +62,10 @@ const UserProfile = () => {
     async function loadRows() {
       try {
         const data = await fetchRows();
-        console.log("data in user profil", data);
+        // console.log("data in user profile", data);
         setDataRows(data); // Update state with fetched data
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
         setError(error);
       } finally {
         setLoading(false);
@@ -77,7 +78,6 @@ const UserProfile = () => {
   const Gender = [
     { value: "MALE", label: "MALE" },
     { value: "FEMALE", label: "FEMALE" },
-    // Add more options as needed
   ];
 
   const FORM_VALIDATION = Yup.object().shape({
@@ -97,9 +97,22 @@ const UserProfile = () => {
   });
 
   const handleSubmit = async (data) => {
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      // console.error("No authentication token found");
+      // if (!hasShownToast.current) {
+      toast.error("User is not authenticated");
+      //   hasShownToast.current = true;
+      // }
+      navigate("/home");
+      return;
+    }
     try {
-      const response = await axios.post(
-        "http://localhost:8000/auth/updateUser",
+      const response = await axios.patch(
+        `${apiUrl}/auth/updateUser`,
+
         {
           firstName: data.firstName,
           fatherName: data.fatherName,
@@ -109,12 +122,17 @@ const UserProfile = () => {
           gender: data.gender,
           username: data.username,
           phoneNumber: data.phoneNumber,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      console.log("Profile updated successfully:", response.data);
+      // console.log("Profile updated successfully:", response.data);
       toast.success("Profile updated successfully");
     } catch (error) {
-      console.error("Error updating profile:", error);
+      // console.error("Error updating profile:", error);
       toast.error("Error updating profile");
     }
   };
@@ -127,7 +145,7 @@ const UserProfile = () => {
   };
 
   if (loading) {
-    return <Typography>Loading...</Typography>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
