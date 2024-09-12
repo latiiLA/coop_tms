@@ -6,7 +6,7 @@ const ViewATMDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { row } = location.state;
-  console.log(row);
+  // console.log(row);
   return (
     <Box
       sx={{

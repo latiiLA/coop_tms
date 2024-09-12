@@ -103,7 +103,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
           toast.success("Terminal details copied to clipboard!");
         })
         .catch((err) => {
-          console.error("Failed to copy:", err);
+          // console.error("Failed to copy:", err);
           toast.error("Failed to copy terminal details.");
         });
     } else {
@@ -125,7 +125,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
       document.execCommand("copy"); // Fallback to execCommand for unsupported environments
       toast.success("Terminal details copied to clipboard!");
     } catch (err) {
-      console.error("Fallback: Failed to copy:", err);
+      // console.error("Fallback: Failed to copy:", err);
       toast.error("Failed to copy terminal details.");
     }
 

@@ -14,7 +14,7 @@ const AddTerminal = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       if (!hasShownToast.current) {
         toast.error("User is not authenticated");
         hasShownToast.current = true;
@@ -34,14 +34,14 @@ const AddTerminal = () => {
         }
       );
 
-      console.log("New ATM is added:", response.data);
+      // console.log("New ATM is added:", response.data);
       toast.success(response.data.message);
     } catch (error) {
-      console.error(
-        "Error adding an ATM:",
-        error,
-        error.response?.data?.message
-      );
+      // console.error(
+      //   "Error adding an ATM:",
+      //   error,
+      //   error.response?.data?.message
+      // );
       toast.error(
         error.response?.data?.message || error.message || "Something went wrong"
       );

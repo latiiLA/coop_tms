@@ -28,7 +28,7 @@ const UserActivityLog = () => {
       setLogs(response.data);
       setLoading(false);
     } catch (err) {
-      console.error("Error fetching logs:", err);
+      // console.error("Error fetching logs:", err);
       setError("Failed to fetch logs.");
       setLoading(false);
     }
@@ -49,7 +49,7 @@ const UserActivityLog = () => {
       }, {});
       setUsers(userMap);
     } catch (err) {
-      console.error("Error fetching users:", err);
+      // console.error("Error fetching users:", err);
       setError("Failed to fetch users.");
     }
   };

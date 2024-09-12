@@ -106,6 +106,7 @@ const TerminalCountPerDistrict = ({ data }) => {
           value={selectedType}
           label="Terminal Type"
           onChange={(e) => setSelectedType(e.target.value)}
+          sx={{ width: "48%" }}
         >
           <MenuItem value="All">All</MenuItem>
           <MenuItem value="CRM">CRM</MenuItem>

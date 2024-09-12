@@ -46,7 +46,7 @@ const TerminalSiteReport = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       if (!hasShownToast.current) {
         toast.error("User is not authenticated");
         hasShownToast.current = true; // Mark that the toast has been shown
@@ -63,10 +63,10 @@ const TerminalSiteReport = () => {
         },
         withCredentials: true,
       });
-      console.log(response.data.data, "inside site report");
+      // console.log(response.data.data, "inside site report");
       return response.data.data; // Adjust this line based on your JSON structure
     } catch (error) {
-      console.error("Error fetching data:", error);
+      // console.error("Error fetching data:", error);
       if (!hasShownToast.current) {
         const errorMessage =
           error.response?.data?.message ||

@@ -22,7 +22,7 @@ const Dashboard = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       if (!hasShownToast.current) {
         toast.error("User is not authenticated");
         hasShownToast.current = true; // Mark that the toast has been shown
@@ -39,10 +39,10 @@ const Dashboard = () => {
         },
         withCredentials: true,
       });
-      console.log("fetchRows", response.data.terminals);
+      // console.log("fetchRows", response.data.terminals);
       return response.data.terminals; // Adjust this line based on your JSON structure
     } catch (error) {
-      console.error("Error fetching data:", error);
+      // console.error("Error fetching data:", error);
       if (!hasShownToast.current) {
         toast.error(`Error: ${error.response?.data?.message || error.message}`);
         hasShownToast.current = true;
@@ -57,7 +57,7 @@ const Dashboard = () => {
         const data = await fetchRows();
         setDataRows(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
         setError(error);
       } finally {
         setLoading(false);

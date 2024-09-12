@@ -44,7 +44,7 @@ export default function ViewRelocated() {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       toast.error("User is not authenticated");
       navigate("/home");
       return;
@@ -64,7 +64,7 @@ export default function ViewRelocated() {
       setDataRows(response.data.terminals);
       setRole(response.data.role);
     } catch (error) {
-      console.error("Error fetching terminals:", error);
+      // console.error("Error fetching terminals:", error);
       setError(error.message);
       toast.error(`Error: ${error.response?.data?.message || error.message}`);
       navigate("/home");

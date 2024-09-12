@@ -28,7 +28,7 @@ export default function ViewBranch() {
     const apiUrl = process.env.REACT_APP_API_URL;
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       toast.error("User is not authenticated");
       navigate("/home");
       return;
@@ -41,10 +41,10 @@ export default function ViewBranch() {
         },
         withCredentials: true,
       });
-      console.log(response);
+      // console.log(response);
       setDataRows(response.data.branches || []);
     } catch (error) {
-      console.error("Error fetching branches:", error);
+      // console.error("Error fetching branches:", error);
       setError(error.response?.data?.message || error.message);
       toast.error(`Error: ${error.response?.data?.message || error.message}`);
       navigate("/home");
@@ -62,7 +62,7 @@ export default function ViewBranch() {
           toast.success("Terminal details copied to clipboard!");
         })
         .catch((err) => {
-          console.error("Failed to copy:", err);
+          // console.error("Failed to copy:", err);
           toast.error("Failed to copy terminal details.");
         });
     } else {
@@ -84,7 +84,7 @@ export default function ViewBranch() {
       document.execCommand("copy"); // Fallback to execCommand for unsupported environments
       toast.success("Terminal details copied to clipboard!");
     } catch (err) {
-      console.error("Fallback: Failed to copy:", err);
+      // console.error("Fallback: Failed to copy:", err);
       toast.error("Failed to copy terminal details.");
     }
 

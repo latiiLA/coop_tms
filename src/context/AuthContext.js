@@ -27,12 +27,12 @@ export const AuthContextProvider = ({ children }) => {
           });
           setRole(response.data.role);
         } catch (error) {
-          console.error("Failed to fetch user information:", error);
+          // console.error("Failed to fetch user information:", error);
           setRole(null); // Set role to null if no token is found
           navigate("/login", { replace: true });
         }
       } else {
-        console.warn("Token not found in localStorage.");
+        // console.warn("Token not found in localStorage.");
         setRole(null); // Set role to null if no token is found
         navigate("/login");
       }

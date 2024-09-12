@@ -33,7 +33,7 @@ const TerminalReport = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       if (!hasShownToast.current) {
         toast.error("The user is not authenticated.");
         hasShownToast.current = true;
@@ -52,10 +52,10 @@ const TerminalReport = () => {
         withCredentials: true,
       }); // Replace with your actual API endpoint
 
-      console.log("fetchRows", response.data.terminals);
+      // console.log("fetchRows", response.data.terminals);
       return response.data.terminals; // Adjust this line based on your JSON structure
     } catch (error) {
-      console.error("Error fetching data:", error);
+      // console.error("Error fetching data:", error);
       const errorMessage = error.response?.data?.message || error;
       if (!hasShownToast.current) {
         toast.error(`Error: ${errorMessage}`);

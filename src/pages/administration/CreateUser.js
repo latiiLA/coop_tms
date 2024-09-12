@@ -67,10 +67,10 @@ const CreateUser = () => {
   ];
 
   const handleSubmit = async (data, { resetForm }) => {
-    console.log("handle submit", data.firstName);
+    // console.log("handle submit", data.firstName);
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       if (!hasShownToast.current) {
         toast.error("User is not authenticated");
         hasShownToast.current = true;
@@ -99,7 +99,7 @@ const CreateUser = () => {
           withCredentials: true,
         }
       );
-      console.log("New user is created:", response.data);
+      // console.log("New user is created:", response.data);
       resetForm();
       toast.success(response.data.message);
 
@@ -111,7 +111,7 @@ const CreateUser = () => {
       // navigate("/login");
       // You can redirect the user to the newly created post or update the post list
     } catch (error) {
-      console.error("Error creating a user:", error);
+      // console.error("Error creating a user:", error);
       if (
         error.response &&
         error.response.data &&
@@ -119,7 +119,7 @@ const CreateUser = () => {
       ) {
         toast.error(error.response.data.message);
       } else {
-        console.error("Error adding an user:", error);
+        // console.error("Error adding an user:", error);
         toast.error(error.message);
       }
     }

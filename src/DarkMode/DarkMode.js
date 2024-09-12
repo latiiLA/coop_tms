@@ -9,7 +9,7 @@ import { IconButton } from "@mui/material";
 
 const DarkMode = () => {
   const { darkMode, toggleTheme } = useTheme();
-  console.log(darkMode);
+  // console.log(darkMode);
   return (
     <IconButton onClick={toggleTheme}>
       {darkMode ? <LightModeIcon /> : <Brightness4Icon />}

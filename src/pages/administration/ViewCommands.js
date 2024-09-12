@@ -24,7 +24,7 @@ export default function Commands({ role = "admin" }) {
         const data = await fetchRows();
         setDataRows(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
       }
     }
 

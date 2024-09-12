@@ -46,7 +46,7 @@ export default function ViewUsers() {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       toast.error("User is not authenticated");
       navigate("/home");
       return;
@@ -68,7 +68,7 @@ export default function ViewUsers() {
       handleClose();
       toast.success("User successfully deleted.");
     } catch (error) {
-      console.error("Error deleting user:", error);
+      // console.error("Error deleting user:", error);
       toast.error(error.response.data.message);
       handleClose();
     }
@@ -77,7 +77,7 @@ export default function ViewUsers() {
   const handleReset = async (rowId) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       toast.error("User is not an authenticated user.");
       navigate("/home");
       return;
@@ -97,7 +97,7 @@ export default function ViewUsers() {
       setDataRows(updatedData);
       toast.success("Password count is successfully reset.");
     } catch (error) {
-      console.error("Error resetting wrong password count", error);
+      // console.error("Error resetting wrong password count", error);
       toast.error("Error: while resetting wrong password count.");
     }
   };
@@ -105,7 +105,7 @@ export default function ViewUsers() {
   const handleResetPassword = async (rowId) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       toast.error("User is not an authenticated user.");
       navigate("/home");
       return;
@@ -125,7 +125,7 @@ export default function ViewUsers() {
       setDataRows(updatedData);
       toast.success("Password reset is successfull.");
     } catch (error) {
-      console.error("Error resetting user password:", error);
+      // console.error("Error resetting user password:", error);
       toast.error("Error: while resetting user password.");
     }
   };
@@ -205,7 +205,7 @@ export default function ViewUsers() {
   async function fetchRows() {
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       toast.error("User is not authenticated");
       navigate("/home");
       return [];
@@ -219,7 +219,7 @@ export default function ViewUsers() {
       });
       return response.data.users;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      // console.error("Error fetching data:", error);
       toast.error(`Error: ${error.response?.data?.message || error.message}`);
       navigate("/home");
       return [];
@@ -232,7 +232,7 @@ export default function ViewUsers() {
         const data = await fetchRows();
         setDataRows(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
         setError(error);
       } finally {
         setLoading(false);

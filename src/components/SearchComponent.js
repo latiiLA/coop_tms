@@ -64,7 +64,7 @@ const SearchComponent = () => {
       );
       setSearchResults(response.data.terminals); // Assuming 'terminals' is the key in your response object
     } catch (error) {
-      console.error("Error searching:", error);
+      // console.error("Error searching:", error);
       // Handle error
     }
   };

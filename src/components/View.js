@@ -68,7 +68,7 @@ async function fetchRows() {
   const response = await axios.get(
     "http://localhost:8000/terminal/getTerminal"
   ); // Replace with your actual API endpoint
-  console.log("fethRows", response.data.terminals);
+  // console.log("fethRows", response.data.terminals);
   return response.data.terminals; // Adjust this line based on your JSON structure
 }
 export default function View({ role }) {
@@ -282,7 +282,7 @@ export default function View({ role }) {
         const data = await fetchRows();
         setDataRows(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
         setError(error);
       } finally {
         setLoading(false);

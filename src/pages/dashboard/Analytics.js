@@ -1,9 +1,11 @@
 import { Box } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const Analytics = () => {
   const theme = useTheme();
+  const [loading, setLoading] = useState(true);
 
   // Conditionally render iframes based on theme mode
   const iframeSrc =
@@ -13,6 +15,7 @@ const Analytics = () => {
 
   return (
     <Box>
+      {loading && <LoadingSpinner />}
       <iframe
         title="Coop TMS Analytics"
         width="100%"
@@ -21,6 +24,7 @@ const Analytics = () => {
         style={{ border: 0 }}
         allowFullScreen
         sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+        onLoad={() => setLoading(false)}
       />
     </Box>
   );

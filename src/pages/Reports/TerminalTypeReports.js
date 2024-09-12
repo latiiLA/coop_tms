@@ -50,7 +50,7 @@ const TerminalTypeReports = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       if (!hasShownToast.current) {
         toast.error("User is not authenticated");
         hasShownToast.current = true; // Mark that the toast has been shown
@@ -69,7 +69,7 @@ const TerminalTypeReports = () => {
       });
       return response.data.terminalsCount; // Adjust this line based on your JSON structure
     } catch (error) {
-      console.error("Error fetching data:", error);
+      // console.error("Error fetching data:", error);
       if (!hasShownToast.current) {
         const errorMessage =
           error.response?.data?.message ||
@@ -87,9 +87,9 @@ const TerminalTypeReports = () => {
       try {
         const data = await fetchRows();
         setDataRows(data);
-        console.log(data);
+        // console.log(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
         setError(error.message);
       } finally {
         setLoading(false);

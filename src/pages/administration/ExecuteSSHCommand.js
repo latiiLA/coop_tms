@@ -20,7 +20,7 @@ const ExecuteSSHCommand = () => {
       // Display the command output
       setOutput(response.data.output);
     } catch (error) {
-      console.error("Error executing command:", error);
+      // console.error("Error executing command:", error);
       setOutput("Failed to execute command");
     }
   };

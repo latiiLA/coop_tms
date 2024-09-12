@@ -13,7 +13,7 @@ const fetchAvailablePorts = async (
   portAssignment,
   currentPort
 ) => {
-  console.log(portSiteAssignment, portAssignment, "before fetch");
+  // console.log(portSiteAssignment, portAssignment, "before fetch");
   try {
     const apiUrl = process.env.REACT_APP_API_URL;
     const response = await axios.get(`${apiUrl}/port/getAssignedPorts`, {
@@ -25,10 +25,10 @@ const fetchAvailablePorts = async (
     });
 
     // Handle response
-    console.log(response.data.availablePorts);
+    // console.log(response.data.availablePorts);
     return response.data.availablePorts || [];
   } catch (error) {
-    console.error("Error fetching available ports:", error);
+    // console.error("Error fetching available ports:", error);
     toast.error("Error fetching available ports:");
     return [];
   }
@@ -88,12 +88,12 @@ const ATMForm = ({
   });
 
   useEffect(() => {
-    console.log(
-      "useEffect triggered with site:",
-      selectedSite,
-      "and type:",
-      selectedType
-    );
+    // console.log(
+    //   "useEffect triggered with site:",
+    //   selectedSite,
+    //   "and type:",
+    //   selectedType
+    // );
 
     const fetchPorts = async () => {
       if (selectedSite && selectedType) {
@@ -103,10 +103,10 @@ const ATMForm = ({
             selectedType,
             initialValues.port
           );
-          console.log("Fetched ports:", ports);
+          // console.log("Fetched ports:", ports);
           setAvailablePorts(ports);
         } catch (error) {
-          console.error("Error fetching ports:", error);
+          // console.error("Error fetching ports:", error);
           setAvailablePorts([]);
         }
       } else {

@@ -57,7 +57,7 @@ const Login = () => {
 
   const handleSubmit = async (user_data) => {
     const apiUrl = process.env.REACT_APP_API_URL;
-    console.log(apiUrl);
+    // console.log(apiUrl);
 
     setLoading(true);
     try {
@@ -75,7 +75,7 @@ const Login = () => {
       const token = response.data.token;
       localStorage.setItem("token", token);
       setRole(data.data.role);
-      console.log("role in login", data.data.role);
+      // console.log("role in login", data.data.role);
 
       if (data.data.status === "New") {
         // window.history.back();
@@ -85,7 +85,7 @@ const Login = () => {
         navigate("/home");
       }
     } catch (error) {
-      console.error("Error logging in:", error);
+      // console.error("Error logging in:", error);
       toast.error(
         `Login Error: ${error.response?.data?.message || error.message}`
       );

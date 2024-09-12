@@ -37,10 +37,10 @@ const CreateCommands = () => {
         description: data.description,
         example: data.example,
       });
-      console.log("New command is created:", response.data);
+      // console.log("New command is created:", response.data);
       alert("Command is created");
     } catch (error) {
-      console.error("Error creating a command:", error);
+      // console.error("Error creating a command:", error);
       alert("Error creating a command");
     }
   };

@@ -17,7 +17,7 @@ const NCRData = () => {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        console.error("No authentication token found");
+        // console.error("No authentication token found");
         if (!hasShownToast.current) {
           toast.error("User is not authenticated");
           hasShownToast.current = true; // Mark that the toast has been shown
@@ -34,10 +34,10 @@ const NCRData = () => {
           },
           withCredentials: true,
         });
-        console.log("fetchRows", response.data.terminals);
+        // console.log("fetchRows", response.data.terminals);
         setTerminals(response.data.terminals); // Set data to state
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
         if (!hasShownToast.current) {
           toast.error(
             `Error: ${error.response?.data?.message || error.message}`

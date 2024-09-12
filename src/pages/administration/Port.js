@@ -55,7 +55,7 @@ const Port = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       // if (!hasShownToast.current) {
       toast.error("User is not authenticated");
       //   hasShownToast.current = true;
@@ -82,10 +82,10 @@ const Port = () => {
           withCredentials: true,
         }
       );
-      console.log("New port is created:", response.data);
+      // console.log("New port is created:", response.data);
       toast.success(response.data.message);
     } catch (error) {
-      console.error("Error creating a port:", error);
+      // console.error("Error creating a port:", error);
       if (
         error.response &&
         error.response.data &&
@@ -93,7 +93,7 @@ const Port = () => {
       ) {
         toast.error(error.response.data.message);
       } else {
-        console.error("Error adding port:", error);
+        // console.error("Error adding port:", error);
         toast.error(error.message);
       }
     }

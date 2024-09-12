@@ -32,7 +32,7 @@ const ViewPort = () => {
   async function fetchRows() {
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       if (!hasShownToast.current) {
         toast.error("User is not authenticated");
         hasShownToast.current = true;
@@ -49,7 +49,7 @@ const ViewPort = () => {
       });
       return response.data.ports; // Adjust this line based on your JSON structure
     } catch (error) {
-      console.error("Error fetching data:", error);
+      // console.error("Error fetching data:", error);
       if (!hasShownToast.current) {
         toast.error(`Error: ${error.response?.data?.message || error.message}`);
         hasShownToast.current = true;
@@ -62,7 +62,7 @@ const ViewPort = () => {
 
   const handleClickOpen = (rowId) => {
     setSelectedRowId(rowId);
-    console.log("selected port id", rowId);
+    // console.log("selected port id", rowId);
     setOpen(true);
   };
 
@@ -76,7 +76,7 @@ const ViewPort = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       toast.error("User is not authenticated");
       navigate("/home");
       return; // Exit the function if no token is found
@@ -96,7 +96,7 @@ const ViewPort = () => {
       handleClose();
       toast.success("Port successfully deleted.");
     } catch (error) {
-      console.error("Error deleting Port:", error);
+      // console.error("Error deleting Port:", error);
       toast.error(`Error: ${error.response?.data?.message || error.message}`);
       hasShownToast.current = true; // Mark that the toast has been shown
     }
@@ -108,7 +108,7 @@ const ViewPort = () => {
         const data = await fetchRows();
         setDataRows(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
         setError(error.message || "Failed to fetch data.");
       } finally {
         setLoading(false);

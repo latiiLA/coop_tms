@@ -14,7 +14,7 @@ const Logout = () => {
       const recieved_token = localStorage.getItem("token");
       localStorage.removeItem("token");
       if (!recieved_token) {
-        console.error("No authentication token found");
+        // console.error("No authentication token found");
         if (!hasShownToast.current) {
           toast.error(
             "Error: User is not authenticated or is already logged out."
@@ -48,11 +48,11 @@ const Logout = () => {
           setRole(null);
           navigate("/login"); // Redirect to login page
         } else {
-          console.error("Logout failed");
+          // console.error("Logout failed");
           toast.error("Logout failed");
         }
       } catch (error) {
-        console.error("An error occurred during logout", error);
+        // console.error("An error occurred during logout", error);
         toast.error("An error occurred during logout");
       }
     };

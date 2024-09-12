@@ -20,13 +20,13 @@ const EditTerminal = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.error("No authentication token found");
+      // console.error("No authentication token found");
       toast.error("User is not authenticated");
       navigate("/home");
       return; // Exit the function if no token is found
     }
     try {
-      console.log("editing data", data);
+      // console.log("editing data", data);
       const apiUrl = process.env.REACT_APP_API_URL;
       const response = await axios.put(
         `${apiUrl}/terminal/updateTerminal/${row._id}`,
@@ -39,7 +39,7 @@ const EditTerminal = () => {
         }
       );
 
-      console.log("The ATM is successfully updated:", response.data);
+      // console.log("The ATM is successfully updated:", response.data);
       await toast.success(response.data.message);
       navigate("/viewdetail", { state: { row: data } });
     } catch (error) {
@@ -50,7 +50,7 @@ const EditTerminal = () => {
       ) {
         toast.error(error.response.data.message);
       } else {
-        console.error("Error updating the ATM:", error);
+        // console.error("Error updating the ATM:", error);
         toast.error("An error occurred while updating the ATM.");
         setError("An error occurred while updating the ATM."); // Set a generic error message
       }
