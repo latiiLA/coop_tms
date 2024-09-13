@@ -156,13 +156,6 @@ const Sidebar = () => {
                           />
                         ),
                       },
-                      {
-                        text: "Power BI",
-                        path: "/powerBI",
-                        icon: (
-                          <Storage sx={{ color: theme.palette.primary.main }} />
-                        ),
-                      },
 
                       ...(role === "admin" || role === "superadmin"
                         ? [
@@ -171,6 +164,15 @@ const Sidebar = () => {
                               path: "/analytics",
                               icon: (
                                 <Analytics
+                                  sx={{ color: theme.palette.primary.main }}
+                                />
+                              ),
+                            },
+                            {
+                              text: "Power BI",
+                              path: "/powerBI",
+                              icon: (
+                                <Storage
                                   sx={{ color: theme.palette.primary.main }}
                                 />
                               ),

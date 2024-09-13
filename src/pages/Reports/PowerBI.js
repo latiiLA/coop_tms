@@ -8,10 +8,11 @@ const PowerBI = () => {
         title="Power BI"
         width="100%"
         height="600"
-        src="http://10.185.15.9:9502/analytics/saw.dll?bieehome"
-        frameborder="0"
+        src="http://10.185.15.9:9502/analytics"
+        frameBorder="0"
         allowFullScreen="true"
-      ></iframe>
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+      />
     </Box>
   );
 };
