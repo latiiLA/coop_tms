@@ -152,6 +152,7 @@ const TerminalReport = () => {
           }}
           pageSizeOptions={[5, 10]}
           checkboxSelection
+          autoHeight
         />
       </Box>
     </Box>

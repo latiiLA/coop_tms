@@ -151,6 +151,7 @@ const TerminalSiteReport = () => {
           loading={loading}
           slots={{ toolbar: GridToolbar }}
           checkboxSelection
+          autoHeight
         />
       </Box>
     </Box>

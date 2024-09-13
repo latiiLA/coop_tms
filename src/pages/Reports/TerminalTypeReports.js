@@ -151,6 +151,7 @@ const TerminalTypeReports = () => {
           rows={rows}
           columns={columns}
           checkboxSelection
+          autoHeight
         />
       </Box>
     </Box>

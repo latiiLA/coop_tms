@@ -233,6 +233,7 @@ const ViewPort = () => {
             },
           }}
           pageSizeOptions={[10, 20]}
+          autoHeight
           checkboxSelection
         />
       </Box>

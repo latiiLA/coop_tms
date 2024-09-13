@@ -23,8 +23,9 @@ const Analytics = () => {
         src={iframeSrc}
         style={{ border: 0 }}
         allowFullScreen
-        sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
         onLoad={() => setLoading(false)}
+        onError={() => setLoading(false)}
+        loading="lazy"
       />
     </Box>
   );

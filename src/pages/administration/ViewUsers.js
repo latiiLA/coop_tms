@@ -3,7 +3,6 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
   Box,
   Button,
-  CircularProgress,
   IconButton,
   Typography,
   Dialog,
@@ -20,6 +19,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { LockOpen } from "@mui/icons-material";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function ViewUsers() {
   const navigate = useNavigate();
@@ -247,7 +247,7 @@ export default function ViewUsers() {
   }));
 
   if (loading) {
-    return <CircularProgress />;
+    return <LoadingSpinner />;
   }
 
   if (error) {
@@ -255,15 +255,7 @@ export default function ViewUsers() {
   }
 
   return (
-    <Box
-    // sx={{
-    //   display: "flex",
-    //   flexDirection: "column",
-    //   gap: 2,
-    //   width: "100%",
-    //   boxSizing: "border-box",
-    // }}
-    >
+    <Box>
       <Box>
         <Typography variant="h4">User Management</Typography>
       </Box>
@@ -293,6 +285,7 @@ export default function ViewUsers() {
             },
           }}
           pageSizeOptions={[15, 30, 50]}
+          autoHeight
           checkboxSelection
         />
       </Box>

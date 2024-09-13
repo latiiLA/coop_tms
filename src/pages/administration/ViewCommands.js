@@ -139,6 +139,7 @@ export default function Commands({ role = "admin" }) {
             },
           }}
           pageSizeOptions={[5, 10]}
+          autoHeight
           checkboxSelection
         />
       </Box>
