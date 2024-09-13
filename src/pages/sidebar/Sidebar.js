@@ -36,9 +36,12 @@ import {
   LocalActivity,
   Home,
   ListAlt,
-  ChangeCircle,
   Archive,
   Analytics,
+  Feedback,
+  BugReport,
+  ReportProblem,
+  Storage,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -153,6 +156,14 @@ const Sidebar = () => {
                           />
                         ),
                       },
+                      {
+                        text: "Power BI",
+                        path: "/powerBI",
+                        icon: (
+                          <Storage sx={{ color: theme.palette.primary.main }} />
+                        ),
+                      },
+
                       ...(role === "admin" || role === "superadmin"
                         ? [
                             {
@@ -291,8 +302,33 @@ const Sidebar = () => {
                         <ListAlt sx={{ color: theme.palette.primary.main }} />
                       ),
                     },
+                    {
+                      text: "Feedback",
+                      path: "/feedback",
+                      icon: (
+                        <Feedback sx={{ color: theme.palette.primary.main }} />
+                      ),
+                    },
                     ...(role === "superadmin"
                       ? [
+                          {
+                            text: "Explore Feedback",
+                            path: "/viewfeedback",
+                            icon: (
+                              <ReportProblem
+                                sx={{ color: theme.palette.primary.main }}
+                              />
+                            ),
+                          },
+                          {
+                            text: "Explore Bug",
+                            path: "/viewbug",
+                            icon: (
+                              <BugReport
+                                sx={{ color: theme.palette.primary.main }}
+                              />
+                            ),
+                          },
                           {
                             text: "Activity Log",
                             path: "/activitylog",

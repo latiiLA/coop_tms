@@ -31,6 +31,10 @@ import UserActivityLog from "../src/pages/administration/UserActivityLog";
 import ViewRelocated from "./pages/administration/ViewRelocated";
 import ViewBranch from "./components/ViewBranch";
 import Analytics from "./pages/dashboard/Analytics";
+import Feedback from "./components/Feedback";
+import ViewFeedback from "./components/ViewFeedback";
+import ViewBugs from "./components/ViewBugs";
+import PowerBI from "./pages/Reports/PowerBI";
 
 // Protect routes based on role
 const ProtectedRoutes = ({ requiredRole }) => {
@@ -124,6 +128,8 @@ function App() {
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/viewdetail" element={<ViewATMDetail />} />
             <Route path="/logout" element={<Logout />} />
+            <Route path="/feedback" element={<Feedback />} />
+            <Route path="/powerBI" element={<PowerBI />} />
           </Route>
 
           {/* Admin Routes */}
@@ -142,6 +148,8 @@ function App() {
             <Route path="/relocatedterminal" element={<ViewRelocated />} />
             <Route path="/viewbranch" element={<ViewBranch />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/viewfeedback" element={<ViewFeedback />} />
+            <Route path="/viewbug" element={<ViewBugs />} />
           </Route>
 
           {/* Super Admin Routes */}
