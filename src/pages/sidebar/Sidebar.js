@@ -17,7 +17,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import HomeLink from "../../components/HomeLink";
 import {
@@ -35,13 +35,14 @@ import {
   SettingsInputComposite,
   LocalActivity,
   Home,
+  Link,
   ListAlt,
   Archive,
   Analytics,
   Feedback,
   BugReport,
   ReportProblem,
-  Storage,
+  CurrencyExchange,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -52,6 +53,15 @@ const Sidebar = () => {
   const [openAdmin, setOpenAdmin] = useState(true);
   const [openReport, setOpenReport] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  //to change the color of the selected button
+  const location = useLocation();
+  const [activeLink, setActiveLink] = useState(location.pathname);
+
+  // Handler to set the active link
+  const handleClick = (path) => {
+    setActiveLink(path);
+  };
 
   const { role, loading } = useAuthContext();
 
@@ -74,8 +84,8 @@ const Sidebar = () => {
   return (
     <Box
       sx={{
-        width: "100%", // Ensures the Box takes full width of the Drawer
-        // height: "100%",
+        width: "100%",
+        height: "100vh",
         display: "flex",
         flexDirection: "column",
       }}
@@ -86,9 +96,14 @@ const Sidebar = () => {
         sx={{
           width: "15%", // This should match the sidebar width in Layout
           flexShrink: 0,
+          height: "100%",
           "& .MuiDrawer-paper": {
-            width: "15%", // Ensure the Drawer paper is also set to the correct width
+            width: "15%",
+            height: "100%",
             boxSizing: "border-box",
+            overflowY: "auto",
+            backgroundColor: theme.palette.background.paper,
+            borderRight: `1px solid ${theme.palette.divider}`,
           },
         }}
       >
@@ -156,6 +171,22 @@ const Sidebar = () => {
                           />
                         ),
                       },
+                      {
+                        text: "Transaction",
+                        path: "/transaction",
+                        icon: (
+                          <CurrencyExchange
+                            sx={{ color: theme.palette.primary.main }}
+                          />
+                        ),
+                      },
+                      {
+                        text: "Links",
+                        path: "/links",
+                        icon: (
+                          <Link sx={{ color: theme.palette.primary.main }} />
+                        ),
+                      },
 
                       ...(role === "admin" || role === "superadmin"
                         ? [
@@ -164,15 +195,6 @@ const Sidebar = () => {
                               path: "/analytics",
                               icon: (
                                 <Analytics
-                                  sx={{ color: theme.palette.primary.main }}
-                                />
-                              ),
-                            },
-                            {
-                              text: "Power BI",
-                              path: "/powerBI",
-                              icon: (
-                                <Storage
                                   sx={{ color: theme.palette.primary.main }}
                                 />
                               ),
