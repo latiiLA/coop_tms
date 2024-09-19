@@ -244,6 +244,7 @@ const UserProfile = () => {
                         label="First Name"
                         variant="outlined"
                         fullWidth
+                        disabled
                         error={touched.firstName && !!errors.firstName}
                         helperText={<ErrorMessage name="firstName" />}
                       />
@@ -253,6 +254,7 @@ const UserProfile = () => {
                         label="Father Name"
                         variant="outlined"
                         fullWidth
+                        disabled
                         error={touched.fatherName && !!errors.fatherName}
                         helperText={<ErrorMessage name="fatherName" />}
                       />
@@ -263,6 +265,7 @@ const UserProfile = () => {
                         label="GrandFather Name"
                         variant="outlined"
                         fullWidth
+                        disabled
                         error={touched.gfatherName && !!errors.gfatherName}
                         helperText={<ErrorMessage name="gfatherName" />}
                       />
