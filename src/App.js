@@ -34,7 +34,9 @@ import Analytics from "./pages/dashboard/Analytics";
 import Feedback from "./components/Feedback";
 import ViewFeedback from "./components/ViewFeedback";
 import ViewBugs from "./components/ViewBugs";
-import PowerBI from "./pages/Reports/PowerBI";
+import Transaction from "./pages/Reports/Transaction";
+import ViewTransaction from "./pages/Reports/ViewTransaction";
+import Links from "./pages/Reports/Links";
 
 // Protect routes based on role
 const ProtectedRoutes = ({ requiredRole }) => {
@@ -129,7 +131,9 @@ function App() {
             <Route path="/viewdetail" element={<ViewATMDetail />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/feedback" element={<Feedback />} />
-            <Route path="/powerBI" element={<PowerBI />} />
+            <Route path="/links" element={<Links />} />
+            <Route path="/transaction" element={<Transaction />} />
+            <Route path="/viewtransaction" element={<ViewTransaction />} />
           </Route>
 
           {/* Admin Routes */}
