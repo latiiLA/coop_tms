@@ -11,11 +11,13 @@ export const useAuthContext = () => {
 export const AuthContextProvider = ({ children }) => {
   const navigate = useNavigate();
   const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const fetchRole = async () => {
       const token = localStorage.getItem("token");
+
       if (token) {
         try {
           const apiUrl = process.env.REACT_APP_API_URL;
@@ -25,19 +27,21 @@ export const AuthContextProvider = ({ children }) => {
             },
             withCredentials: true,
           });
-          setRole(response.data.role);
+          setCurrentUser(response.data.user);
+          setRole(response.data.user.role);
         } catch (error) {
-          // console.error("Failed to fetch user information:", error);
-          setRole(null); // Set role to null if no token is found
+          setRole(null);
+          setCurrentUser(null);
           navigate("/login", { replace: true });
         }
       } else {
-        // console.warn("Token not found in localStorage.");
-        setRole(null); // Set role to null if no token is found
+        setRole(null);
+        setCurrentUser(null);
         navigate("/login");
       }
-      setLoading(false); // Set loading to false after fetching
+      setLoading(false);
     };
+
     fetchRole();
 
     const handleStorageChange = () => {
@@ -48,10 +52,10 @@ export const AuthContextProvider = ({ children }) => {
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, [navigate, role, setRole]); // Ensure this effect runs on mount
+  }, [navigate]);
 
   return (
-    <AuthContext.Provider value={{ role, setRole, loading }}>
+    <AuthContext.Provider value={{ currentUser, role, setRole, loading }}>
       {children}
     </AuthContext.Provider>
   );
