@@ -12,7 +12,7 @@ const WelcomeText = styled(Typography)(({ theme }) => ({
 
 const IntroText = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(4),
-  fontSize: "1.2rem",
+  fontSize: "1rem",
   color: theme.palette.text.secondary,
   lineHeight: 1.5,
   maxWidth: "800px",
@@ -36,10 +36,10 @@ const Home = () => {
           textAlign: "center",
         }}
       >
-        <WelcomeText variant="h1">Welcome to COOP TMS.</WelcomeText>
+        <WelcomeText variant="h4">Welcome to COOP TMS.</WelcomeText>
       </Box>
       <Box>
-        <IntroText variant="h4">
+        <IntroText variant="h5">
           Automate workflows effortlessly by centralizing data and enabling
           seamless data sharing. Simplify tasks, enhance clarity, and minimize
           errors with comprehensive tools.
