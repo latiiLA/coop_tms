@@ -31,6 +31,51 @@ export default function ViewUsers() {
   const [selectedRowId, setSelectedRowId] = useState(null);
   const apiUrl = process.env.REACT_APP_API_URL;
 
+  // State to store the name of the user who created the terminal
+  // const [createdByName, setCreatedByName] = useState("default");
+  // const handleUsersName = async (userId) => {
+  //   const token = localStorage.getItem("token");
+
+  //   if (!token) {
+  //     toast.error("User is not authenticated");
+  //     navigate("/home");
+  //     return null; // Exit the function if no token is found
+  //   }
+
+  //   try {
+  //     const apiUrl = process.env.REACT_APP_API_URL;
+  //     const response = await axios.get(
+  //       `${apiUrl}/auth/getUsersName`, // Use the correct endpoint
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         params: { userId }, // Pass userId as a query parameter
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     return response.data.usersName; // Return the fetched user's name
+  //   } catch (error) {
+  //     if (error.response?.data?.message) {
+  //       toast.error(error.response.data.message);
+  //     } else {
+  //       toast.error(error.message);
+  //     }
+
+  //     return null; // Signal failure with a return value
+  //   }
+  // };
+  // useEffect(() => {
+  //   const fetchCreatedByName = async () => {
+  //     console.log("from row", dataRows);
+  //     const userName = await handleUsersName(dataRows.createdBy);
+  //     console.log("username after fetch", userName);
+  //     setCreatedByName(userName);
+  //   };
+
+  //   fetchCreatedByName();
+  // }, [handleUsersName]);
+
   const handleClickOpen = (rowId) => {
     setSelectedRowId(rowId);
     setOpen(true);
@@ -130,9 +175,11 @@ export default function ViewUsers() {
     }
   };
 
+  // console.log("created by", createdByName);
+
   const columns = [
     { field: "id", headerName: "No", flex: 0.1 },
-    { field: "username", headerName: "Username", flex: 0.5 },
+    { field: "username", headerName: "Username", flex: 0.4 },
     {
       field: "fullName",
       headerName: "Full name",
@@ -141,18 +188,18 @@ export default function ViewUsers() {
         `${row.firstName || ""} ${row.fatherName || ""} ${
           row.gfatherName || ""
         }`,
-      flex: 1,
+      flex: 0.6,
     },
-    { field: "department", headerName: "Department", flex: 0.5 },
-    { field: "role", headerName: "Role", flex: 0.5 },
-    { field: "createdBy", headerName: "createdBy", flex: 1 },
-    { field: "createdAt", headerName: "Date Created", flex: 1 },
-    { field: "status", headerName: "Status", flex: 0.5 },
-    { field: "wrongPasswordCount", headerName: "Login Failure", flex: 0.5 },
+    { field: "department", headerName: "Department", flex: 0.4 },
+    { field: "role", headerName: "Role", flex: 0.4 },
+    { field: "createdBy", headerName: "createdBy", flex: 0.6 },
+    { field: "createdAt", headerName: "Date Created", flex: 0.3 },
+    { field: "status", headerName: "Status", flex: 0.3 },
+    { field: "wrongPasswordCount", headerName: "WrongPwd", flex: 0.3 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 0.5,
+      flex: 0.4,
       renderCell: (params) => (
         <Box
           sx={{
@@ -160,7 +207,7 @@ export default function ViewUsers() {
             justifyContent: "space-around",
             alignItems: "center",
             height: "100%", // Ensure the Box takes the full height of the cell
-            width: "100%",
+            // width: "100%",
             margin: "auto",
           }}
         >
@@ -256,12 +303,8 @@ export default function ViewUsers() {
 
   return (
     <Box>
-      <Box>
-        <Typography variant="h4">User Management</Typography>
-      </Box>
       <Box
         sx={{
-          width: "100%",
           "& .super-app-theme--header": {
             backgroundColor: "#0693e3",
           },
@@ -273,6 +316,7 @@ export default function ViewUsers() {
             backgroundColor: "#0693e3",
             color: "#fff",
           },
+          margin: 1,
         }}
       >
         <DataGrid
