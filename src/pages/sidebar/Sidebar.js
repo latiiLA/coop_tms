@@ -12,6 +12,7 @@ import {
   Box,
   Collapse,
   IconButton,
+  styled,
 } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -43,25 +44,41 @@ import {
   BugReport,
   ReportProblem,
   CurrencyExchange,
+  PointOfSale,
+  AddCircle,
+  Explore,
+  AtmOutlined,
+  QuestionMark,
+  ChevronRight,
+  ChevronLeft,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { MdMoving, MdSend, MdFiberNew } from "react-icons/md";
+import { TbStatusChange } from "react-icons/tb";
 
 const Sidebar = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const [openAdmin, setOpenAdmin] = useState(true);
-  const [openReport, setOpenReport] = useState(true);
+  const [openAdmin, setOpenAdmin] = useState(false);
+  const [openReport, setOpenReport] = useState(false);
+  const [openPOSAdmin, setOpenPOSAdmin] = useState(false);
+  const [openATMAdmin, setOpenATMAdmin] = useState(false);
+  const [openRequest, setRequest] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [open, setOpen] = useState(true);
 
-  //to change the color of the selected button
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  // to change the color of the selected button
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
-
-  // Handler to set the active link
-  const handleClick = (path) => {
-    setActiveLink(path);
-  };
 
   const { role, loading } = useAuthContext();
 
@@ -77,9 +94,29 @@ const Sidebar = () => {
     setOpenReport(!openReport);
   };
 
+  const handlePOSAdminClick = () => {
+    setOpenPOSAdmin(!openPOSAdmin);
+  };
+
+  const handleATMAdminClick = () => {
+    setOpenATMAdmin(!openATMAdmin);
+  };
+  const handleRequestClick = () => {
+    setRequest(!openRequest);
+  };
+
   if (loading) {
     return <LoadingSpinner />;
   }
+
+  const DrawerHeader = styled("div")(({ theme }) => ({
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: "flex-end",
+  }));
 
   return (
     <Box
@@ -91,25 +128,43 @@ const Sidebar = () => {
       }}
     >
       <Drawer
-        variant="permanent"
+        open={open}
+        variant="persistent"
         anchor="left"
         sx={{
-          width: "15%", // This should match the sidebar width in Layout
-          flexShrink: 0,
-          height: "100%",
+          width: open ? "240px" : "0px",
+          transition: theme.transitions.create(["width"], {
+            duration: theme.transitions.duration.enteringScreen,
+          }),
           "& .MuiDrawer-paper": {
-            width: "15%",
-            height: "100%",
-            boxSizing: "border-box",
+            width: open ? "240px" : "0px",
             overflowY: "auto",
             backgroundColor: theme.palette.background.paper,
             borderRight: `1px solid ${theme.palette.divider}`,
           },
         }}
       >
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === "ltr" ? <ChevronLeft /> : <ChevronRight />}
+          </IconButton>
+        </DrawerHeader>
         <Toolbar>
+          {/* <IconButton
+            aria-label={open ? "close drawer" : "open drawer"}
+            onClick={open ? handleDrawerClose : handleDrawerOpen}
+            edge="start"
+            sx={{
+              color: theme.palette.primary.main,
+            }}
+          >
+            {open ? <CloseIcon /> : <MenuIcon />}
+          </IconButton> */}
           <HomeLink />
-          <Typography variant="h4" sx={{ color: theme.palette.primary.main }}>
+          <Typography
+            variant="h4"
+            sx={{ color: theme.palette.primary.main, ml: 2 }}
+          >
             TMS
           </Typography>
         </Toolbar>
@@ -124,6 +179,11 @@ const Sidebar = () => {
             {
               text: "Dashboard",
               path: "/dashboard",
+              icon: <Dashboard sx={{ color: theme.palette.primary.main }} />,
+            },
+            {
+              text: "POS Dashboard",
+              path: "/posdashboard",
               icon: <Dashboard sx={{ color: theme.palette.primary.main }} />,
             },
             ...(role === "user"
@@ -171,15 +231,7 @@ const Sidebar = () => {
                           />
                         ),
                       },
-                      {
-                        text: "Transaction",
-                        path: "/transaction",
-                        icon: (
-                          <CurrencyExchange
-                            sx={{ color: theme.palette.primary.main }}
-                          />
-                        ),
-                      },
+
                       {
                         text: "Links",
                         path: "/links",
@@ -188,8 +240,17 @@ const Sidebar = () => {
                         ),
                       },
 
-                      ...(role === "admin" || role === "superadmin"
+                      ...(role === "superadmin"
                         ? [
+                            {
+                              text: "Transaction",
+                              path: "/transaction",
+                              icon: (
+                                <CurrencyExchange
+                                  sx={{ color: theme.palette.primary.main }}
+                                />
+                              ),
+                            },
                             {
                               text: "Analytics",
                               path: "/analytics",
@@ -235,6 +296,279 @@ const Sidebar = () => {
             )
           )}
 
+          {(role === "user" || role === "superadmin") && (
+            <React.Fragment key="request">
+              <ListItem disablePadding>
+                <ListItemButton onClick={handleRequestClick}>
+                  <ListItemIcon>
+                    <Box
+                      sx={{
+                        color: theme.palette.primary.main,
+                        fontSize: "20px",
+                      }}
+                    >
+                      <MdSend />
+                    </Box>
+                  </ListItemIcon>
+                  {!isCollapsed && (
+                    <ListItemText
+                      primary="Requests"
+                      sx={{ color: theme.palette.text.primary }}
+                    />
+                  )}
+                  {openRequest ? (
+                    <ExpandLess sx={{ color: theme.palette.text.primary }} />
+                  ) : (
+                    <ExpandMore sx={{ color: theme.palette.text.primary }} />
+                  )}
+                </ListItemButton>
+              </ListItem>
+              <Collapse in={openRequest} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {[
+                    {
+                      text: "Explore POS",
+                      path: "/managepos",
+                      icon: (
+                        <Explore sx={{ color: theme.palette.primary.main }} />
+                      ),
+                    },
+                    {
+                      text: "Request POS",
+                      path: "/request",
+                      icon: (
+                        <Box
+                          sx={{
+                            color: theme.palette.primary.main,
+                            fontSize: "20px",
+                          }}
+                        >
+                          <MdFiberNew />
+                        </Box>
+                      ),
+                    },
+                    {
+                      text: "Relocate POS",
+                      path: "/relocate",
+                      icon: (
+                        <Box
+                          sx={{
+                            color: theme.palette.primary.main,
+                            fontSize: "20px",
+                          }}
+                        >
+                          <MdMoving />
+                        </Box>
+                      ),
+                    },
+                    {
+                      text: "Request Status",
+                      path: "/requeststatus",
+                      icon: (
+                        <Box
+                          sx={{
+                            color: theme.palette.primary.main,
+                            fontSize: "20px",
+                          }}
+                        >
+                          <TbStatusChange />
+                        </Box>
+                      ),
+                    },
+                  ].map((subItem) => (
+                    <ListItem key={subItem.text} disablePadding>
+                      <ListItemButton
+                        sx={{ pl: 4 }}
+                        onClick={() => navigate(subItem.path)}
+                      >
+                        <ListItemIcon>{subItem.icon}</ListItemIcon>
+                        {!isCollapsed && (
+                          <ListItemText
+                            primary={subItem.text}
+                            sx={{ color: theme.palette.text.primary }}
+                          />
+                        )}
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            </React.Fragment>
+          )}
+
+          {(role === "admin" || role === "superadmin") && (
+            <React.Fragment key="posadministration">
+              <ListItem disablePadding>
+                <ListItemButton onClick={handlePOSAdminClick}>
+                  <ListItemIcon>
+                    <PointOfSale sx={{ color: theme.palette.primary.main }} />
+                  </ListItemIcon>
+                  {!isCollapsed && (
+                    <ListItemText
+                      primary="POS Admin"
+                      sx={{ color: theme.palette.text.primary }}
+                    />
+                  )}
+                  {openPOSAdmin ? (
+                    <ExpandLess sx={{ color: theme.palette.text.primary }} />
+                  ) : (
+                    <ExpandMore sx={{ color: theme.palette.text.primary }} />
+                  )}
+                </ListItemButton>
+              </ListItem>
+              <Collapse in={openPOSAdmin} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {[
+                    {
+                      text: "Create POS",
+                      path: "/addpos",
+                      icon: (
+                        <AddCircle sx={{ color: theme.palette.primary.main }} />
+                      ),
+                    },
+                    {
+                      text: "Manage POS",
+                      path: "/managepos",
+                      icon: (
+                        <Explore sx={{ color: theme.palette.primary.main }} />
+                      ),
+                    },
+                    {
+                      text: "Relocated POS",
+                      path: "/relocatedpos",
+                      icon: (
+                        <Box
+                          sx={{
+                            color: theme.palette.primary.main,
+                            fontSize: "20px",
+                          }}
+                        >
+                          <MdMoving />
+                        </Box>
+                      ),
+                    },
+                    {
+                      text: "POS Requests",
+                      path: "/viewrequests",
+                      icon: (
+                        <Box
+                          sx={{
+                            color: theme.palette.primary.main,
+                            fontSize: "20px",
+                          }}
+                        >
+                          <TbStatusChange />
+                        </Box>
+                      ),
+                    },
+                  ].map((subItem) => (
+                    <ListItem key={subItem.text} disablePadding>
+                      <ListItemButton
+                        sx={{ pl: 4 }}
+                        onClick={() => navigate(subItem.path)}
+                      >
+                        <ListItemIcon>{subItem.icon}</ListItemIcon>
+                        {!isCollapsed && (
+                          <ListItemText
+                            primary={subItem.text}
+                            sx={{ color: theme.palette.text.primary }}
+                          />
+                        )}
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            </React.Fragment>
+          )}
+          {(role === "admin" || role === "superadmin") && (
+            <React.Fragment key="atmadministration">
+              <ListItem disablePadding>
+                <ListItemButton onClick={handleATMAdminClick}>
+                  <ListItemIcon>
+                    <AtmOutlined sx={{ color: theme.palette.primary.main }} />
+                  </ListItemIcon>
+                  {!isCollapsed && (
+                    <ListItemText
+                      primary="ATM Admin"
+                      sx={{ color: theme.palette.text.primary }}
+                    />
+                  )}
+                  {openATMAdmin ? (
+                    <ExpandLess sx={{ color: theme.palette.text.primary }} />
+                  ) : (
+                    <ExpandMore sx={{ color: theme.palette.text.primary }} />
+                  )}
+                </ListItemButton>
+              </ListItem>
+              <Collapse in={openATMAdmin} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {[
+                    {
+                      text: "Manage ATM",
+                      path: "/manageterminal",
+                      icon: (
+                        <ManageSearch
+                          sx={{ color: theme.palette.primary.main }}
+                        />
+                      ),
+                    },
+                    {
+                      text: "Relocated ATM",
+                      path: "/relocatedterminal",
+                      icon: (
+                        <Archive sx={{ color: theme.palette.primary.main }} />
+                      ),
+                    },
+                    {
+                      text: "Create ATM",
+                      path: "/add",
+                      icon: <Add sx={{ color: theme.palette.primary.main }} />,
+                    },
+                    {
+                      text: "Create Port",
+                      path: "/ports",
+                      icon: (
+                        <Outlet sx={{ color: theme.palette.primary.main }} />
+                      ),
+                    },
+                    {
+                      text: "Manage Port",
+                      path: "/viewports",
+                      icon: (
+                        <SettingsInputComposite
+                          sx={{ color: theme.palette.primary.main }}
+                        />
+                      ),
+                    },
+                    {
+                      text: "Branch Code",
+                      path: "/viewbranch",
+                      icon: (
+                        <ListAlt sx={{ color: theme.palette.primary.main }} />
+                      ),
+                    },
+                  ].map((subItem) => (
+                    <ListItem key={subItem.text} disablePadding>
+                      <ListItemButton
+                        sx={{ pl: 4 }}
+                        onClick={() => navigate(subItem.path)}
+                      >
+                        <ListItemIcon>{subItem.icon}</ListItemIcon>
+                        {!isCollapsed && (
+                          <ListItemText
+                            primary={subItem.text}
+                            sx={{ color: theme.palette.text.primary }}
+                          />
+                        )}
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            </React.Fragment>
+          )}
+
           {(role === "admin" || role === "superadmin") && (
             <React.Fragment key="Administration">
               <ListItem disablePadding>
@@ -260,11 +594,6 @@ const Sidebar = () => {
               <Collapse in={openAdmin} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   {[
-                    {
-                      text: "Create ATM",
-                      path: "/add",
-                      icon: <Add sx={{ color: theme.palette.primary.main }} />,
-                    },
                     ...(role === "superadmin"
                       ? [
                           {
@@ -278,29 +607,7 @@ const Sidebar = () => {
                           },
                         ]
                       : []),
-                    {
-                      text: "Create Port",
-                      path: "/ports",
-                      icon: (
-                        <Outlet sx={{ color: theme.palette.primary.main }} />
-                      ),
-                    },
-                    {
-                      text: "Manage ATM",
-                      path: "/manageterminal",
-                      icon: (
-                        <ManageSearch
-                          sx={{ color: theme.palette.primary.main }}
-                        />
-                      ),
-                    },
-                    {
-                      text: "Relocated ATM",
-                      path: "/relocatedterminal",
-                      icon: (
-                        <Archive sx={{ color: theme.palette.primary.main }} />
-                      ),
-                    },
+
                     {
                       text: "Manage User",
                       path: "/viewuser",
@@ -310,22 +617,7 @@ const Sidebar = () => {
                         />
                       ),
                     },
-                    {
-                      text: "Manage Port",
-                      path: "/viewports",
-                      icon: (
-                        <SettingsInputComposite
-                          sx={{ color: theme.palette.primary.main }}
-                        />
-                      ),
-                    },
-                    {
-                      text: "Branch Code",
-                      path: "/viewbranch",
-                      icon: (
-                        <ListAlt sx={{ color: theme.palette.primary.main }} />
-                      ),
-                    },
+
                     {
                       text: "Feedback",
                       path: "/feedback",
