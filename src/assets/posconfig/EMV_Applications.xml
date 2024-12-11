@@ -1,0 +1,1431 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no" ?>
+<ApplicationData>
+    <Application AID="A0000000031010">
+        <VerNum>0096</VerNum>
+        <AppName>Visa</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000031020">
+        <VerNum>0096</VerNum>
+        <AppName>Visa</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+		<CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000032010">
+        <VerNum>0096</VerNum>
+        <AppName>Visa Electron</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000033010">
+        <VerNum>0096</VerNum>
+        <AppName>Visa Interlink</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000038010">
+        <VerNum>0096</VerNum>
+        <AppName>Visa Plus</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000032020">
+        <VerNum>0096</VerNum>
+        <AppName>VPAY</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000041010">
+        <VerNum>0002</VerNum>
+        <AppName>Mastercard</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>FE50BCF800</TAC_Online>
+        <TAC_Default>FE50BCA000</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTagsTRM>9F530152</AdditionalTagsTRM>
+        <Taglist>008E</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>0000000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000042010">
+        <VerNum>0002</VerNum>
+        <AppName>Mastercard</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>FE50BCF800</TAC_Online>
+        <TAC_Default>FE50BCA000</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTagsTRM>9F530152</AdditionalTagsTRM>
+        <Taglist>008E</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>0000000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000043060">
+        <VerNum>0002</VerNum>
+        <AppName>Maestro</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>FE50BCF800</TAC_Online>
+        <TAC_Default>FE50BCA000</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTagsTRM>9F530152</AdditionalTagsTRM>
+        <Taglist>008E</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>0000000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000043010">
+        <VerNum>0002</VerNum>
+        <AppName>Mastercard</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>FE50BCF800</TAC_Online>
+        <TAC_Default>FE50BCA000</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTagsTRM>9F530152</AdditionalTagsTRM>
+        <Taglist>008E</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>0000000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+
+    <!--  <Application AID="A000000025010403"> --> <!-- i added 0403 to the end to see if selection will work. worked when ASI=01-->
+    <!--  <Application AID="A00000002501"> --> <!-- AID="A00000002501 and ASI=00 didnt work. it falls back  -->
+    <!--  <Application AID="A00000002501"> --> <!-- AID="A00000002501 and ASI=01 didnt work. it falls back  -->
+
+    <Application AID="A000000025">
+        <VerNum>0001</VerNum>
+        <AppName>AMEX</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DE00FC9800</TAC_Online>
+        <TAC_Default>DC50FC9800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>35</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000250000">
+        <VerNum>0001</VerNum>
+        <AppName>AMEX</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DE00FC9800</TAC_Online>
+        <TAC_Default>DC50FC9800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>35</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A00000002501">
+        <VerNum>0001</VerNum>
+        <AppName>AMEX</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DE00FC9800</TAC_Online>
+        <TAC_Default>DC50FC9800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>35</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A000000025010403">
+        <VerNum>0001</VerNum>
+        <AppName>AMEX</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DE00FC9800</TAC_Online>
+        <TAC_Default>DC50FC9800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>35</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000250402">
+        <VerNum>0001</VerNum>
+        <AppName>AMEX</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>0000000000</TAC_Online>
+        <TAC_Default>0000000000</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>35</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+
+    <!--  <Application AID="A000000333010102"> --> <!-- added 02 at the end to see if it will do the selection. worked when ASI=01 -->
+    <!--   <Application AID="A0000003330101"> --> <!-- A0000003330101 and ASI=00 didnt work. it falls back   -->
+    <!--   <Application AID="A0000003330101"> --> <!-- A0000003330101 and ASI=01 didnt work. it falls back   -->
+
+    <Application AID="A0000003330101">
+        <VerNum>0020</VerNum>
+        <AppName>CUP</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>99</TargetPercentage>
+        <MaxTargetPercentage>99</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>D84004F800</TAC_Online>
+        <TAC_Default>D84000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A000000333010101">
+        <VerNum>0020</VerNum>
+        <AppName>CUP</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>99</TargetPercentage>
+        <MaxTargetPercentage>99</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>D84004F800</TAC_Online>
+        <TAC_Default>D84000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A000000333010102">
+        <VerNum>0020</VerNum>
+        <AppName>CUP</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>99</TargetPercentage>
+        <MaxTargetPercentage>99</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>D84004F800</TAC_Online>
+        <TAC_Default>D84000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A000000333010103">
+        <VerNum>0020</VerNum>
+        <AppName>CUP</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>99</TargetPercentage>
+        <MaxTargetPercentage>99</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>D84004F800</TAC_Online>
+        <TAC_Default>D84000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A000000333010106">
+        <VerNum>0020</VerNum>
+        <AppName>CUP</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>99</TargetPercentage>
+        <MaxTargetPercentage>99</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>D84004F800</TAC_Online>
+        <TAC_Default>D84000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A000000333010108">
+        <VerNum>0020</VerNum>
+        <AppName>CUP</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>99</TargetPercentage>
+        <MaxTargetPercentage>99</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>D84004F800</TAC_Online>
+        <TAC_Default>D84000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+
+    <Application AID="A0000001523010">
+        <VerNum>0001</VerNum>
+        <AppName>DCI</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>FC50BCF800</TAC_Online>
+        <TAC_Default>FC50BCA000</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000002591010">
+        <VerNum>0002</VerNum>
+        <AppName>MERCURY</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00001000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>FC50BCF800</TAC_Online>
+        <TAC_Default>FC50BCA000</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A000000627">
+        <VerNum>0002</VerNum>
+        <AppName>EthSwitch</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000009210002">
+        <VerNum>0011</VerNum>
+        <AppName>COOP PREPIAD</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000009210001">
+        <VerNum>0011</VerNum>
+        <AppName>COOP DEBIT</AppName>
+        <ASI>01</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A000000025010402">
+        <VerNum>0001</VerNum>
+        <AppName>AMEX</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>DE00FC9800</TAC_Online>
+        <TAC_Default>DC50FC9800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist />
+        <AppTermCap>E0F8C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>35</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>BE3FB52A</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000000650000">
+        <VerNum>0003</VerNum>
+        <AppName>WEGAGEN</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+    <Application AID="A0000008210001">
+        <VerNum>0002</VerNum>
+        <AppName>ZEMEN</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0200498000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+	<Application AID="D231CBE00001">
+        <VerNum>0011</VerNum>
+        <AppName>CBE</AppName>
+        <ASI>00</ASI>
+        <BrKey>5999</BrKey>
+        <TermIdent>3132333435363738</TermIdent>
+        <FloorLimit>00000000</FloorLimit>
+        <Threshold>00000000</Threshold>
+        <TargetPercentage>00</TargetPercentage>
+        <MaxTargetPercentage>00</MaxTargetPercentage>
+        <TAC_Denial>0000000000</TAC_Denial>
+        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Default>DC4000A800</TAC_Default>
+        <EMV_Application>01</EMV_Application>
+        <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <MerchIdent>202020202020202020202020202020</MerchIdent>
+        <CDA_Processing>00</CDA_Processing>
+        <AC_BeforeAfter>00</AC_BeforeAfter>
+        <POS_EntryMode>05</POS_EntryMode>
+        <AdditionalTags>
+            000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        </AdditionalTags>
+        <Taglist>00579F08</Taglist>
+        <AppTermCap>E040C8</AppTermCap>
+        <Capabilities_belowLimit>000000</Capabilities_belowLimit>
+        <Additional_Versions_No />
+        <Security_Limit>00000000</Security_Limit>
+        <AppFlowCap>271D170400
+        </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
+        <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
+        <CountryCodeTerm>0231</CountryCodeTerm>
+        <CurrencyData>0230</CurrencyData>
+        <AppTermAddCap>F000F0A001</AppTermAddCap>
+        <AppTerminalType>22</AppTerminalType>
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <AID_Prio />
+        <FallbackMIDs>000000</FallbackMIDs>
+        <SpecialTRX>2120110000000000</SpecialTRX>
+        <FallbackHandling>00</FallbackHandling>
+        <Customer_CVM>00</Customer_CVM>
+        <ChksumParams>1900000000</ChksumParams>
+        <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
+        <MasterAID />
+    </Application>
+</ApplicationData>

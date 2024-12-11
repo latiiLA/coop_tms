@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no" ?>
+<TerminalData>
+  <TermTyp>22</TermTyp>
+  <CountryCodeTerm>0784</CountryCodeTerm>
+  <CurrencyTrans>0784</CurrencyTrans>
+  <ExpTrans>02</ExpTrans>
+  <SuppLang>0100000000000000000000000000000000000000</SuppLang>
+  <IFD_SerialNumber>12345678</IFD_SerialNumber>
+  <FlowOptions>00000000000000000000</FlowOptions>
+  <MaxCTLSTranslimit>000186A0</MaxCTLSTranslimit> <!--000186A0 = 1000.00 AED , 00007530 = 300.00 AED-->
+  <BeepVolume>0032</BeepVolume>
+  <BeepFrequencySuccess>0000</BeepFrequencySuccess>
+  <BeepFrequencyAlert>0000</BeepFrequencyAlert>
+  <KernelVersion>L27.0.0l</KernelVersion>
+  <FrameworkVersion>01.00.00-rc1</FrameworkVersion>
+  <L1DriverVersion>123456</L1DriverVersion></TerminalData>

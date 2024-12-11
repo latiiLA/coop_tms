@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no" ?>
+<ApplicationData>
+  <Application AID="A0000000041010" KernelID="020000">
+    <ASI_DFAB02>00</ASI_DFAB02>
+    <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
+    <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
+    <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
+    <ChksumKernel_DFAB07>301A128D</ChksumKernel_DFAB07>
+    <RetapFieldOff_DFAB08>0A</RetapFieldOff_DFAB08>
+    <AdditionalTagsTRM_DFAB20></AdditionalTagsTRM_DFAB20>
+    <AdditionalTagsCRD_DFAB21></AdditionalTagsCRD_DFAB21>
+    <DefaultApplicationName_DFAB22>Mastercard</DefaultApplicationName_DFAB22>
+    <MasterCard>
+      <TermIdent_9F1C>3132333435363738</TermIdent_9F1C>
+      <TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
+      <TerminalType_9F35>22</TerminalType_9F35>
+      <AdditionalTerminalCapabilities_9F40>6000F0A001</AdditionalTerminalCapabilities_9F40>
+      <MagstripeCVM_aboveLimit_DF811E>20</MagstripeCVM_aboveLimit_DF811E> <!-- 60 -->
+      <MagstripeCVM_belowLimit_DF812C>00</MagstripeCVM_belowLimit_DF812C> <!-- 08 -->
+      <ChipCVM_aboveLimit_DF8118>60</ChipCVM_aboveLimit_DF8118>
+      <ChipCVM_belowLimit_DF8119>08</ChipCVM_belowLimit_DF8119>
+      <SecurityCapability_DF811F>68</SecurityCapability_DF811F>
+      <CardDataInputCapability_DF8117>E0</CardDataInputCapability_DF8117>
+      <FloorLimit_DF8123>000000000000</FloorLimit_DF8123>
+      <TransactionLimitNoOnDevice_DF8124>000000200000</TransactionLimitNoOnDevice_DF8124> <!-- 000000100001 --> <!-- 000000030001 = 300.01 AED -->
+      <TransactionLimitOnDevice_DF8125>000000200000</TransactionLimitOnDevice_DF8125> <!-- 000000100001 --> <!-- 000000030001 = 300.01 AED -->
+      <CVMRequiredLimit_DF8126>000000050000</CVMRequiredLimit_DF8126> <!-- 000000005000 --> <!-- 000000010000 = 100.00 AED -->
+	  <ChipVersionNumber_9F09>0002</ChipVersionNumber_9F09> <!-- original value was 0002000000000000000000000000000000000000 -->
+      <MSRVersionNumber_9F6D>FFFF</MSRVersionNumber_9F6D> <!-- Original value was empty -->
+      <KernelConfiguration_DF811B>30</KernelConfiguration_DF811B> <!-- it was 20 for for MCM04 T03S01, But for RRP, I changed it to 30 --> <!-- original value = 30 --> <!-- then I tried 20, for MCM04 T03S01, i changed to 60 -->
+      <TransactionCategoryCode_9F53>52</TransactionCategoryCode_9F53>
+      <TACDefault_DF8120>F45084800C</TACDefault_DF8120>
+      <TACDenial_DF8121>0000000000</TACDenial_DF8121>
+      <TACOnline_DF8122>F45084800C</TACOnline_DF8122>
+      <KernelID_DF810C>02</KernelID_DF810C>
+      <TerminalRiskManagementData_9F1D>6C00800000000000</TerminalRiskManagementData_9F1D> <!-- 64E8800000000000 was the original value. FAB asked to chage to 6C70800000000000 (Signature and Pin) -->
+      <MerchantCategoryCode_9F15>5999</MerchantCategoryCode_9F15>
+      <MerchantIdentifier_9F16></MerchantIdentifier_9F16>
+      <MerchantNameAndLocation_9F4E>Merchant name</MerchantNameAndLocation_9F4E>
+      <AcquirerIdentifier_9F01>000000000000</AcquirerIdentifier_9F01>
+      <HoldTimeValue_DF8130>0D</HoldTimeValue_DF8130>
+      <MessageHoldTime_DF812D>000013</MessageHoldTime_DF812D>
+      <TornTransactionLifetime_DF811C>0300</TornTransactionLifetime_DF811C>
+      <TornTransactionNumber_DF811D>00</TornTransactionNumber_DF811D>
+      <PhoneMessageTable_DF8131></PhoneMessageTable_DF8131>
+      <TagsToRead_DF8112></TagsToRead_DF8112>
+      <TagsToWriteBeforeGenAC_FF8102></TagsToWriteBeforeGenAC_FF8102>
+      <TagsToWriteAfterGenAC_FF8103></TagsToWriteAfterGenAC_FF8103>
+      <ProceedToFirstWriteFlag_DF8110>FE</ProceedToFirstWriteFlag_DF8110>
+      <DSRequestedOperatorID_9F5C>FFFFFFFFFFFFFFFF</DSRequestedOperatorID_9F5C>
+      <DETimeoutValue_DF8127>01F4</DETimeoutValue_DF8127>
+      <AppFlowCap_DFAB31>0200000000</AppFlowCap_DFAB31>
+      <RR_MinGracePeriod_DF8132>0014</RR_MinGracePeriod_DF8132>
+      <RR_MaxGracePeriod_DF8133>0032</RR_MaxGracePeriod_DF8133>
+      <RR_ExpTransTimeCAPDU_DF8134>0012</RR_ExpTransTimeCAPDU_DF8134>
+      <RR_ExpTransTimeRAPDU_DF8135>0018</RR_ExpTransTimeRAPDU_DF8135>
+      <RR_AccuracyThreshold_DF8136>012C</RR_AccuracyThreshold_DF8136>
+      <RR_TransTimeMismatchThreshold_DF8137>32</RR_TransTimeMismatchThreshold_DF8137>
+      <MerchantCustomData_9F7C>0102030405060708090A0B0C0D0E0F1011121300</MerchantCustomData_9F7C></MasterCard></Application>
+  <Application AID="A0000000043060" KernelID="020000">
+    <ASI_DFAB02>00</ASI_DFAB02>
+    <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
+    <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
+    <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
+    <ChksumKernel_DFAB07>301A128D</ChksumKernel_DFAB07>
+    <RetapFieldOff_DFAB08>0A</RetapFieldOff_DFAB08>
+    <AdditionalTagsTRM_DFAB20></AdditionalTagsTRM_DFAB20>
+    <AdditionalTagsCRD_DFAB21></AdditionalTagsCRD_DFAB21>
+    <DefaultApplicationName_DFAB22>Maestro</DefaultApplicationName_DFAB22>
+    <MasterCard>
+      <TermIdent_9F1C>3132333435363738</TermIdent_9F1C>
+      <TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
+      <TerminalType_9F35>22</TerminalType_9F35>
+      <AdditionalTerminalCapabilities_9F40>6000F0A001</AdditionalTerminalCapabilities_9F40>
+      <MagstripeCVM_aboveLimit_DF811E>20</MagstripeCVM_aboveLimit_DF811E> <!-- 40 -->
+      <MagstripeCVM_belowLimit_DF812C>00</MagstripeCVM_belowLimit_DF812C> <!-- 08 -->
+      <ChipCVM_aboveLimit_DF8118>40</ChipCVM_aboveLimit_DF8118>
+      <ChipCVM_belowLimit_DF8119>08</ChipCVM_belowLimit_DF8119>
+      <SecurityCapability_DF811F>48</SecurityCapability_DF811F>
+      <CardDataInputCapability_DF8117>E0</CardDataInputCapability_DF8117>
+      <FloorLimit_DF8123>000000000000</FloorLimit_DF8123>
+      <TransactionLimitNoOnDevice_DF8124>000000200000</TransactionLimitNoOnDevice_DF8124> <!-- 000000100001 --> <!-- 000000030001 = 300.01 AED -->
+      <TransactionLimitOnDevice_DF8125>000000200000</TransactionLimitOnDevice_DF8125> <!-- 000000100001 --> <!-- 000000030001 = 300.01 AED -->
+      <CVMRequiredLimit_DF8126>000000030000</CVMRequiredLimit_DF8126> <!-- 000000005000 --> <!-- 000000010000 = 100.00 AED -->
+      <ChipVersionNumber_9F09>0002</ChipVersionNumber_9F09> <!-- original value was 0002000000000000000000000000000000000000 -->
+      <MSRVersionNumber_9F6D>0001</MSRVersionNumber_9F6D> <!-- original value was 0001000000000000000000000000000000000000 -->
+      <KernelConfiguration_DF811B>B0</KernelConfiguration_DF811B> <!-- It was 20 for MCM04 T03S01, for RRP, I changed it to 30 and for MSI92 I changed to B0 --> <!-- Original value was A0 --> <!-- then I changed to 20, for MCM04 T03S01 I changed to 60 -->
+      <TransactionCategoryCode_9F53>52</TransactionCategoryCode_9F53>
+      <TACDefault_DF8120>F45004800C</TACDefault_DF8120>
+      <TACDenial_DF8121>0000800000</TACDenial_DF8121>
+      <TACOnline_DF8122>F45004800C</TACOnline_DF8122>
+      <KernelID_DF810C>02</KernelID_DF810C>
+      <TerminalRiskManagementData_9F1D>4C00800000000000</TerminalRiskManagementData_9F1D> <!-- 3rd byte test for MCM04 T3S1 changed from 80 to 00 --> <!-- 64E8800000000000 was the original value. FAB asked to change to 4C7080000000000000 (Online Pin Only) -->
+      <MerchantCategoryCode_9F15>5999</MerchantCategoryCode_9F15>
+      <MerchantIdentifier_9F16></MerchantIdentifier_9F16>
+      <MerchantNameAndLocation_9F4E></MerchantNameAndLocation_9F4E>
+      <AcquirerIdentifier_9F01>000000000000</AcquirerIdentifier_9F01>
+      <HoldTimeValue_DF8130>0D</HoldTimeValue_DF8130>
+      <MessageHoldTime_DF812D>000013</MessageHoldTime_DF812D>
+      <TornTransactionLifetime_DF811C>0300</TornTransactionLifetime_DF811C>
+      <TornTransactionNumber_DF811D>00</TornTransactionNumber_DF811D>
+      <PhoneMessageTable_DF8131></PhoneMessageTable_DF8131>
+      <TagsToRead_DF8112></TagsToRead_DF8112>
+      <TagsToWriteBeforeGenAC_FF8102></TagsToWriteBeforeGenAC_FF8102>
+      <TagsToWriteAfterGenAC_FF8103></TagsToWriteAfterGenAC_FF8103>
+      <ProceedToFirstWriteFlag_DF8110>FE</ProceedToFirstWriteFlag_DF8110>
+      <DSRequestedOperatorID_9F5C>FFFFFFFFFFFFFFFF</DSRequestedOperatorID_9F5C>
+      <DETimeoutValue_DF8127>01F4</DETimeoutValue_DF8127>
+      <AppFlowCap_DFAB31>0000000000</AppFlowCap_DFAB31>
+      <RR_MinGracePeriod_DF8132>0014</RR_MinGracePeriod_DF8132>
+      <RR_MaxGracePeriod_DF8133>0032</RR_MaxGracePeriod_DF8133>
+      <RR_ExpTransTimeCAPDU_DF8134>0012</RR_ExpTransTimeCAPDU_DF8134>
+      <RR_ExpTransTimeRAPDU_DF8135>0018</RR_ExpTransTimeRAPDU_DF8135>
+      <RR_AccuracyThreshold_DF8136>012C</RR_AccuracyThreshold_DF8136>
+      <RR_TransTimeMismatchThreshold_DF8137>32</RR_TransTimeMismatchThreshold_DF8137>
+      <MerchantCustomData_9F7C>0102030405060708090A0B0C0D0E0F1011121300</MerchantCustomData_9F7C></MasterCard></Application>
+  <Application AID="A0000000031010" KernelID="030000">
+    <ASI_DFAB02>00</ASI_DFAB02>
+    <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
+    <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
+    <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
+    <ChksumKernel_DFAB07>2FD4B4F18B6769E8813B7ACDA10E1125</ChksumKernel_DFAB07>
+    <RetapFieldOff_DFAB08>0A</RetapFieldOff_DFAB08>
+    <AdditionalTagsTRM_DFAB20></AdditionalTagsTRM_DFAB20>
+    <AdditionalTagsCRD_DFAB21></AdditionalTagsCRD_DFAB21>
+    <DefaultApplicationName_DFAB22>VISA</DefaultApplicationName_DFAB22>
+    <Visa>
+      <TermIdent_9F1C>3132333435363738</TermIdent_9F1C>
+      <TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
+      <TerminalType_9F35>22</TerminalType_9F35>
+      <TerminalTransactionQualifier_9F66>36004000</TerminalTransactionQualifier_9F66> <!--B6000000-->
+      <TerminalCapabilities_9F33>E0F8C8</TerminalCapabilities_9F33> <!--606848-->
+      <AdditionalTerminalCapabilities_9F40>6000F0A001</AdditionalTerminalCapabilities_9F40>
+      <VersionNumber_9F09>008DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</VersionNumber_9F09> <!-- original value was 008D000000000000000000000000000000000000 -->
+      <MerchantCategoryCode_9F15>5999</MerchantCategoryCode_9F15>
+      <MerchantIdentifier_9F16></MerchantIdentifier_9F16>
+      <MerchantNameAndLocation_9F4E></MerchantNameAndLocation_9F4E>
+      <TecSupport_DFAB30>01</TecSupport_DFAB30>
+      <AppFlowCap_DFAB31>0A00000000</AppFlowCap_DFAB31>
+      <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+      <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+      <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682620</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>00</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682612000003</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>01</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682612</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>02</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682600</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>03</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01></Visa></Application>
+  <Application AID="A0000000032010" KernelID="030000">
+    <ASI_DFAB02>00</ASI_DFAB02>
+    <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
+    <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
+    <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
+    <ChksumKernel_DFAB07>2FD4B4F18B6769E8813B7ACDA10E1125</ChksumKernel_DFAB07>
+    <RetapFieldOff_DFAB08>0A</RetapFieldOff_DFAB08>
+    <AdditionalTagsTRM_DFAB20></AdditionalTagsTRM_DFAB20>
+    <AdditionalTagsCRD_DFAB21></AdditionalTagsCRD_DFAB21>
+    <DefaultApplicationName_DFAB22>VISA Electron</DefaultApplicationName_DFAB22>
+    <Visa>
+      <TermIdent_9F1C>3132333435363738</TermIdent_9F1C>
+      <TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
+      <TerminalType_9F35>22</TerminalType_9F35>
+      <TerminalTransactionQualifier_9F66>36004000</TerminalTransactionQualifier_9F66> <!--B6000000-->
+      <TerminalCapabilities_9F33>E0F8C8</TerminalCapabilities_9F33> <!--606848-->
+      <AdditionalTerminalCapabilities_9F40>6000F0A001</AdditionalTerminalCapabilities_9F40>
+      <VersionNumber_9F09>008DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</VersionNumber_9F09> <!-- original value was 008D000000000000000000000000000000000000 -->
+      <MerchantCategoryCode_9F15>5999</MerchantCategoryCode_9F15>
+      <MerchantIdentifier_9F16></MerchantIdentifier_9F16>
+      <MerchantNameAndLocation_9F4E></MerchantNameAndLocation_9F4E>
+      <TecSupport_DFAB30>01</TecSupport_DFAB30>
+      <AppFlowCap_DFAB31>0A00000000</AppFlowCap_DFAB31>
+      <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+      <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+      <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682620</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>00</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682612000003</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>01</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682612</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>02</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682600</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>03</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01></Visa></Application>
+  <Application AID="A0000000033010" KernelID="030000">
+    <ASI_DFAB02>00</ASI_DFAB02>
+    <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
+    <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
+    <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
+    <ChksumKernel_DFAB07>2FD4B4F18B6769E8813B7ACDA10E1125</ChksumKernel_DFAB07>
+    <RetapFieldOff_DFAB08>0A</RetapFieldOff_DFAB08>
+    <AdditionalTagsTRM_DFAB20></AdditionalTagsTRM_DFAB20>
+    <AdditionalTagsCRD_DFAB21></AdditionalTagsCRD_DFAB21>
+    <DefaultApplicationName_DFAB22>VISA Interlink</DefaultApplicationName_DFAB22>
+    <Visa>
+      <TermIdent_9F1C>3132333435363738</TermIdent_9F1C>
+      <TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
+      <TerminalType_9F35>22</TerminalType_9F35>
+      <TerminalTransactionQualifier_9F66>36004000</TerminalTransactionQualifier_9F66> <!--B6000000-->
+      <TerminalCapabilities_9F33>E0F8C8</TerminalCapabilities_9F33> <!--606848-->
+      <AdditionalTerminalCapabilities_9F40>6000F0A001</AdditionalTerminalCapabilities_9F40>
+      <VersionNumber_9F09>008DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</VersionNumber_9F09> <!-- Original value was 008D000000000000000000000000000000000000 -->
+      <MerchantCategoryCode_9F15>5999</MerchantCategoryCode_9F15>
+      <MerchantIdentifier_9F16></MerchantIdentifier_9F16>
+      <MerchantNameAndLocation_9F4E></MerchantNameAndLocation_9F4E>
+      <TecSupport_DFAB30>01</TecSupport_DFAB30>
+      <AppFlowCap_DFAB31>0A00000000</AppFlowCap_DFAB31>
+      <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+      <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+      <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682620</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>00</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682612000003</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>01</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682612</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>02</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682600</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000030000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000010000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>03</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01></Visa></Application>
+  <Application AID="A0000000038010" KernelID="030000">
+    <ASI_DFAB02>00</ASI_DFAB02>
+    <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
+    <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
+    <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
+    <ChksumKernel_DFAB07>2FD4B4F18B6769E8813B7ACDA10E1125</ChksumKernel_DFAB07>
+    <RetapFieldOff_DFAB08>0A</RetapFieldOff_DFAB08>
+    <AdditionalTagsTRM_DFAB20></AdditionalTagsTRM_DFAB20>
+    <AdditionalTagsCRD_DFAB21></AdditionalTagsCRD_DFAB21>
+    <DefaultApplicationName_DFAB22>VISA Plus</DefaultApplicationName_DFAB22>
+    <Visa>
+      <TermIdent_9F1C>3132333435363738</TermIdent_9F1C>
+      <TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
+      <TerminalType_9F35>22</TerminalType_9F35>
+      <TerminalTransactionQualifier_9F66>36004000</TerminalTransactionQualifier_9F66> <!--B6000000-->
+      <TerminalCapabilities_9F33>E0F8C8</TerminalCapabilities_9F33> <!--606848-->
+      <AdditionalTerminalCapabilities_9F40>6000F0A001</AdditionalTerminalCapabilities_9F40>
+      <VersionNumber_9F09>008DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</VersionNumber_9F09> <!-- original value was 008D000000000000000000000000000000000000 -->
+      <MerchantCategoryCode_9F15>5999</MerchantCategoryCode_9F15>
+      <MerchantIdentifier_9F16></MerchantIdentifier_9F16>
+      <MerchantNameAndLocation_9F4E></MerchantNameAndLocation_9F4E>
+      <TecSupport_DFAB30>01</TecSupport_DFAB30>
+      <AppFlowCap_DFAB31>0A00000000</AppFlowCap_DFAB31>
+      <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+      <ContactlessTransactionLimit_DFAB41>000000030001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+      <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682620</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000030001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>00</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682612000003</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000030001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>01</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682612</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000030001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>02</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682600</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000030001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>03</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01></Visa></Application>
+  <Application AID="A0000000032020" KernelID="030000">
+    <ASI_DFAB02>00</ASI_DFAB02>
+    <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
+    <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
+    <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
+    <ChksumKernel_DFAB07>2FD4B4F18B6769E8813B7ACDA10E1125</ChksumKernel_DFAB07>
+    <RetapFieldOff_DFAB08>0A</RetapFieldOff_DFAB08>
+    <AdditionalTagsTRM_DFAB20></AdditionalTagsTRM_DFAB20>
+    <AdditionalTagsCRD_DFAB21></AdditionalTagsCRD_DFAB21>
+    <DefaultApplicationName_DFAB22>VISA VPAY</DefaultApplicationName_DFAB22>
+    <Visa>
+      <TermIdent_9F1C>3132333435363738</TermIdent_9F1C>
+      <TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
+      <TerminalType_9F35>22</TerminalType_9F35>
+      <TerminalTransactionQualifier_9F66>36004000</TerminalTransactionQualifier_9F66> <!--B6000000-->
+      <TerminalCapabilities_9F33>E0F8C8</TerminalCapabilities_9F33> <!--606848-->
+      <AdditionalTerminalCapabilities_9F40>6000F0A001</AdditionalTerminalCapabilities_9F40>
+      <VersionNumber_9F09>008DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</VersionNumber_9F09>
+      <MerchantCategoryCode_9F15>5999</MerchantCategoryCode_9F15>
+      <MerchantIdentifier_9F16></MerchantIdentifier_9F16>
+      <MerchantNameAndLocation_9F4E></MerchantNameAndLocation_9F4E>
+      <TecSupport_DFAB30>01</TecSupport_DFAB30>
+      <AppFlowCap_DFAB31>0A00000000</AppFlowCap_DFAB31>
+      <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+      <ContactlessTransactionLimit_DFAB41>000000030001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+      <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682620</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000030001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>00</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682612000003</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000030001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>01</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682612</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000030001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>02</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01>
+      <VisaDRLParams_FFAB01>
+        <AppProgramId_9F5A>3102682600</AppProgramId_9F5A>
+        <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000030001</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+        <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
+        <OnOffSwitch_DFAB49>03</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01></Visa></Application>
+  <Application AID="A00000002501"   KernelID="040000">
+    <ASI_DFAB02>00</ASI_DFAB02>
+    <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
+    <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
+    <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
+    <ChksumKernel_DFAB07>2FD4B4F1740B8CFFD2EA41DD9ACF9E6B</ChksumKernel_DFAB07>
+    <RetapFieldOff_DFAB08>0A</RetapFieldOff_DFAB08>
+    <AdditionalTagsTRM_DFAB20></AdditionalTagsTRM_DFAB20>
+    <AdditionalTagsCRD_DFAB21></AdditionalTagsCRD_DFAB21>
+    <DefaultApplicationName_DFAB22>Amex</DefaultApplicationName_DFAB22>
+    <AmericanExpress>
+      <TermIdent_9F1C>3132333435363738</TermIdent_9F1C>
+      <TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
+      <TerminalType_9F35>22</TerminalType_9F35>
+      <AmexContactlessReaderCapabilities_9F6D>C8</AmexContactlessReaderCapabilities_9F6D>
+      <AmexTerminalTransactionCapabilities_9F6E>D8F04000</AmexTerminalTransactionCapabilities_9F6E>
+      <TerminalCapabilities_9F33>E0E0C8</TerminalCapabilities_9F33>
+      <AdditionalTerminalCapabilities_9F40>6000F0A001</AdditionalTerminalCapabilities_9F40>
+      <VersionNumber_9F09>0001000000000000000000000000000000000000</VersionNumber_9F09>
+      <MerchantCategoryCode_9F15>5999</MerchantCategoryCode_9F15>
+      <MerchantIdentifier_9F16></MerchantIdentifier_9F16>
+      <MerchantNameAndLocation_9F4E></MerchantNameAndLocation_9F4E>
+      <AcquirerIdentifier_9F01>000000000000</AcquirerIdentifier_9F01>
+      <TecSupport_DFAB30>03</TecSupport_DFAB30>
+      <AppFlowCap_DFAB31>0000000000</AppFlowCap_DFAB31>
+      <ContactlessFloorLimit_DFAB40>000000000000</ContactlessFloorLimit_DFAB40>
+      <ContactlessTransactionLimit_DFAB41>000000001500</ContactlessTransactionLimit_DFAB41>
+      <ContactlessCVMRequiredLimit_DFAB42>000000001000</ContactlessCVMRequiredLimit_DFAB42>
+      <TACDefault_DFAB43>DC50FC9800</TACDefault_DFAB43>
+      <TACDenial_DFAB44>0010000000</TACDenial_DFAB44>
+      <TACOnline_DFAB45>DE00FC9800</TACOnline_DFAB45>
+      <AmexDRLParams_FFAB01>
+        <ContactlessFloorLimit_DFAB40>000000000000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000001500</ContactlessTransactionLimit_DFAB41>
+        <ContactlessCVMRequiredLimit_DFAB42>000000001000</ContactlessCVMRequiredLimit_DFAB42>
+        <OnOffSwitch_DFAB49>00</OnOffSwitch_DFAB49></AmexDRLParams_FFAB01>
+      <AmexDRLParams_FFAB01>
+        <ContactlessFloorLimit_DFAB40>000000000000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000000700</ContactlessTransactionLimit_DFAB41>
+        <ContactlessCVMRequiredLimit_DFAB42>000000000200</ContactlessCVMRequiredLimit_DFAB42>
+        <OnOffSwitch_DFAB49>00</OnOffSwitch_DFAB49></AmexDRLParams_FFAB01>
+      <AmexDRLParams_FFAB01>
+        <ContactlessFloorLimit_DFAB40>000000000000</ContactlessFloorLimit_DFAB40>
+        <ContactlessTransactionLimit_DFAB41>000000000300</ContactlessTransactionLimit_DFAB41>
+        <ContactlessCVMRequiredLimit_DFAB42>000000000100</ContactlessCVMRequiredLimit_DFAB42>
+        <OnOffSwitch_DFAB49>00</OnOffSwitch_DFAB49></AmexDRLParams_FFAB01>
+      <UnpredictableNumberRange_DFAB52>3C</UnpredictableNumberRange_DFAB52></AmericanExpress></Application>
+   <Application AID="A0000003330101" KernelID="070000" >
+	<ASI_DFAB02>00</ASI_DFAB02>
+	<AppFlowCap_DFAB03>1000000000</AppFlowCap_DFAB03>
+	<SpecialTRXConfig_DFAB05>2120100000000000</SpecialTRXConfig_DFAB05>
+	<ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
+	<ChksumKernel_DFAB07>3CA5CB3E</ChksumKernel_DFAB07>
+	<RetapFieldOff_DFAB08>0A</RetapFieldOff_DFAB08>
+	<AdditionalTagsTRM_DFAB20/>
+	<AdditionalTagsCRD_DFAB21/>
+	<DefaultApplicationName_DFAB22/>
+	<ChinaUnionPay>
+		<TermIdent_9F1C>3030303030303030</TermIdent_9F1C>
+		<TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
+		<TerminalType_9F35>22</TerminalType_9F35>
+		<TerminalTransactionQualifier_9F66>36204000</TerminalTransactionQualifier_9F66>
+		<TerminalCapabilities_9F33>E0F8C8</TerminalCapabilities_9F33>
+		<AdditionalTerminalCapabilities_9F40>7000B0A001</AdditionalTerminalCapabilities_9F40>
+		<VersionNumber_9F09>008C000000000000000000000000000000000000</VersionNumber_9F09>
+		<MerchantCategoryCode_9F15>5999</MerchantCategoryCode_9F15>
+		<MerchantIdentifier_9F16/>
+		<MerchantNameAndLocation_9F4E/>
+		<TecSupport_DFAB30>01</TecSupport_DFAB30>
+		<AppFlowCap_DFAB31>0400000000</AppFlowCap_DFAB31>
+		<ContactlessFloorLimit_DFAB40>000000000000</ContactlessFloorLimit_DFAB40>
+		<ContactlessTransactionLimit_DFAB41>999999999999</ContactlessTransactionLimit_DFAB41>
+		<ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42>
+	</ChinaUnionPay>
+	</Application>
+</ApplicationData>

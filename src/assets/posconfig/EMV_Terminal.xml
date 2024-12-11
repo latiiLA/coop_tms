@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no" ?>
+<TerminalData>
+  <TermTyp>22</TermTyp>
+  <CountryCodeTerm>0231</CountryCodeTerm>
+  <TermCap>E0F8C8</TermCap>
+  <TermAddCap>F000F0A001</TermAddCap>
+  <TermIdent>3132333435363738</TermIdent>
+  <CurrencyTrans>0230</CurrencyTrans>
+  <ExpTrans>02</ExpTrans>
+  <SuppLang>0100000000000000</SuppLang>
+  <IFD_SerialNumber>12345678</IFD_SerialNumber>
+  <KernelVersion>L27.0.0l</KernelVersion>
+  <FrameworkVersion>01.00.00-rc1</FrameworkVersion>
+  <L1DriverVersion>123456</L1DriverVersion></TerminalData>
+	
