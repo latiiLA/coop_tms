@@ -80,13 +80,13 @@ const Dashboard = () => {
         display: "flex",
         flexDirection: "column",
         gap: 1,
-        padding: "inherit",
+        // padding: "inherit",
+        margin: 2,
       }}
     >
-      <Typography variant="h4">Dashboard</Typography>
       <Box
         sx={{
-          width: "95%",
+          width: "100%",
           margin: "auto",
           display: "flex",
           flexDirection: "row",

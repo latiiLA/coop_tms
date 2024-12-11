@@ -97,7 +97,7 @@ const TerminalCountPerDistrict = ({ data }) => {
   };
 
   return (
-    <Box sx={{ width: "95%", height: 350, margin: "auto", paddingBottom: 2 }}>
+    <Box sx={{ width: "100%", height: 350, margin: "auto", paddingBottom: 2 }}>
       <FormControl fullWidth sx={{ mb: 1 }}>
         <InputLabel id="terminal-type-select-label">Terminal Type</InputLabel>
         <Select

@@ -35,7 +35,7 @@ const TotalTerminalPieChart = ({ data }) => {
               ],
             },
           ]}
-          width={300}
+          width={250}
           height={200}
           // legend={{
           //   position: "right",

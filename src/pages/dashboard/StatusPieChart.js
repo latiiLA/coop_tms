@@ -70,7 +70,7 @@ const StatusPieChart = ({ data }) => {
         <PieChart
           series={[{ data: pieData }]}
           colors={colors} // Apply reordered colors
-          width={300}
+          width={250}
           height={200}
           legend={false} // Remove the legend
         />
