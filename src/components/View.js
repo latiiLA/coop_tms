@@ -273,8 +273,8 @@ export default function View({ role }) {
     role === "user"
       ? allColumns.filter((col) => col.field !== "actions")
       : role === "admin"
-      ? allColumns
-      : allColumns.filter((col) => col.field !== "actions"); // Modify this part if you want to apply a different filter for other roles
+        ? allColumns
+        : allColumns.filter((col) => col.field !== "actions"); // Modify this part if you want to apply a different filter for other roles
 
   useEffect(() => {
     async function loadRows() {

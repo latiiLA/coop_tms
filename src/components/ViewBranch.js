@@ -59,11 +59,11 @@ export default function ViewBranch() {
       navigator.clipboard
         .writeText(branchCode)
         .then(() => {
-          toast.success("Terminal details copied to clipboard!");
+          toast.success("Branch code copied to clipboard!");
         })
         .catch((err) => {
           // console.error("Failed to copy:", err);
-          toast.error("Failed to copy terminal details.");
+          toast.error("Failed to copy Branch code.");
         });
     } else {
       // Fallback for HTTP or unsupported browsers
@@ -82,10 +82,10 @@ export default function ViewBranch() {
 
     try {
       document.execCommand("copy"); // Fallback to execCommand for unsupported environments
-      toast.success("Terminal details copied to clipboard!");
+      toast.success("Branch code copied to clipboard!");
     } catch (err) {
       // console.error("Fallback: Failed to copy:", err);
-      toast.error("Failed to copy terminal details.");
+      toast.error("Failed to copy branch code.");
     }
 
     // Remove the textarea element after copying
@@ -180,10 +180,15 @@ export default function ViewBranch() {
   return (
     <Box>
       <Box
-        sx={{ display: "flex", flexDirection: "row", gap: 2, paddingBottom: 2 }}
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 2,
+          margin: 1,
+        }}
       >
         <Typography
-          variant="h4"
+          variant="h5"
           sx={{ height: "100%", marginTop: "auto" }}
           gutterBottom
         >
@@ -207,6 +212,7 @@ export default function ViewBranch() {
       <Box
         sx={{
           width: "auto",
+          margin: 1,
           "& .super-app-theme--header": {
             backgroundColor: "#0693e3",
           },

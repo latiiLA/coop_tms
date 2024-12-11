@@ -101,7 +101,6 @@ const ViewFeedback = () => {
   }
   return (
     <Box>
-      <Typography>View Feedback</Typography>
       <Box
         sx={{
           width: "auto",
@@ -130,6 +129,7 @@ const ViewFeedback = () => {
           "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
             display: "none",
           },
+          margin: 1,
         }}
       >
         <DataGrid

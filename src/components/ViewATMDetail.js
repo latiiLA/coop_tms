@@ -1,34 +1,40 @@
 import { Box, Button, Card, TextField, Typography } from "@mui/material";
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 const ViewATMDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { row } = location.state;
-  // console.log(row);
+  // console.log("inside view detail", row);
+
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        // margin: "auto",
+        marginX: 10,
+        marginY: 1,
       }}
     >
-      <Typography variant="h4" margin="auto">
+      <Typography variant="h5" margin="auto">
         Terminal Details
       </Typography>
       <Card
         sx={{
-          p: 3,
+          py: 5,
+          px: 5,
+
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
           borderRadius: 2,
           boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
           width: { xs: "100%", sm: "90%", md: "90%" },
-          gap: 2,
+          gap: 4,
           margin: "auto",
         }}
       >
@@ -149,6 +155,31 @@ const ViewATMDetail = () => {
             }}
             defaultValue={row.ipAddress}
           />
+          {row.isDeleted === true && (
+            <TextField
+              name="relocatorName"
+              label="Relocated By"
+              variant="outlined"
+              fullWidth
+              InputProps={{
+                readOnly: true,
+              }}
+              value={row.relocatorName} // Fallback to user ID if name is not available
+            />
+          )}
+          {row.isDeleted === false && (
+            <TextField
+              name="creatorName"
+              label="Created By"
+              variant="outlined"
+              fullWidth
+              InputProps={{
+                readOnly: true,
+              }}
+              value={row.creatorName} // Fallback to user ID if name is not available
+            />
+          )}
+
           <TextField
             name="createdAt"
             label="Creation Date"
@@ -157,7 +188,14 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.createdAt}
+            defaultValue={new Date(row.updatedAt).toLocaleString("en-US", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })}
           />
           <TextField
             name="updatedAt"
@@ -167,7 +205,14 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.updatedAt}
+            defaultValue={new Date(row.updatedAt).toLocaleString("en-US", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })}
           />
           <TextField
             name="status"
@@ -191,7 +236,7 @@ const ViewATMDetail = () => {
         }}
       >
         <Button onClick={() => navigate("/")}>Home</Button>
-        <Button onClick={() => navigate("/view")}>View Terminals</Button>
+        <Button onClick={() => navigate(-1)}>View Terminals</Button>
       </Box>
     </Box>
   );

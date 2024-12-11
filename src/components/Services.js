@@ -100,7 +100,7 @@ const Services = () => {
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" padding={2}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h5" gutterBottom>
         Things You Can Do
       </Typography>
       <Grid container spacing={3} justifyContent="center">
@@ -109,7 +109,7 @@ const Services = () => {
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Tile>
                 <IconWrapper>{service.icon}</IconWrapper>
-                <Title variant="h6">{service.title}</Title>
+                <Title variant="h7">{service.title}</Title>
                 <Description>{service.description}</Description>
               </Tile>
             </Grid>

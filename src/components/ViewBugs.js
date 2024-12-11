@@ -102,10 +102,8 @@ const ViewBugs = () => {
   }
   return (
     <Box>
-      <Typography>View Bug Reports</Typography>
       <Box
         sx={{
-          width: "auto",
           "& .super-app-theme--header": {
             backgroundColor: "#0693e3",
           },
@@ -131,6 +129,7 @@ const ViewBugs = () => {
           "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
             display: "none",
           },
+          margin: 1,
         }}
       >
         <DataGrid

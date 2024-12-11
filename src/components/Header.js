@@ -49,7 +49,7 @@ const Header = () => {
   };
   return (
     <Box>
-      <AppBar
+      {/* <AppBar
         position="static"
         sx={{
           flexShrink: 0,
@@ -57,24 +57,24 @@ const Header = () => {
           border: "none",
           boxShadow: "none",
         }}
+      > */}
+      {/* <Toolbar
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      > */}
+      {/* <Search /> */}
+      {/* <Box></Box> */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "Center",
+        }}
       >
-        <Toolbar
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          {/* <Search /> */}
-          <Box></Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "Center",
-            }}
-          >
-            {/* <Tooltip
+        {/* <Tooltip
               title="Open notification"
               sx={{
                 display: "flex",
@@ -92,46 +92,46 @@ const Header = () => {
                 </Badge>
               </IconButton>
             </Tooltip> */}
-            <Tooltip title="Open setting">
-              <IconButton onClick={handleOpenUserMenu}>
-                <Avatar
-                  alt="User Photo"
-                  // src="https://gravatar.com/avatar/27205e5c51cb03f862138b22bcb5dc20f94a342e744ff6df1b8dc8af3c865109"
-                  // src="https://media.gettyimages.com/id/1203239465/photo/woman-from-borana-tribe-holding-her-baby-ethiopia-africa.jpg?s=612x612&w=gi&k=20&c=y2HnpsGtq1BrR_vjKJpYRJR2GDc6YmJK_GEczfZjOPE="
-                  src={propicture}
-                />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+        <Tooltip title="Open setting">
+          <IconButton onClick={handleOpenUserMenu}>
+            <Avatar
+              alt="User Photo"
+              // src="https://gravatar.com/avatar/27205e5c51cb03f862138b22bcb5dc20f94a342e744ff6df1b8dc8af3c865109"
+              // src="https://media.gettyimages.com/id/1203239465/photo/woman-from-borana-tribe-holding-her-baby-ethiopia-africa.jpg?s=612x612&w=gi&k=20&c=y2HnpsGtq1BrR_vjKJpYRJR2GDc6YmJK_GEczfZjOPE="
+              src={propicture}
+            />
+          </IconButton>
+        </Tooltip>
+        <Menu
+          sx={{ mt: "45px" }}
+          id="menu-appbar"
+          anchorEl={anchorElUser}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          open={Boolean(anchorElUser)}
+          onClose={handleCloseUserMenu}
+        >
+          {settings.map(({ name, link }) => (
+            <MenuItem
+              key={name}
+              onClick={() => handleMenuItemClick(link, handleCloseUserMenu)}
             >
-              {settings.map(({ name, link }) => (
-                <MenuItem
-                  key={name}
-                  onClick={() => handleMenuItemClick(link, handleCloseUserMenu)}
-                >
-                  <Typography textAlign="center">{name}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-            <DarkMode />
-          </Box>
-        </Toolbar>
-      </AppBar>
-      <Divider />
+              <Typography textAlign="center">{name}</Typography>
+            </MenuItem>
+          ))}
+        </Menu>
+        <DarkMode />
+      </Box>
+      {/* </Toolbar> */}
+      {/* </AppBar> */}
+      {/* <Divider /> */}
     </Box>
   );
 };
