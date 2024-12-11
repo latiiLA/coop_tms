@@ -11,14 +11,16 @@ const Links = () => {
       sx={{
         padding: "2rem",
         maxWidth: "600px",
-        margin: "auto",
+        minWidth: "500px",
+        marginX: "auto",
+        marginY: 1,
         borderRadius: "8px",
         backgroundColor: theme.palette.background.paper, // Dynamic background color based on theme
         textAlign: "center",
       }}
     >
       <Typography
-        variant="h4"
+        variant="h5"
         gutterBottom
         sx={{
           color: theme.palette.primary.main, // Dynamic text color from the theme
@@ -39,10 +41,11 @@ const Links = () => {
             backgroundColor: theme.palette.background.default, // Dynamic background color based on theme
             borderRadius: "8px",
             boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+            gap: 5,
           }}
         >
           <Typography
-            variant="h5"
+            variant="h6"
             sx={{
               fontWeight: "500",
               color: theme.palette.text.primary, // Dynamic text color
@@ -78,7 +81,7 @@ const Links = () => {
           }}
         >
           <Typography
-            variant="h5"
+            variant="h6"
             sx={{
               fontWeight: "500",
               color: theme.palette.text.primary, // Dynamic text color
@@ -98,6 +101,42 @@ const Links = () => {
             }}
           >
             IST Switch GUI
+          </Button>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "1rem",
+            backgroundColor: theme.palette.background.default,
+            borderRadius: "8px",
+            boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "500",
+              color: theme.palette.text.primary, // Dynamic text color
+            }}
+          >
+            Coop IT Service Management
+          </Typography>
+
+          <Button
+            variant="contained"
+            href="https://10.1.50.56:8080/"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+              ":hover": { backgroundColor: theme.palette.primary.dark },
+              width: "15rem",
+            }}
+          >
+            IT Service Management
           </Button>
         </Box>
       </Box>

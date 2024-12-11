@@ -8,11 +8,10 @@ const GeneralTerminalReport = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: 2,
-        padding: "inherit",
+        gap: 1,
+        margin: 1,
       }}
     >
-      <Typography variant="h4">Reports</Typography>
       <TerminalSiteReport />
     </Box>
   );
