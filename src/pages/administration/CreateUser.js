@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { Formik, Form, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
-import { Password, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -57,6 +57,7 @@ const CreateUser = () => {
   const role = [
     { value: "tempo_user", label: "User" },
     { value: "tempo_admin", label: "Admin" },
+    { value: "tempo_posuser", label: "POS User" },
     // Add more options as needed
   ];
 
@@ -131,19 +132,17 @@ const CreateUser = () => {
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
-        // alignItems: "center",
-        // marginTop: 8,
+        margin: 1,
       }}
     >
       <Card
         sx={{
           p: 3,
+          px: 5,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          // border: "2px solid #dee2e6",
           borderRadius: 2,
-          // boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
           width: { xs: "100%", sm: "80%", md: "70%" },
         }}
       >
@@ -165,7 +164,7 @@ const CreateUser = () => {
                   sx={{
                     display: "flex",
                     flexDirection: "row",
-                    gap: 2,
+                    gap: 5,
                   }}
                 >
                   <Box

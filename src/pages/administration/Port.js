@@ -105,6 +105,7 @@ const Port = () => {
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
+          margin: 1,
         }}
       >
         <Card
@@ -211,7 +212,11 @@ const Port = () => {
                     error={touched.portCapacity && !!errors.portCapacity}
                     helperText={<ErrorMessage name="portCapacity" />}
                   />
-                  <Button variant="contained" type="submit">
+                  <Button
+                    sx={{ width: 50, margin: "auto" }}
+                    variant="contained"
+                    type="submit"
+                  >
                     Submit
                   </Button>
                 </Box>

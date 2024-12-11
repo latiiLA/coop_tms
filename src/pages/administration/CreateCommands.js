@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  Box,
-  TextField,
-  Typography,
-  Button,
-  Card,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@mui/material";
+import { Box, TextField, Typography, Button, Card } from "@mui/material";
 import { Formik, Form, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -59,17 +49,18 @@ const CreateCommands = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          // border: "2px solid #dee2e6",
           borderRadius: 2,
           boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
           width: { xs: "100%", sm: "75%", md: "60%" },
+          margin: 1,
         }}
       >
         <Formik
           initialValues={INITIAL_FORM_STATE}
           validationSchema={FORM_VALIDATION}
-          onSubmit={(values) => {
+          onSubmit={(values, { resetForm }) => {
             handleSubmit(values);
+            resetForm();
           }}
         >
           {({ errors, touched }) => (
@@ -107,7 +98,11 @@ const CreateCommands = () => {
                   error={touched.example && !!errors.example}
                   helperText={<ErrorMessage name="example" />}
                 />
-                <Button variant="contained" type="submit">
+                <Button
+                  sx={{ width: 50, margin: "auto" }}
+                  variant="contained"
+                  type="submit"
+                >
                   Submit
                 </Button>
               </Box>
