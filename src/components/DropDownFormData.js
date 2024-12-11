@@ -7,6 +7,10 @@ const sites = [
   { value: "Onsite", label: "Onsite" },
   { value: "Offsite", label: "Offsite" },
 ];
+const pos_sites = [
+  { value: "Merchant", label: "Merchant" },
+  { value: "Branch", label: "Branch" },
+];
 
 const atm_status = [
   { value: "New", label: "New" },
@@ -14,6 +18,20 @@ const atm_status = [
   { value: "InActive", label: "InActive" },
   { value: "Relocated", label: "Relocated" },
   { value: "Stopped", label: "Stopped" },
+];
+
+const pos_status = [
+  { value: "New", label: "New" },
+  { value: "Active", label: "Active" },
+  { value: "InActive", label: "InActive" },
+  { value: "Relocated", label: "Relocated" },
+  { value: "Stopped", label: "Stopped" },
+];
+
+const request_status = [
+  { value: "New", label: "New" },
+  { value: "Approved", label: "Approved" },
+  { value: "Rejected", label: "Rejected" },
 ];
 
 const districts = [
@@ -36,4 +54,12 @@ const districts = [
   { value: "Mekelle", label: "Mekelle" },
 ];
 
-export { atm_types, sites, atm_status, districts };
+export {
+  atm_types,
+  sites,
+  atm_status,
+  pos_status,
+  request_status,
+  pos_sites,
+  districts,
+};
