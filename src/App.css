@@ -1,1 +1,30 @@
-/* App.css */
+/* Root variables */
+:root {
+  --scrollbar-track-color: #f0f0f0;
+  --scrollbar-thumb-color: #4a90e2;
+  --scrollbar-thumb-hover-color: #357ab8;
+}
+
+[data-theme="dark"] {
+  --scrollbar-track-color: #2e2e2e;
+  --scrollbar-thumb-color: #1e90ff;
+  --scrollbar-thumb-hover-color: #1c7ed6;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover-color);
+}
