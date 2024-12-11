@@ -119,142 +119,153 @@ const ATMForm = ({
   }, [selectedSite, selectedType, initialValues.port]);
 
   return (
-    <Card
-      sx={{
-        p: 3,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        borderRadius: 2,
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        width: { xs: "100%", sm: "95%", md: "90%" },
-      }}
-    >
-      <Formik
-        initialValues={initialValues}
-        validationSchema={FORM_VALIDATION}
-        onSubmit={onSubmit}
-        validateOnMount
-        validateOnChange
-        validateOnBlur
+    <Box sx={{ width: "100%", marginY: 1, marginX: 10 }}>
+      <Typography variant="h5" sx={{ textAlign: "center" }}>
+        {isEdit
+          ? "Update Terminal Information"
+          : "Add New Terminal Information"}
+      </Typography>
+      <Card
+        sx={{
+          py: 4,
+          px: 5,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          borderRadius: 2,
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          width: { xs: "100%", sm: "95%", md: "90%" },
+          margin: "auto",
+        }}
       >
-        {({ isValid, isSubmitting, validateForm, handleChange }) => (
-          <Form>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Typography variant="h5" sx={{ textAlign: "center" }}>
-                {isEdit
-                  ? "Update Terminal Information"
-                  : "Add New Terminal Information"}
-              </Typography>
-
-              <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                    width: "50%",
-                  }}
-                >
-                  <CustomSelect
-                    name="type"
-                    label="ATM Type"
-                    options={atm_types}
-                    onChange={(e) => {
-                      setSelectedType(e.target.value);
-                      setAvailablePorts([]); // Clear ports on type change
-                      handleChange(e);
-                      validateForm();
+        <Formik
+          initialValues={initialValues}
+          validationSchema={FORM_VALIDATION}
+          onSubmit={onSubmit}
+          validateOnMount
+          validateOnChange
+          validateOnBlur
+        >
+          {({ isValid, isSubmitting, validateForm, handleChange }) => (
+            <Form>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Box sx={{ display: "flex", flexDirection: "row", gap: 5 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 2,
+                      width: "50%",
                     }}
-                  />
-                  <CustomTextField name="unitId" label="Unit ID" />
-                  <CustomTextField name="terminalId" label="Terminal ID" />
-                  <CustomTextField name="terminalName" label="Terminal Name" />
-                  <CustomTextField name="branchName" label="Branch Name" />
-                  <CustomSelect
-                    name="district"
-                    label="District"
-                    options={districts}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                    width: "50%",
-                  }}
-                >
-                  <CustomSelect
-                    name="site"
-                    label="Terminal Site"
-                    options={sites}
-                    onChange={(e) => {
-                      setSelectedSite(e.target.value);
-                      setAvailablePorts([]); // Clear ports on site change
-                      handleChange(e);
-                      validateForm();
-                    }}
-                  />
-                  <CustomTextField
-                    name="prevport"
-                    label="Previous Port"
-                    value={initialValues.port || "No previous port"}
-                    disabled
-                  />
-                  <CustomSelect
-                    name="port"
-                    label="UpdatePort"
-                    options={availablePorts.map((port) => ({
-                      value: port,
-                      label: port.toString(),
-                    }))}
-                    onChange={(e) => {
-                      handleChange(e);
-                      validateForm(); // Trigger form validation after port selection
-                    }}
-                    disabled={!selectedSite} // Disable port selection if no site selected
-                  />
-                  {availablePorts.length === 0 &&
-                    selectedSite &&
-                    selectedType && (
-                      <FormHelperText error>
-                        No available ports for selected site and type.
-                      </FormHelperText>
-                    )}
-                  <CustomTextField name="cbsAccount" label="CBS Account" />
-                  <CustomTextField name="ipAddress" label="IP Address" />
-                  {isEdit && (
+                  >
                     <CustomSelect
-                      name="status"
-                      label="Status"
-                      options={atm_status}
+                      name="type"
+                      label="ATM Type"
+                      options={atm_types}
+                      onChange={(e) => {
+                        setSelectedType(e.target.value);
+                        setAvailablePorts([]); // Clear ports on type change
+                        handleChange(e);
+                        validateForm();
+                      }}
                     />
-                  )}
+                    <CustomTextField name="unitId" label="Unit ID" />
+                    <CustomTextField name="terminalId" label="Terminal ID" />
+                    <CustomTextField
+                      name="terminalName"
+                      label="Terminal Name"
+                    />
+                    <CustomTextField name="branchName" label="Branch Name" />
+                    <CustomSelect
+                      name="district"
+                      label="District"
+                      options={districts}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 2,
+                      width: "50%",
+                    }}
+                  >
+                    <CustomSelect
+                      name="site"
+                      label="Terminal Site"
+                      options={sites}
+                      onChange={(e) => {
+                        setSelectedSite(e.target.value);
+                        setAvailablePorts([]); // Clear ports on site change
+                        handleChange(e);
+                        validateForm();
+                      }}
+                    />
+                    <CustomTextField
+                      name="prevport"
+                      label="Previous Port"
+                      value={initialValues.port || "No previous port"}
+                      disabled
+                    />
+                    <CustomSelect
+                      name="port"
+                      label="UpdatePort"
+                      options={availablePorts.map((port) => ({
+                        value: port,
+                        label: port.toString(),
+                      }))}
+                      onChange={(e) => {
+                        handleChange(e);
+                        validateForm(); // Trigger form validation after port selection
+                      }}
+                      disabled={!selectedSite} // Disable port selection if no site selected
+                    />
+                    {availablePorts.length === 0 &&
+                      selectedSite &&
+                      selectedType && (
+                        <FormHelperText error>
+                          No available ports for selected site and type.
+                        </FormHelperText>
+                      )}
+                    <CustomTextField name="cbsAccount" label="CBS Account" />
+                    <CustomTextField name="ipAddress" label="IP Address" />
+                    {isEdit && (
+                      <CustomSelect
+                        name="status"
+                        label="Status"
+                        options={atm_status}
+                      />
+                    )}
+                  </Box>
                 </Box>
               </Box>
-            </Box>
-            <Box
-              sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}
-            >
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                // disabled={!isValid || isSubmitting}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 2,
+                  mt: 2,
+                }}
               >
-                {isEdit ? "Update" : "Submit"}
-              </Button>
-              {isEdit && (
-                <Button onClick={() => navigate("/view")}>
-                  View Terminals
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  // disabled={!isValid || isSubmitting}
+                >
+                  {isEdit ? "Update" : "Submit"}
                 </Button>
-              )}
-            </Box>
-          </Form>
-        )}
-      </Formik>
-    </Card>
+                {isEdit && (
+                  <Button onClick={() => navigate("/view")}>
+                    View Terminals
+                  </Button>
+                )}
+              </Box>
+            </Form>
+          )}
+        </Formik>
+      </Card>
+    </Box>
   );
 };
 
