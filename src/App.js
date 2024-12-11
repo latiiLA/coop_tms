@@ -1,5 +1,12 @@
 import React, { useEffect } from "react";
-import { Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+  useNavigate,
+  Router,
+} from "react-router-dom";
 import { useAuthContext } from "./context/AuthContext";
 import Layout from "./Layout/Layout";
 import Home from "./pages/Home";
@@ -37,6 +44,30 @@ import ViewBugs from "./components/ViewBugs";
 import Transaction from "./pages/Reports/Transaction";
 import ViewTransaction from "./pages/Reports/ViewTransaction";
 import Links from "./pages/Reports/Links";
+import AddPOS from "./pages/POS/AddPOS";
+import ManagePOS from "./pages/POS/ManagePOS";
+import "./App.css";
+import POSDetails from "./pages/POS/POSDetails";
+import EditPOS from "./pages/POS/EditPOS";
+import RequestPOS from "./pages/POS/requests/RequestPOS";
+import RelocatedPOS from "./pages/POS/RelocatedPOS";
+import RelocatedRequest from "./pages/POS/requests/RelocateRequest";
+import ViewPOSRequests from "./pages/POS/ViewPOSRequests";
+import RequestStatus from "./pages/POS/requests/RequestStatus";
+import RequestDetails from "./pages/POS/requests/RequestDetails";
+import ApprovePOSRequest from "./pages/POS/ApprovePOSRequest";
+import EditRequests from "./pages/POS/requests/EditRequests";
+import Posdashboard from "./pages/dashboard/posdashboard/Posdashboard.js";
+import Side from "./pages/sidebar/Side.js";
+import SideDashboard from "./pages/sidebar/SideDashboard.js";
+import TerminalCreationManual from "./pages/Manual/TerminalCreationManual.js";
+import POSMerchantGuide from "./pages/Manual/POSMerchantGuide.js";
+import POSBranchGuide from "./pages/Manual/POSBranchGuide.js";
+import ATMLocation from "./pages/administration/ATMLocation.js";
+import ATMAdminitration from "./pages/administration/ATMAdministration.js";
+import POSAdministration from "./pages/administration/POSAdministration.js";
+import POSRequestAdministration from "./pages/POS/requests/POSRequestAdministration.js";
+import BulkRequest from "./pages/POS/requests/BulkRequest.js";
 
 // Protect routes based on role
 const ProtectedRoutes = ({ requiredRole }) => {
@@ -49,6 +80,7 @@ const ProtectedRoutes = ({ requiredRole }) => {
 
   if (
     role === "tempo_user" ||
+    role === "tempo_posuser" ||
     role === "tempo_admin" ||
     role === "tempo_superadmin"
   ) {
@@ -69,10 +101,16 @@ const ProtectedLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (role === "user" || role === "admin" || role === "superadmin") {
+    if (
+      role === "posuser" ||
+      role === "user" ||
+      role === "admin" ||
+      role === "superadmin"
+    ) {
       navigate("/home", { replace: true });
     } else if (
       role === "tempo_user" ||
+      role === "tempo_posuser" ||
       role === "tempo_admin" ||
       role === "tempo_superadmin"
     ) {
@@ -92,74 +130,128 @@ function App() {
 
   return (
     <Box>
-      <Layout>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<ProtectedLogin />} />
+      {/* <Layout> */}
+      <Routes>
+        {/* Public Routes */}
 
-          {/* <Route
+        <Route path="/login" element={<ProtectedLogin />} />
+
+        <Route path="/changepassword" element={<ForgotPassword />} />
+
+        {/* Protected Routes */}
+        <Route element={<SideDashboard router={Router} />}>
+          <Route
             element={
               <ProtectedRoutes
-                requiredRole={[
-                  "user",
-                  "admin",
-                  "superadmin",
-                  "tempo_user",
-                  "tempo_admin",
-                ]}
+                requiredRole={["user", "posuser", "admin", "superadmin"]}
               />
             }
-          > */}
-          <Route path="/changepassword" element={<ForgotPassword />} />
-          {/* </Route> */}
-
-          {/* Protected Routes */}
+          >
+            <Route path="/account" element={<Account />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/home" element={<Home />} />
+          </Route>
           <Route
             element={
               <ProtectedRoutes requiredRole={["user", "admin", "superadmin"]} />
             }
           >
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/view" element={<ViewTerminal />} />
-            <Route path="/report" element={<Report />} />
+            <Route path="/reports" element={<Report />} />
             <Route path="/terminalreport" element={<TerminalReport />} />
-            <Route path="/generalreport" element={<GeneralTerminalReport />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/profile" element={<UserProfile />} />
+            <Route
+              path="/reports/generalreport"
+              element={<GeneralTerminalReport />}
+            />
+
             <Route path="/viewdetail" element={<ViewATMDetail />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route path="/feedback" element={<Feedback />} />
+
+            <Route path="/administration/feedback" element={<Feedback />} />
             <Route path="/links" element={<Links />} />
             <Route path="/transaction" element={<Transaction />} />
             <Route path="/viewtransaction" element={<ViewTransaction />} />
+
+            {/* <Route path="/side" element={<Side />} /> */}
           </Route>
 
           {/* Admin Routes */}
           <Route
             element={<ProtectedRoutes requiredRole={["admin", "superadmin"]} />}
           >
-            <Route path="/add" element={<AddTerminal />} />
             <Route path="/edit" element={<EditTerminal />} />
-            <Route path="/administration" element={<Administration />} />
-            <Route path="/viewuser" element={<ViewUsers />} />
-            <Route path="/manageterminal" element={<ManageTerminal />} />
-            <Route path="/ports" element={<Port />} />
-            <Route path="/viewports" element={<ViewPort />} />
-            <Route path="/new_command" element={<CreateCommands />} />
-            <Route path="/commands" element={<ViewCommands />} />
-            <Route path="/relocatedterminal" element={<ViewRelocated />} />
-            <Route path="/viewbranch" element={<ViewBranch />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/viewfeedback" element={<ViewFeedback />} />
-            <Route path="/viewbug" element={<ViewBugs />} />
+            <Route path="/atm" element={<ATMAdminitration />} />
+            <Route path="/atm/add" element={<AddTerminal />} />
+            <Route path="/atm/manageterminal" element={<ManageTerminal />} />
+            <Route path="/atm/ports" element={<Port />} />
+            <Route path="/atm/viewports" element={<ViewPort />} />
+            <Route path="/atm/command" element={<CreateCommands />} />
+            <Route path="/atm/viewcommands" element={<ViewCommands />} />
+            <Route path="/atm/relocatedterminal" element={<ViewRelocated />} />
+            <Route path="/atm/viewbranch" element={<ViewBranch />} />
+            <Route path="/atm/atmlocation" element={<ATMLocation />} />
+
+            {/* POS ROUTES */}
+            <Route path="/pos" element={<POSAdministration />} />
+            <Route path="/pos/addpos" element={<AddPOS />} />
+            <Route path="/pos/managepos" element={<ManagePOS />} />
+            <Route path="/pos/relocatedpos" element={<RelocatedPOS />} />
+            <Route path="/pos/requests" element={<ViewPOSRequests />} />
+            <Route path="/approverequest" element={<ApprovePOSRequest />} />
+            <Route path="/editpos" element={<EditPOS />} />
+
+            <Route
+              path="/manual/atmcreationmanual"
+              element={<TerminalCreationManual />}
+            />
+          </Route>
+
+          <Route
+            element={
+              <ProtectedRoutes
+                requiredRole={["posuser", "admin", "superadmin"]}
+              />
+            }
+          >
+            <Route path="/posdashboard" element={<Posdashboard />} />
+            <Route path="/posdetail" element={<POSDetails />} />
+            <Route path="/request/requeststatus" element={<RequestStatus />} />
+            <Route path="/request/viewpos" element={<ManagePOS />} />
           </Route>
 
           {/* Super Admin Routes */}
           <Route element={<ProtectedRoutes requiredRole={["superadmin"]} />}>
-            <Route path="/createuser" element={<CreateUser />} />
-            <Route path="/activitylog" element={<UserActivityLog />} />
+            <Route path="/administration" element={<Administration />} />
+            <Route path="/administration/manageuser" element={<ViewUsers />} />
+            <Route path="/administration/analytics" element={<Analytics />} />
+            <Route path="/administration/createuser" element={<CreateUser />} />
+            <Route
+              path="/administration/activitylog"
+              element={<UserActivityLog />}
+            />
+            <Route
+              path="/administration/viewfeedback"
+              element={<ViewFeedback />}
+            />
+            <Route path="/administration/viewbug" element={<ViewBugs />} />
+          </Route>
+
+          {/* POS user Routes */}
+          <Route element={<ProtectedRoutes requiredRole={["posuser"]} />}>
+            <Route path="/request" element={<POSRequestAdministration />} />
+            <Route path="/editrequest" element={<EditRequests />} />
+            <Route path="/request/request" element={<RequestPOS />} />
+            <Route path="/request/bulkrequest" element={<BulkRequest />} />
+            <Route path="/request/relocate" element={<RelocatedRequest />} />
+            <Route
+              path="/usermanual/merchantguide"
+              element={<POSMerchantGuide />}
+            />
+            <Route
+              path="/usermanual/branchguide"
+              element={<POSBranchGuide />}
+            />
           </Route>
 
           {/* Catch-All Route */}
@@ -175,9 +267,11 @@ function App() {
               )
             }
           />
-        </Routes>
-        <Toaster />
-      </Layout>
+        </Route>
+      </Routes>
+
+      <Toaster />
+      {/* </Layout> */}
     </Box>
   );
 }
