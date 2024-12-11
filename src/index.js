@@ -5,6 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import "./index.css";
 import { ThemeProvider } from "./context/ThemeProvider";
 import { AuthContextProvider } from "./context/AuthContext";
+import SideDashboard from "./pages/sidebar/SideDashboard";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
