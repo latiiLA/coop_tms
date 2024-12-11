@@ -5,6 +5,8 @@ import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
+import { CopyAll } from "@mui/icons-material";
+import toast from "react-hot-toast";
 
 // Mock function for demonstration
 async function fetchRows() {
@@ -17,6 +19,32 @@ export default function Commands({ role = "admin" }) {
   const [data_rows, setDataRows] = useState([]);
   const [editingRow, setEditingRow] = useState(null);
   const [edited, setEdited] = useState({});
+
+  const handleCopy = (rowData) => {
+    // Format the row data into a string
+    console.log(rowData);
+    const rowText = `
+    ${rowData.example}
+  `;
+
+    const textArea = document.createElement("textarea");
+    textArea.value = rowText;
+    textArea.style.position = "fixed"; // Prevent scrolling to the bottom
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand("copy"); // Fallback to execCommand for unsupported environments
+      toast.success("Load example copied.");
+    } catch (err) {
+      // console.error("Fallback: Failed to copy:", err);
+      toast.error("Failed to copy load example.");
+    }
+
+    // Remove the textarea element after copying
+    document.body.removeChild(textArea);
+  };
 
   useEffect(() => {
     async function loadRows() {
@@ -40,6 +68,7 @@ export default function Commands({ role = "admin" }) {
     {
       field: "id",
       headerName: "No",
+      flex: 0.1,
     },
     {
       field: "command",
@@ -63,22 +92,26 @@ export default function Commands({ role = "admin" }) {
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1,
+      flex: 0.3,
       renderCell: (params) => (
         <Box
           sx={{
             display: "flex",
             flexDirection: "row",
-            gap: 1,
-            width: "auto",
+            justifyContent: "left",
+            alignItems: "center",
+            width: "100%",
+            height: "100%",
           }}
         >
           <IconButton
             color="secondary"
-            size="small"
             onClick={() => handleDelete(params.row.id)}
           >
             <DeleteIcon />
+          </IconButton>
+          <IconButton color="primary" onClick={() => handleCopy(params.row)}>
+            <CopyAll />
           </IconButton>
         </Box>
       ),
@@ -108,15 +141,13 @@ export default function Commands({ role = "admin" }) {
     role === "user"
       ? allColumns.filter((col) => col.field !== "actions")
       : role === "admin"
-      ? allColumns
-      : allColumns.filter((col) => col.field !== "actions");
+        ? allColumns
+        : allColumns.filter((col) => col.field !== "actions");
 
   return (
     <Box>
-      <Typography variant="h4">Commands</Typography>
       <Box
         sx={{
-          height: 400,
           width: "auto",
           "& .super-app-theme--header": {
             backgroundColor: "#0693e3",
@@ -127,6 +158,7 @@ export default function Commands({ role = "admin" }) {
           "& .MuiDataGrid-footerContainer": {
             backgroundColor: "#0693e3",
           },
+          margin: 1,
         }}
       >
         <DataGrid

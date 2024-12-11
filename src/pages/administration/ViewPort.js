@@ -7,6 +7,7 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -167,6 +168,12 @@ const ViewPort = () => {
       flex: 1,
     },
     {
+      field: "createdBy",
+      headerName: "Port Creator",
+      type: "string",
+      flex: 1,
+    },
+    {
       field: "actions",
       headerName: "Actions",
       flex: 0.5,
@@ -203,12 +210,8 @@ const ViewPort = () => {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ marginBottom: 2 }}>
-        All Ports
-      </Typography>
       <Box
         sx={{
-          width: "100%",
           "& .super-app-theme--header": {
             backgroundColor: "#0693e3",
           },
@@ -220,6 +223,7 @@ const ViewPort = () => {
             backgroundColor: "#0693e3",
             color: "#fff",
           },
+          margin: 1,
         }}
       >
         <DataGrid
