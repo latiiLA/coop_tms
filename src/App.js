@@ -135,7 +135,6 @@ function App() {
         {/* Public Routes */}
 
         <Route path="/login" element={<ProtectedLogin />} />
-
         <Route path="/changepassword" element={<ForgotPassword />} />
 
         {/* Protected Routes */}
@@ -258,6 +257,7 @@ function App() {
           <Route
             path="*"
             element={
+              role === "tempo_user" ||
               role === "tempo_user" ||
               role === "tempo_admin" ||
               role === "tempo_superadmin" ? (
