@@ -65,15 +65,26 @@ const EditPOS = () => {
     }
 
     try {
-      const response = await axios.patch(`${apiUrl}/pos/updatepos`, values, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
+      const response = await axios.put(
+        `${apiUrl}/pos/updatePos/${row._id}`,
+        values,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
 
       toast.success(response.data.message);
       resetForm();
+      navigate("/posdetail", {
+        state: {
+          isRequest: false,
+          relocated: false,
+          row: response.data.posTerminal,
+        },
+      });
     } catch (error) {
       toast.error(
         error.response?.data?.message || error.message || "Something went wrong"
@@ -113,7 +124,7 @@ const EditPOS = () => {
             onSubmit={handleSubmit}
             validateOnMount
           >
-            {() => (
+            {({ isValid, errors, resetForm }) => (
               <Form>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   <Typography variant="h5" sx={{ textAlign: "center" }}>
