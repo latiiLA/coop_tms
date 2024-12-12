@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import * as Yup from "yup";
 import { Download } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { useAuthContext } from "../../context/AuthContext";
 
 const ApprovePOSRequest = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const ApprovePOSRequest = () => {
   // const [status, setStatus] = useState("");
   const location = useLocation();
   const { row } = location.state;
+  const { role } = useAuthContext();
 
   // console.log(row, "row");
 
@@ -363,10 +365,7 @@ const ApprovePOSRequest = () => {
                   >
                     Reject
                   </LoadingButton>
-
-                  <Button onClick={() => navigate("/viewrequests")}>
-                    View Requests
-                  </Button>
+                  <Button onClick={() => navigate(-1)}>Back</Button>
                 </Box>
               </Form>
             )}
