@@ -119,7 +119,7 @@ export default function RequestStatus() {
         ?.timestamp || Date.now(),
   }));
 
-  console.log(filteredRows);
+  // console.log(filteredRows);
 
   if (loading) {
     return <LoadingSpinner />;

@@ -20,7 +20,7 @@ const POSDetails = () => {
       }
 
       // Construct the full file URL
-      const fileUrl = `${process.env.REACT_APP_API_URL}\${row.file.filePath}`;
+      const fileUrl = `${process.env.REACT_APP_API_URL}/${row.file.filePath}`;
       console.log("Downloading file from:", fileUrl);
 
       // Create a temporary anchor element
