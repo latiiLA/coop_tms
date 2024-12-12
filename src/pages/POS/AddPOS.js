@@ -116,6 +116,13 @@ const AddPOS = () => {
 
       toast.success(response.data.message);
       resetForm();
+      navigate("/posdetail", {
+        state: {
+          isRequest: false,
+          relocated: false,
+          row: response.data.posTerminal,
+        },
+      });
     } catch (error) {
       toast.error(
         error.response?.data?.message || error.message || "Something went wrong"

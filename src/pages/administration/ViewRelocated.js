@@ -85,31 +85,6 @@ export default function ViewRelocated() {
     setSearchText(event.target.value);
   };
 
-  const rows =
-    dataRows?.map((row, index) => ({
-      id: index + 1,
-      ...row,
-    })) ?? [];
-
-  // Filtered rows
-  const filteredRows = rows
-    .filter((row) =>
-      Object.keys(row).some((key) =>
-        String(row[key]).toLowerCase().includes(searchText.toLowerCase())
-      )
-    )
-    .sort((a, b) => {
-      // First sort by type (CRM should come first)
-      if (a.type !== b.type) {
-        return a.type.localeCompare(b.type);
-      }
-      // Sort by unitId numerically or by localeCompare for strings
-      if (typeof a.unitId === "string" && typeof b.unitId === "string") {
-        return a.unitId.localeCompare(b.unitId);
-      }
-      return (a.unitId || 0) - (b.unitId || 0); // Handle cases where unitId might be missing or non-numeric
-    });
-
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -118,9 +93,17 @@ export default function ViewRelocated() {
     return <Typography>Error: {error}</Typography>;
   }
 
+  const rows =
+    dataRows
+      ?.map((row, index) => ({
+        id: index + 1,
+        ...row,
+      }))
+      .reverse() ?? [];
+
   // Split sorted rows into CRM and NCR
-  const crmRows = filteredRows.filter((row) => row.type === "CRM");
-  const ncrRows = filteredRows.filter((row) => row.type === "NCR");
+  const crmRows = rows.filter((row) => row.type === "CRM");
+  const ncrRows = rows.filter((row) => row.type === "NCR");
 
   return (
     <Box
@@ -154,7 +137,7 @@ export default function ViewRelocated() {
         />
       </Box>
       <TabPanel value={value} index={0}>
-        <ViewTerminalGridComponent rows={filteredRows} isRelocated={true} />
+        <ViewTerminalGridComponent rows={rows} isRelocated={true} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
