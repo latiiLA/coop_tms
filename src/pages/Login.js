@@ -110,6 +110,7 @@ const Login = () => {
             justifyContent: "center",
             alignItems: "center",
             flexDirection: "column",
+            backgroundColor: theme.palette.background.default,
           }}
         >
           {isMatch ? (
