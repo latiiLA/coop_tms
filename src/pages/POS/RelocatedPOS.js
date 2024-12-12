@@ -52,7 +52,7 @@ export default function RelocatedPOS() {
     }
 
     try {
-      const response = await axios.get(`${apiUrl}/pos/getPos`, {
+      const response = await axios.get(`${apiUrl}/pos/getRelocatedPos`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -71,46 +71,8 @@ export default function RelocatedPOS() {
     }
   };
 
-  const fetchPings = async () => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      // console.error("No authentication token found");
-      toast.error("User is not authenticated");
-      navigate("/home");
-      return;
-    }
-    try {
-      const response = await axios.get(`${apiUrl}/ping/getPings`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
-
-      setPings(response.data.pings);
-    } catch (error) {
-      // console.error("Error fetching terminals:", error);
-      setError(error.message);
-      toast.error(`Error: ${error.response?.data?.message || error.message}`);
-      navigate("/home");
-    }
-  };
-
   useEffect(() => {
     fetchRows();
-  }, []);
-
-  // use effect for fetching pings every 30sec
-  useEffect(() => {
-    // Fetch data immediately when the component mounts
-    fetchPings();
-
-    // Set interval to call fetchPings every 30 seconds (30000 ms)
-    const intervalId = setInterval(fetchPings, 30000);
-
-    // Clear interval when the component is unmounted
-    return () => clearInterval(intervalId);
   }, []);
 
   const handleChange = (event, newValue) => {
@@ -122,41 +84,12 @@ export default function RelocatedPOS() {
   };
 
   const rows =
-    dataRows?.map((row, index) => ({
-      id: index + 1,
-      ...row,
-    })) ?? [];
-
-  // Filtered rows
-  let filteredRows = rows
-    .filter((row) =>
-      Object.keys(row).some((key) =>
-        String(row[key]).toLowerCase().includes(searchText.toLowerCase())
-      )
-    )
-    .sort((a, b) => {
-      // First sort by type (CRM should come first)
-      if (a.type !== b.type) {
-        return a.type.localeCompare(b.type);
-      }
-      // Sort by unitId numerically or by localeCompare for strings
-      if (typeof a.unitId === "string" && typeof b.unitId === "string") {
-        return a.unitId.localeCompare(b.unitId);
-      }
-      return (a.unitId || 0) - (b.unitId || 0); // Handle cases where unitId might be missing or non-numeric
-    });
-
-  filteredRows = filteredRows.map((terminal) => ({
-    ...terminal,
-    pingStatus:
-      pings.find((ping) => ping.terminalId === terminal.terminalId)
-        ?.pingStatus || false,
-    timestamp:
-      pings.find((ping) => ping.terminalId === terminal.terminalId)
-        ?.timestamp || Date.now(),
-  }));
-
-  // console.log(filteredRows);
+    dataRows
+      ?.map((row, index) => ({
+        id: index + 1,
+        ...row,
+      }))
+      .reverse() ?? [];
 
   if (loading) {
     return <LoadingSpinner />;
@@ -167,8 +100,8 @@ export default function RelocatedPOS() {
   }
 
   // Split sorted rows into CRM and NCR
-  const branchRows = filteredRows.filter((row) => row.posSite === "Branch");
-  const merchantRows = filteredRows.filter((row) => row.posSite === "Merchant");
+  const branchRows = rows.filter((row) => row.posSite === "Branch");
+  const merchantRows = rows.filter((row) => row.posSite === "Merchant");
 
   return (
     <Box
@@ -182,9 +115,9 @@ export default function RelocatedPOS() {
         }}
       >
         <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
-          <Tab label="All POS" />
-          <Tab label="Merchant POS" />
-          <Tab label="Branch POS" />
+          <Tab label="Relocated POS" />
+          <Tab label="Relocated Merchant POS" />
+          <Tab label="Relocated Branch POS" />
         </Tabs>
         <TextField
           label="Search"
@@ -202,15 +135,15 @@ export default function RelocatedPOS() {
         />
       </Box>
       <TabPanel value={value} index={0}>
-        <ViewPOSGridComponent rows={filteredRows} />
+        <ViewPOSGridComponent isRelocated={true} rows={rows} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <ViewPOSGridComponent rows={merchantRows} />
+        <ViewPOSGridComponent isRelocated={true} rows={merchantRows} />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <ViewPOSGridComponent rows={branchRows} />
+        <ViewPOSGridComponent isRelocated={true} rows={branchRows} />
       </TabPanel>
     </Box>
   );
