@@ -5,6 +5,8 @@ import ViewPOSRequests from "../ViewPOSRequests";
 import RequestPOS from "./RequestPOS";
 import RelocatedRequest from "./RelocateRequest";
 import RequestStatus from "./RequestStatus";
+import ManagePOS from "../ManagePOS";
+import RelocatedPOS from "../RelocatedPOS";
 
 const POSRequestAdministration = () => {
   return (
@@ -17,13 +19,13 @@ const POSRequestAdministration = () => {
       }}
     >
       <Box>
-        <Typography variant="h4">Explore POS</Typography>
-        <ViewPOSRequests />
+        <Typography variant="h4">Request POS</Typography>
+        <RequestPOS />
       </Box>
       <Divider />
       <Box>
-        <Typography variant="h4">Request POS</Typography>
-        <RequestPOS />
+        <Typography variant="h4">Explore POS</Typography>
+        <ManagePOS />
       </Box>
       <Divider />
 
