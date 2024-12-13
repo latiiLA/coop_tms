@@ -17,6 +17,8 @@ import {
   useTheme,
   Grid,
   Avatar,
+  createTheme,
+  ThemeProvider,
 } from "@mui/material";
 
 import Visibility from "@mui/icons-material/Visibility";
@@ -40,6 +42,22 @@ const Login = () => {
   const FORM_VALIDATION = Yup.object().shape({
     username: Yup.string().required("Username is required"),
     password: Yup.string().required("Password is required"),
+  });
+
+  const demoTheme = createTheme({
+    cssVariables: {
+      colorSchemeSelector: "data-toolpad-color-scheme",
+    },
+    colorSchemes: { light: true, dark: true },
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 600,
+        lg: 1200,
+        xl: 1536,
+      },
+    },
   });
 
   const theme = useTheme();
@@ -100,294 +118,295 @@ const Login = () => {
   }
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Box
-          sx={{
-            display: "flex",
-            height: "100vh",
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-            backgroundColor: theme.palette.background.default,
-          }}
-        >
-          {isMatch ? (
-            <Stack
-              sx={{
-                width: "80%",
-                height: "80%",
-                boxShadow: "0.3rem 0.3rem 0.6rem grey",
-                padding: "1rem",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-evenly",
-                gap: 2,
-              }}
-            >
-              <Card
+    <ThemeProvider theme={demoTheme}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Box
+            sx={{
+              display: "flex",
+              height: "100vh",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            {isMatch ? (
+              <Stack
                 sx={{
-                  width: "100%",
-                  height: "100%",
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  image={left_image2}
-                  alt="login picture"
-                />
-              </Card>
-              <Box sx={{ width: "100%", display: "flex", gap: 5 }}>
-                <Formik
-                  initialValues={INITIAL_FORM_STATE}
-                  validationSchema={FORM_VALIDATION}
-                  onSubmit={handleSubmit}
-                >
-                  {({ errors, touched }) => (
-                    <Form
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        margin: "auto",
-                        gap: 10,
-                      }}
-                    >
-                      <Stack gap={2}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            margin: "auto",
-                          }}
-                        >
-                          <Box>
-                            <Avatar
-                              src={coop}
-                              sx={{
-                                width: 100,
-                                borderRadius: 0,
-                                objectFit: "cover",
-                                marginY: "auto",
-                              }}
-                            />
-                          </Box>
-                          <Typography variant="h3">TMS</Typography>
-                        </Box>
-                        <Typography
-                          sx={{
-                            textAlign: "center",
-                            fontSize: "2rem",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Login
-                        </Typography>
-
-                        <Field
-                          as={TextField}
-                          name="username"
-                          label="Username"
-                          variant="outlined"
-                          fullWidth
-                          error={touched.username && !!errors.username}
-                          helperText={<ErrorMessage name="username" />}
-                        />
-
-                        <FormControl
-                          variant="outlined"
-                          error={touched.password && !!errors.password}
-                          fullWidth
-                        >
-                          <InputLabel htmlFor="outlined-adornment-password">
-                            Password
-                          </InputLabel>
-                          <Field
-                            as={OutlinedInput}
-                            id="outlined-adornment-password"
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            endAdornment={
-                              <InputAdornment position="end">
-                                <IconButton
-                                  aria-label="toggle password visibility"
-                                  onClick={handleClickShowPassword}
-                                  onMouseDown={handleMouseDownPassword}
-                                  edge="end"
-                                >
-                                  {showPassword ? (
-                                    <VisibilityOff />
-                                  ) : (
-                                    <Visibility />
-                                  )}
-                                </IconButton>
-                              </InputAdornment>
-                            }
-                            label="Password"
-                          />
-                          <ErrorMessage
-                            name="password"
-                            component="div"
-                            style={{ color: "red" }}
-                          />
-                        </FormControl>
-                      </Stack>
-                      <Stack>
-                        <Button type="submit" variant="contained">
-                          Login
-                        </Button>
-                      </Stack>
-                    </Form>
-                  )}
-                </Formik>
-              </Box>
-            </Stack>
-          ) : (
-            <Stack
-              gap={2}
-              sx={{
-                width: "60%",
-                height: "60%",
-                boxShadow: "0.3rem 0.3rem 0.6rem grey",
-                paddingRight: "1rem",
-                display: "flex",
-                flexDirection: "row !important",
-                justifyContent: "space-evenly",
-              }}
-            >
-              <Card
-                sx={{
-                  width: "50%",
-                  height: "100%",
+                  width: "80%",
+                  height: "80%",
+                  boxShadow: "0.3rem 0.3rem 0.6rem grey",
+                  padding: "1rem",
                   display: "flex",
-                  flexDirection: "column !important",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  margin: "auto",
+                  flexDirection: "column",
+                  justifyContent: "space-evenly",
+                  gap: 2,
                 }}
               >
-                <CardMedia
-                  component="img"
-                  image={left_image2}
-                  alt="login picture"
-                />
-              </Card>
-
-              <Box
-                sx={{
-                  width: "50%",
-                  margin: "auto",
-                }}
-              >
-                <Formik
-                  initialValues={INITIAL_FORM_STATE}
-                  validationSchema={FORM_VALIDATION}
-                  onSubmit={handleSubmit}
+                <Card
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                  }}
                 >
-                  {({ errors, touched }) => (
-                    <Form
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        margin: "auto",
-                        gap: 10,
-                      }}
-                    >
-                      <Stack gap={2}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            margin: "auto",
-                          }}
-                        >
-                          <Box>
-                            <Avatar
-                              src={coop}
-                              sx={{
-                                width: 100,
-                                borderRadius: 0,
-                                objectFit: "cover",
-                                marginY: "auto",
-                              }}
-                            />
+                  <CardMedia
+                    component="img"
+                    image={left_image2}
+                    alt="login picture"
+                  />
+                </Card>
+                <Box sx={{ width: "100%", display: "flex", gap: 5 }}>
+                  <Formik
+                    initialValues={INITIAL_FORM_STATE}
+                    validationSchema={FORM_VALIDATION}
+                    onSubmit={handleSubmit}
+                  >
+                    {({ errors, touched }) => (
+                      <Form
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          margin: "auto",
+                          gap: 10,
+                        }}
+                      >
+                        <Stack gap={2}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              margin: "auto",
+                            }}
+                          >
+                            <Box>
+                              <Avatar
+                                src={coop}
+                                sx={{
+                                  width: 100,
+                                  borderRadius: 0,
+                                  objectFit: "cover",
+                                  marginY: "auto",
+                                }}
+                              />
+                            </Box>
+                            <Typography variant="h3">TMS</Typography>
                           </Box>
-                          <Typography variant="h3">TMS</Typography>
-                        </Box>
-                        <Typography
-                          sx={{
-                            textAlign: "center",
-                            fontSize: "2rem",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Login
-                        </Typography>
+                          <Typography
+                            sx={{
+                              textAlign: "center",
+                              fontSize: "2rem",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Login
+                          </Typography>
 
-                        <Field
-                          as={TextField}
-                          name="username"
-                          label="Username"
-                          variant="outlined"
-                          fullWidth
-                          error={touched.username && !!errors.username}
-                          helperText={<ErrorMessage name="username" />}
-                        />
-
-                        <FormControl
-                          variant="outlined"
-                          error={touched.password && !!errors.password}
-                          fullWidth
-                        >
-                          <InputLabel htmlFor="outlined-adornment-password">
-                            Password
-                          </InputLabel>
                           <Field
-                            as={OutlinedInput}
-                            id="outlined-adornment-password"
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            endAdornment={
-                              <InputAdornment position="end">
-                                <IconButton
-                                  aria-label="toggle password visibility"
-                                  onClick={handleClickShowPassword}
-                                  onMouseDown={handleMouseDownPassword}
-                                  edge="end"
-                                >
-                                  {showPassword ? (
-                                    <VisibilityOff />
-                                  ) : (
-                                    <Visibility />
-                                  )}
-                                </IconButton>
-                              </InputAdornment>
-                            }
-                            label="Password"
+                            as={TextField}
+                            name="username"
+                            label="Username"
+                            variant="outlined"
+                            fullWidth
+                            error={touched.username && !!errors.username}
+                            helperText={<ErrorMessage name="username" />}
                           />
-                          <ErrorMessage
-                            name="password"
-                            component="div"
-                            style={{ color: "red" }}
+
+                          <FormControl
+                            variant="outlined"
+                            error={touched.password && !!errors.password}
+                            fullWidth
+                          >
+                            <InputLabel htmlFor="outlined-adornment-password">
+                              Password
+                            </InputLabel>
+                            <Field
+                              as={OutlinedInput}
+                              id="outlined-adornment-password"
+                              type={showPassword ? "text" : "password"}
+                              name="password"
+                              endAdornment={
+                                <InputAdornment position="end">
+                                  <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    onMouseDown={handleMouseDownPassword}
+                                    edge="end"
+                                  >
+                                    {showPassword ? (
+                                      <VisibilityOff />
+                                    ) : (
+                                      <Visibility />
+                                    )}
+                                  </IconButton>
+                                </InputAdornment>
+                              }
+                              label="Password"
+                            />
+                            <ErrorMessage
+                              name="password"
+                              component="div"
+                              style={{ color: "red" }}
+                            />
+                          </FormControl>
+                        </Stack>
+                        <Stack>
+                          <Button type="submit" variant="contained">
+                            Login
+                          </Button>
+                        </Stack>
+                      </Form>
+                    )}
+                  </Formik>
+                </Box>
+              </Stack>
+            ) : (
+              <Stack
+                gap={2}
+                sx={{
+                  width: "60%",
+                  height: "60%",
+                  boxShadow: "0.3rem 0.3rem 0.6rem grey",
+                  paddingRight: "1rem",
+                  display: "flex",
+                  flexDirection: "row !important",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <Card
+                  sx={{
+                    width: "50%",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column !important",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    margin: "auto",
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    image={left_image2}
+                    alt="login picture"
+                  />
+                </Card>
+
+                <Box
+                  sx={{
+                    width: "50%",
+                    margin: "auto",
+                  }}
+                >
+                  <Formik
+                    initialValues={INITIAL_FORM_STATE}
+                    validationSchema={FORM_VALIDATION}
+                    onSubmit={handleSubmit}
+                  >
+                    {({ errors, touched }) => (
+                      <Form
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          margin: "auto",
+                          gap: 10,
+                        }}
+                      >
+                        <Stack gap={2}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              margin: "auto",
+                            }}
+                          >
+                            <Box>
+                              <Avatar
+                                src={coop}
+                                sx={{
+                                  width: 100,
+                                  borderRadius: 0,
+                                  objectFit: "cover",
+                                  marginY: "auto",
+                                }}
+                              />
+                            </Box>
+                            <Typography variant="h3">TMS</Typography>
+                          </Box>
+                          <Typography
+                            sx={{
+                              textAlign: "center",
+                              fontSize: "2rem",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Login
+                          </Typography>
+
+                          <Field
+                            as={TextField}
+                            name="username"
+                            label="Username"
+                            variant="outlined"
+                            fullWidth
+                            error={touched.username && !!errors.username}
+                            helperText={<ErrorMessage name="username" />}
                           />
-                        </FormControl>
-                      </Stack>
-                      <Stack>
-                        <Button type="submit" variant="contained">
-                          Login
-                        </Button>
-                      </Stack>
-                    </Form>
-                  )}
-                </Formik>
-              </Box>
-            </Stack>
-          )}
-        </Box>
+
+                          <FormControl
+                            variant="outlined"
+                            error={touched.password && !!errors.password}
+                            fullWidth
+                          >
+                            <InputLabel htmlFor="outlined-adornment-password">
+                              Password
+                            </InputLabel>
+                            <Field
+                              as={OutlinedInput}
+                              id="outlined-adornment-password"
+                              type={showPassword ? "text" : "password"}
+                              name="password"
+                              endAdornment={
+                                <InputAdornment position="end">
+                                  <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    onMouseDown={handleMouseDownPassword}
+                                    edge="end"
+                                  >
+                                    {showPassword ? (
+                                      <VisibilityOff />
+                                    ) : (
+                                      <Visibility />
+                                    )}
+                                  </IconButton>
+                                </InputAdornment>
+                              }
+                              label="Password"
+                            />
+                            <ErrorMessage
+                              name="password"
+                              component="div"
+                              style={{ color: "red" }}
+                            />
+                          </FormControl>
+                        </Stack>
+                        <Stack>
+                          <Button type="submit" variant="contained">
+                            Login
+                          </Button>
+                        </Stack>
+                      </Form>
+                    )}
+                  </Formik>
+                </Box>
+              </Stack>
+            )}
+          </Box>
+        </Grid>
       </Grid>
-    </Grid>
+    </ThemeProvider>
   );
 };
 
