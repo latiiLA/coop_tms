@@ -139,6 +139,42 @@ const Links = () => {
             IT Service Management
           </Button>
         </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "1rem",
+            backgroundColor: theme.palette.background.default,
+            borderRadius: "8px",
+            boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "500",
+              color: theme.palette.text.primary, // Dynamic text color
+            }}
+          >
+            Cortex Web
+          </Typography>
+
+          <Button
+            variant="contained"
+            href="http://10.1.177.90:7777/cortex-web/app/app"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+              ":hover": { backgroundColor: theme.palette.primary.dark },
+              width: "15rem",
+            }}
+          >
+            Cortex Web GUI
+          </Button>
+        </Box>
       </Box>
     </Paper>
   );
