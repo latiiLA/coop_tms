@@ -33,7 +33,6 @@ function TabPanel(props) {
 export default function ManagePOS() {
   const navigate = useNavigate();
   const [dataRows, setDataRows] = useState([]);
-  const [pings, setPings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [role, setRole] = useState("user");
@@ -107,16 +106,6 @@ export default function ManagePOS() {
       }
       return (a.unitId || 0) - (b.unitId || 0); // Handle cases where unitId might be missing or non-numeric
     });
-
-  filteredRows = filteredRows.map((terminal) => ({
-    ...terminal,
-    pingStatus:
-      pings.find((ping) => ping.terminalId === terminal.terminalId)
-        ?.pingStatus || false,
-    timestamp:
-      pings.find((ping) => ping.terminalId === terminal.terminalId)
-        ?.timestamp || Date.now(),
-  }));
 
   // console.log(filteredRows);
 

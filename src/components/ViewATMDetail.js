@@ -1,8 +1,7 @@
 import { Box, Button, Card, TextField, Typography } from "@mui/material";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ViewATMDetail = () => {
   const navigate = useNavigate();

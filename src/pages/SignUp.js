@@ -21,10 +21,7 @@ import {
 
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
 import { makeStyles } from "@material-ui/styles";
-import Header from "../components/Header";
-// import axios from "axios";
 
 const useStyles = makeStyles({
   all: {
@@ -62,7 +59,6 @@ const SignUp = () => {
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   const classes = useStyles();
-  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = React.useState(false);
   const [showPassword2, setShowPassword2] = React.useState(false);

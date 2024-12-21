@@ -1,29 +1,15 @@
 import {
-  AppBar,
   Avatar,
-  Badge,
   Box,
-  Button,
-  Divider,
-  Grid,
-  Link,
   Menu,
   MenuItem,
-  Tab,
-  Tabs,
-  Toolbar,
   Tooltip,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import DarkMode from "../DarkMode/DarkMode";
-import Search from "./SearchComponent";
-import { AccountCircle, Notifications } from "@mui/icons-material";
 import propicture from ".././assets/profile_avatar.jpg";
 const settings = [
   { name: "Profile", link: "/profile" },
@@ -33,7 +19,6 @@ const settings = [
 
 const Header = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const handleOpenUserMenu = (event) => {

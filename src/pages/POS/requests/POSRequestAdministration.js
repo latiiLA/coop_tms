@@ -1,12 +1,9 @@
 import { Box, Divider, Typography } from "@mui/material";
 import React from "react";
-
-import ViewPOSRequests from "../ViewPOSRequests";
 import RequestPOS from "./RequestPOS";
 import RelocatedRequest from "./RelocateRequest";
 import RequestStatus from "./RequestStatus";
 import ManagePOS from "../ManagePOS";
-import RelocatedPOS from "../RelocatedPOS";
 
 const POSRequestAdministration = () => {
   return (

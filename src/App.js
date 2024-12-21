@@ -8,7 +8,6 @@ import {
   Router,
 } from "react-router-dom";
 import { useAuthContext } from "./context/AuthContext";
-import Layout from "./Layout/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Dashboard from "./pages/dashboard/Dashboard";
@@ -54,11 +53,9 @@ import RelocatedPOS from "./pages/POS/RelocatedPOS";
 import RelocatedRequest from "./pages/POS/requests/RelocateRequest";
 import ViewPOSRequests from "./pages/POS/ViewPOSRequests";
 import RequestStatus from "./pages/POS/requests/RequestStatus";
-import RequestDetails from "./pages/POS/requests/RequestDetails";
 import ApprovePOSRequest from "./pages/POS/ApprovePOSRequest";
 import EditRequests from "./pages/POS/requests/EditRequests";
 import Posdashboard from "./pages/dashboard/posdashboard/Posdashboard.js";
-import Side from "./pages/sidebar/Side.js";
 import SideDashboard from "./pages/sidebar/SideDashboard.js";
 import TerminalCreationManual from "./pages/Manual/TerminalCreationManual.js";
 import POSMerchantGuide from "./pages/Manual/POSMerchantGuide.js";

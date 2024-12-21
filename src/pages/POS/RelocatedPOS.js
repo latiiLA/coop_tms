@@ -33,7 +33,6 @@ function TabPanel(props) {
 export default function RelocatedPOS() {
   const navigate = useNavigate();
   const [dataRows, setDataRows] = useState([]);
-  const [pings, setPings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [role, setRole] = useState("user");

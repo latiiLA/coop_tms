@@ -19,8 +19,6 @@ export default function ViewBranch() {
   const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const [value, setValue] = useState(0); // State for the active tab
   const [searchText, setSearchText] = useState(""); // State for search input
 
   const fetchRows = async () => {

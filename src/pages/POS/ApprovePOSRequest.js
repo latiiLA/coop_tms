@@ -2,14 +2,12 @@ import { Box, Button, Card, Typography } from "@mui/material";
 import { Form, Formik } from "formik";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CustomSelect, CustomTextField } from "../../components/CustomFields";
-import { request_status } from "../../components/DropDownFormData";
+import { CustomTextField } from "../../components/CustomFields";
 import axios from "axios";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import { Download } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { useAuthContext } from "../../context/AuthContext";
 
 const ApprovePOSRequest = () => {
   const navigate = useNavigate();
@@ -18,7 +16,6 @@ const ApprovePOSRequest = () => {
   // const [status, setStatus] = useState("");
   const location = useLocation();
   const { row } = location.state;
-  const { role } = useAuthContext();
 
   // console.log(row, "row");
 

@@ -1,12 +1,9 @@
 import { Box, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import Sidebar from "../sidebar/Sidebar";
-import Header from "../../components/Header";
 import TotalTerminalPieChart from "./TotalTerminalPieChart";
 import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import TerminalCountPerDistrict from "./TerminalCountPerDistrict";
-import PortGraph from "./PortGraph";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import NCRData from "./NCRData";

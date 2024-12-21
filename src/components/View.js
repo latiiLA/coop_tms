@@ -1,68 +1,10 @@
 import { DataGrid } from "@mui/x-data-grid";
-import {
-  Box,
-  IconButton,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, IconButton, TextField, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
-// const rows = [
-//   {
-//     id: 1,
-//     unitId: 1,
-//     terminalId: "EFDC0122",
-//     terminalName: "Nekemte",
-//     branchName: "Nekemte",
-//     acceptorLocation: "Nekemte",
-//     cbsAccount: "ETB10005000102222",
-//     port: "6800",
-//     ipAddress: "198.563.25.3",
-//     type: "CRM",
-//     status: "Done",
-//     dateCreated: "06/06/2024",
-//   },
-//   {
-//     id: 2,
-//     unitId: 1,
-//     terminalId: "EFD0122",
-//     terminalName: "Nekemte",
-//     branchName: "Nekemte",
-//     acceptorLocation: "Nekemte",
-//     cbsAccount: "ETB10005000102222",
-//     port: "6800",
-//     ipAddress: "198.563.255.333",
-//     type: "NCR",
-//     status: "Done",
-//     dateCreated: "6/6/2024",
-//   },
-//   {
-//     id: 3,
-//     unitId: 444,
-//     terminalId: "EFD0122",
-//     terminalName: "Nekemte",
-//     branchName: "Nekemte",
-//     acceptorLocation: "Nekemte",
-//     cbsAccount: "ETB10005000102222",
-//     port: "6800",
-//     ipAddress: "198.563.25.3",
-//     type: "CRM",
-//     status: "Done",
-//     dateCreated: "6/6/2024",
-//   },
-//   { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-//   { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-//   { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
-//   { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-//   { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-//   { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
-// ];
 
 async function fetchRows() {
   const response = await axios.get(

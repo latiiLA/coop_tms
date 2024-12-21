@@ -3,7 +3,6 @@ import React from "react";
 
 const Links = () => {
   const theme = useTheme(); // Access the theme for dynamic styling
-  const isDarkMode = theme.palette.mode === "dark"; // Check if the current theme is dark mode
 
   return (
     <Paper

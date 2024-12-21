@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Box,
   Typography,
-  Button,
   Card,
   FormControl,
   InputLabel,
@@ -18,13 +17,12 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeProvider";
 import demoTheme from "../DarkMode/demoTheme";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const { role, setRole } = useAuthContext();
-  const theme = useTheme();
   const [loading, setLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -39,13 +37,6 @@ const ForgotPassword = () => {
 
   const handleClickShowPassword3 = () => setShowPassword3((show) => !show);
   const handleMouseDownPassword3 = (event) => event.preventDefault();
-
-  // useEffect(() => {
-  //   // Handle redirection or other logic if necessary
-  //   if (!["tempo_user", "tempo_admin", "tempo_superadmin"].includes(role)) {
-  //     window.location.href = "/home";
-  //   }
-  // }, [role]);
 
   const handleSubmit = async (update_data) => {
     setLoading(true);
@@ -256,9 +247,13 @@ const ForgotPassword = () => {
                     />
                   </FormControl>
 
-                  <Button variant="contained" type="submit">
+                  <LoadingButton
+                    loading={loading}
+                    variant="contained"
+                    type="submit"
+                  >
                     Submit
-                  </Button>
+                  </LoadingButton>
                 </Box>
               </Form>
             )}

@@ -9,11 +9,7 @@ import {
   CustomSelect,
   CustomTextField,
 } from "../../../components/CustomFields";
-import {
-  pos_status,
-  districts,
-  pos_sites,
-} from "../../../components/DropDownFormData";
+import { districts, pos_sites } from "../../../components/DropDownFormData";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 
 const RelocatedRequest = () => {

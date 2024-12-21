@@ -8,6 +8,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import axios from "axios";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const EditPOS = () => {
   const navigate = useNavigate();
@@ -215,9 +216,13 @@ const EditPOS = () => {
                     marginTop: 2,
                   }}
                 >
-                  <Button variant="contained" type="Submit">
+                  <LoadingButton
+                    loading={loading}
+                    variant="contained"
+                    type="Submit"
+                  >
                     Update
-                  </Button>
+                  </LoadingButton>
                   <Button
                     onClick={() =>
                       role === "posuser"

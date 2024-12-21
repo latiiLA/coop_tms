@@ -16,8 +16,6 @@ import {
 } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseIcon from "@mui/icons-material/Close";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import HomeLink from "../../components/HomeLink";
@@ -25,7 +23,6 @@ import {
   Dashboard,
   Atm,
   Assessment,
-  AddBox,
   Summarize,
   AdminPanelSettings,
   Add,
@@ -48,7 +45,6 @@ import {
   AddCircle,
   Explore,
   AtmOutlined,
-  QuestionMark,
   ChevronRight,
   ChevronLeft,
 } from "@mui/icons-material";

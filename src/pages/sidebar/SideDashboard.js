@@ -2,33 +2,16 @@ import * as React from "react";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { createTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import DescriptionIcon from "@mui/icons-material/Description";
-import LayersIcon from "@mui/icons-material/Layers";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { useDemoRouter } from "@toolpad/core/internal";
 import logo from "../../assets/coop.gif";
 import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer";
-import {
-  Avatar,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  IconButton,
-  Popover,
-  Radio,
-  RadioGroup,
-  Stack,
-  Tooltip,
-  useColorScheme,
-} from "@mui/material";
-import { AccountPreview } from "@toolpad/core/Account";
+import { Avatar, IconButton, Tooltip } from "@mui/material";
 import propicture from "../../assets/profile_avatar.jpg";
 import { useTheme } from "../../context/ThemeProvider";
 import {
@@ -128,12 +111,11 @@ const NAVIGATION = [
         title: "Request POS",
         icon: <Add />,
       },
-
-      // {
-      //   segment: "bulkrequest",
-      //   title: "Bulk POS Request",
-      //   icon: <List />,
-      // },
+      {
+        segment: "bulkrequest",
+        title: "Bulk POS Request",
+        icon: <List />,
+      },
       {
         segment: "viewpos",
         title: "Explore POS",

@@ -1,11 +1,4 @@
-import {
-  Cancel,
-  CheckCircle,
-  ContentCopy,
-  Download,
-  Edit,
-  Preview,
-} from "@mui/icons-material";
+import { ContentCopy, Edit, Preview } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -13,7 +6,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   IconButton,
   Tooltip,
   Typography,
