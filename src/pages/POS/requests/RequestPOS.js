@@ -10,7 +10,6 @@ import {
   CustomTextField,
 } from "../../../components/CustomFields";
 import { districts, pos_sites } from "../../../components/DropDownFormData";
-import LoadingSpinner from "../../../components/LoadingSpinner";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { CloudUpload } from "@mui/icons-material";
 
@@ -36,7 +35,10 @@ const RequestPOS = () => {
   const phoneRegExp = /^[0-9]{10}$/;
 
   const FORM_VALIDATION = Yup.object().shape({
-    serialNumber: Yup.string().required("Serial number is required"),
+    serialNumber: Yup.string()
+      .required("Serial number is required")
+      .min(16, "Serial Number should be 16 characters.")
+      .max(16, "Serial Number should be 16 characters."),
     posBranchName: Yup.string().required("Branch name is required"),
     posDistrict: Yup.string().required("District is required"),
     posSite: Yup.string().required("Terminal site assignment is required"),
@@ -48,9 +50,9 @@ const RequestPOS = () => {
       .matches(phoneRegExp, "Phone number must be 10 digits"),
     posCbsAccount: Yup.string()
       .required("CBS Account is required")
-      .min(12, "CBS Account must be at least 12 characters"),
+      .min(13, "CBS Account must be at least 13 characters"),
     simCardNumber: Yup.string()
-      .required("SIM Card Number is required")
+      .required("Service number should is required")
       .matches(phoneRegExp, "Phone number must be 10 digits"),
     staticIp: Yup.string()
       .required("IP Address is required")
@@ -281,14 +283,18 @@ const RequestPOS = () => {
                         />
                         <CustomTextField
                           name="simCardNumber"
-                          label="SIM Card Number"
+                          label="Service Number"
                           required
                         />
                       </Box>
                       <Box
                         sx={{
                           display: "flex",
-                          flexDirection: { md: "row", xs: "column" },
+                          flexDirection: {
+                            lg: "row",
+                            md: "column",
+                            xs: "column",
+                          },
                           gap: 2,
                         }}
                       >
@@ -307,7 +313,7 @@ const RequestPOS = () => {
                             gap: 1,
                           }}
                         >
-                          <Typography>Upload Merchant Agreement</Typography>
+                          <Typography>Upload POS Agreement</Typography>
                           <Button
                             variant="outlined"
                             component="label"

@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  Divider,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Card, Divider, Typography } from "@mui/material";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import React, { useState } from "react";
@@ -13,12 +6,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { CustomSelect, CustomTextField } from "../../components/CustomFields";
-import {
-  pos_status,
-  districts,
-  pos_sites,
-} from "../../components/DropDownFormData";
-import LoadingSpinner from "../../components/LoadingSpinner";
+import { districts, pos_sites } from "../../components/DropDownFormData";
 import { CloudUpload } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
 
@@ -51,15 +39,19 @@ const AddPOS = () => {
   // Tom@J-Class.com
 
   const FORM_VALIDATION = Yup.object().shape({
-    serialNumber: Yup.string().required("Serial number is required"),
+    serialNumber: Yup.string()
+      .required("Serial number is required")
+      .min(16, "Serial number must at least 16 character.")
+      .max(16, "Serial number must at least 16 character."),
     posTerminalId: Yup.string()
       .required("Terminal ID is required")
-      .min(8, "Terminal ID must be at least 8 characters"),
+      .min(8, "Terminal ID must be at least 8 characters")
+      .max(8, "Terminal ID must be at least 8 characters"),
 
     posBranchName: Yup.string().required("Branch Name is required"),
     posDistrict: Yup.string().required("District is required"),
     posSite: Yup.string().required("Terminal site assignment is required"),
-    merchantId: Yup.string(),
+    merchantId: Yup.string().required("Merchant Id is required"),
     merchantName: Yup.string().required("Merchant name is required"),
     merchantAddress: Yup.string().required("Merchant Address is required"),
     merchantPhonenumber: Yup.string()
@@ -67,9 +59,9 @@ const AddPOS = () => {
       .matches(phoneRegExp, "Phone number must be 10 digits"),
     posCbsAccount: Yup.string()
       .required("CBS Account is required")
-      .min(12, "CBS Account must be at least 12 characters"),
+      .min(13, "CBS Account must be at least 13 characters"),
     simCardNumber: Yup.string()
-      .required("SIM Card Number is required")
+      .required("Service number is required")
       .matches(phoneRegExp, "Phone number must be 10 digits"),
     staticIp: Yup.string()
       .required("IP Address is required")
@@ -247,6 +239,7 @@ const AddPOS = () => {
                         <CustomTextField
                           name="merchantId"
                           label="Merchant ID"
+                          required
                         />
                       </Box>
                       <Box
@@ -301,6 +294,7 @@ const AddPOS = () => {
                       <Box
                         sx={{
                           display: "flex",
+                          flexDirection: { xs: "column", md: "row" },
                           gap: 2,
                         }}
                       >
@@ -311,32 +305,36 @@ const AddPOS = () => {
                         />
                         <CustomTextField
                           name="simCardNumber"
-                          label="SIM Card Number"
+                          label="Service Number"
                           required
                         />
                       </Box>
                       <Box
                         sx={{
                           display: "flex",
+                          flexDirection: {
+                            xs: "column",
+                            md: "column",
+                            lg: "row",
+                          },
                           gap: 2,
                         }}
                       >
                         <CustomTextField
                           name="staticIp"
                           label="Static IP Address"
+                          sx={{ width: { xs: "100%", md: "49%" } }}
                           required
-                          sx={{ width: "49%" }}
                         />
                         {/* File Upload Section */}
                         <Box
                           sx={{
                             display: "flex",
-                            flexDirection: { xs: "column", md: "row" },
                             alignItems: "center",
                             gap: 1,
                           }}
                         >
-                          <Typography>Upload Merchant Agreement</Typography>
+                          <Typography>Upload POS Agreement</Typography>
                           <Button
                             variant="outlined"
                             component="label"
