@@ -101,9 +101,16 @@ export default function ViewRelocated() {
       }))
       .reverse() ?? [];
 
+  // Filtered rows
+  let filteredRows = rows.filter((row) =>
+    Object.keys(row).some((key) =>
+      String(row[key]).toLowerCase().includes(searchText.toLowerCase())
+    )
+  );
+
   // Split sorted rows into CRM and NCR
-  const crmRows = rows.filter((row) => row.type === "CRM");
-  const ncrRows = rows.filter((row) => row.type === "NCR");
+  const crmRows = filteredRows.filter((row) => row.type === "CRM");
+  const ncrRows = filteredRows.filter((row) => row.type === "NCR");
 
   return (
     <Box
@@ -137,7 +144,7 @@ export default function ViewRelocated() {
         />
       </Box>
       <TabPanel value={value} index={0}>
-        <ViewTerminalGridComponent rows={rows} isRelocated={true} />
+        <ViewTerminalGridComponent rows={filteredRows} isRelocated={true} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
