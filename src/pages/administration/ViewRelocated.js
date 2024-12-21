@@ -35,7 +35,6 @@ export default function ViewRelocated() {
   const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [role, setRole] = useState("user");
   const [value, setValue] = useState(0); // State for the active tab
   const [searchText, setSearchText] = useState(""); // State for search input
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -62,7 +61,6 @@ export default function ViewRelocated() {
       );
 
       setDataRows(response.data.terminals);
-      setRole(response.data.role);
     } catch (error) {
       // console.error("Error fetching terminals:", error);
       setError(error.message);

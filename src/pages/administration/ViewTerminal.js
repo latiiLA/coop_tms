@@ -33,10 +33,8 @@ function TabPanel(props) {
 export default function ViewTerminal() {
   const navigate = useNavigate();
   const [dataRows, setDataRows] = useState([]);
-  const [pings, setPings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [role, setRole] = useState("user");
   const [value, setValue] = useState(0); // State for the active tab
   const [searchText, setSearchText] = useState(""); // State for search input
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -60,7 +58,6 @@ export default function ViewTerminal() {
       });
 
       setDataRows(response.data.terminals);
-      setRole(response.data.role);
     } catch (error) {
       // console.error("Error fetching terminals:", error);
       setError(error.message);
@@ -107,16 +104,6 @@ export default function ViewTerminal() {
       }
       return (a.unitId || 0) - (b.unitId || 0); // Handle cases where unitId might be missing or non-numeric
     });
-
-  // filteredRows = filteredRows.map((terminal) => ({
-  //   ...terminal,
-  //   pingStatus:
-  //     pings.find((ping) => ping.terminalId === terminal.terminalId)
-  //       ?.pingStatus || false,
-  //   timestamp:
-  //     pings.find((ping) => ping.terminalId === terminal.terminalId)
-  //       ?.timestamp || Date.now(),
-  // }));
 
   // console.log(filteredRows);
 

@@ -1,13 +1,5 @@
 import { Box, Divider, Typography } from "@mui/material";
 import React from "react";
-
-import CreateUser from "./CreateUser";
-import ViewUsers from "./ViewUsers";
-import ViewFeedback from "../../components/ViewFeedback";
-import ViewBugs from "../../components/ViewBugs";
-
-import UserActivityLog from "./UserActivityLog";
-import Analytics from "../dashboard/Analytics";
 import AddPOS from "../POS/AddPOS";
 import ManagePOS from "../POS/ManagePOS";
 import RelocatedPOS from "../POS/RelocatedPOS";

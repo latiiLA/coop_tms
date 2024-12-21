@@ -3,10 +3,8 @@ import { Box, TextField, Typography, Button, Card } from "@mui/material";
 import { Formik, Form, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const CreateCommands = () => {
-  const navigate = useNavigate();
   const INITIAL_FORM_STATE = {
     command: "",
     description: "",

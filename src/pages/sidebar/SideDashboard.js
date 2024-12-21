@@ -13,7 +13,6 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer";
 import { Avatar, IconButton, Tooltip } from "@mui/material";
 import propicture from "../../assets/profile_avatar.jpg";
-import { useTheme } from "../../context/ThemeProvider";
 import {
   Add,
   AdminPanelSettings,
@@ -327,7 +326,6 @@ const NAVIGATION = [
 
 function DemoPageContent({ pathname }) {
   const navigate = useNavigate();
-  const { currentUser } = useAuthContext();
 
   React.useEffect(() => {
     navigate(pathname);
@@ -340,8 +338,6 @@ DemoPageContent.propTypes = {
 
 function SideDashboard(props) {
   const navigate = useNavigate();
-  const { window } = props;
-  const { darkMode, toggleTheme } = useTheme();
   const { role, currentUser } = useAuthContext();
 
   // Filter navigation items based on roles

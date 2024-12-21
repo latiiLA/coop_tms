@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+import { Box, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import SaveAsIcon from "@mui/icons-material/SaveAs";
 import { CopyAll } from "@mui/icons-material";
 import toast from "react-hot-toast";
 
@@ -17,7 +15,6 @@ async function fetchRows() {
 
 export default function Commands({ role = "admin" }) {
   const [data_rows, setDataRows] = useState([]);
-  const [editingRow, setEditingRow] = useState(null);
   const [edited, setEdited] = useState({});
 
   const handleCopy = (rowData) => {
@@ -117,21 +114,6 @@ export default function Commands({ role = "admin" }) {
       ),
     },
   ];
-
-  const handleEdit = (row) => {
-    setEditingRow(row.id);
-    setEdited({ ...row });
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEdited({ ...edited, [name]: value });
-  };
-
-  const handleSave = (id) => {
-    // Add your save logic here
-    setEditingRow(null);
-  };
 
   const handleDelete = (id) => {
     // Add your delete logic here
