@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import * as XLSX from "xlsx";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { SimCard } from "@mui/icons-material";
 
 const BulkRequest = () => {
   const [columns, setColumns] = useState([]);
@@ -25,8 +26,8 @@ const BulkRequest = () => {
         if (sheetData.length > 0) {
           // Create columns from the first row
           const newColumns = sheetData[0].map((header, index) => ({
-            field: `column_${index}`,
-            headerName: header || `Column ${index + 1}`,
+            field: `column_${index}`, // Correct template literal
+            headerName: header || `Column ${index + 1}`, // Correct template literal
             flex: 1,
           }));
 
@@ -34,11 +35,12 @@ const BulkRequest = () => {
           const newRows = sheetData.slice(1).map((row, rowIndex) => {
             const rowData = {};
             row.forEach((cell, cellIndex) => {
-              rowData[`column_${cellIndex}`] = cell;
+              rowData[`column_${cellIndex}`] = cell; // Correct template literal
             });
             return { id: rowIndex + 1, ...rowData };
           });
 
+          // Assuming setColumns and setRows are state setters (if using React)
           setColumns(newColumns);
           setRows(newRows);
         }

@@ -11,8 +11,9 @@ import { useAuthContext } from "./context/AuthContext";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { Box } from "@mui/material";
 import { Toaster } from "react-hot-toast";
+import SideDashboard from "./pages/sidebar/SideDashboard";
+import Login from "./pages/Login";
 const Home = React.lazy(() => import("./pages/Home"));
-const Login = React.lazy(() => import("./pages/Login"));
 const Dashboard = React.lazy(() => import("./pages/dashboard/Dashboard"));
 const ViewTerminal = React.lazy(
   () => import("./pages/administration/ViewTerminal")
@@ -93,7 +94,7 @@ const EditRequests = React.lazy(
 const Posdashboard = React.lazy(
   () => import("./pages/dashboard/posdashboard/Posdashboard")
 );
-const SideDashboard = React.lazy(() => import("./pages/sidebar/SideDashboard"));
+
 const TerminalCreationManual = React.lazy(
   () => import("./pages/Manual/TerminalCreationManual")
 );
