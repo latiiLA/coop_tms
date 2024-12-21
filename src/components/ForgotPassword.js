@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState } from "react";
 import {
   Box,
-  TextField,
   Typography,
   Button,
   Card,
@@ -11,7 +10,6 @@ import {
   InputAdornment,
   IconButton,
   ThemeProvider,
-  createTheme,
 } from "@mui/material";
 import { Formik, Form, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
@@ -21,6 +19,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeProvider";
+import demoTheme from "../DarkMode/demoTheme";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -92,22 +91,6 @@ const ForgotPassword = () => {
       setLoading(false);
     }
   };
-
-  const demoTheme = createTheme({
-    cssVariables: {
-      colorSchemeSelector: "data-toolpad-color-scheme",
-    },
-    colorSchemes: { light: true, dark: true },
-    breakpoints: {
-      values: {
-        xs: 0,
-        sm: 600,
-        md: 600,
-        lg: 1200,
-        xl: 1536,
-      },
-    },
-  });
 
   const INITIAL_FORM_STATE = {
     password: "",

@@ -17,7 +17,6 @@ import {
   useTheme,
   Grid,
   Avatar,
-  createTheme,
   ThemeProvider,
 } from "@mui/material";
 
@@ -32,6 +31,7 @@ import { useAuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner";
 import coop from "../assets/coop.gif";
+import demoTheme from "../DarkMode/demoTheme";
 
 const Login = () => {
   const INITIAL_FORM_STATE = {
@@ -42,22 +42,6 @@ const Login = () => {
   const FORM_VALIDATION = Yup.object().shape({
     username: Yup.string().required("Username is required"),
     password: Yup.string().required("Password is required"),
-  });
-
-  const demoTheme = createTheme({
-    cssVariables: {
-      colorSchemeSelector: "data-toolpad-color-scheme",
-    },
-    colorSchemes: { light: true, dark: true },
-    breakpoints: {
-      values: {
-        xs: 0,
-        sm: 600,
-        md: 600,
-        lg: 1200,
-        xl: 1536,
-      },
-    },
   });
 
   const theme = useTheme();

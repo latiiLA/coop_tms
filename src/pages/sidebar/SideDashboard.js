@@ -60,6 +60,7 @@ import {
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import { TbStatusChange } from "react-icons/tb";
+import demoTheme from "../../DarkMode/demoTheme";
 
 const NAVIGATION = [
   {
@@ -341,23 +342,6 @@ const NAVIGATION = [
   //     icon: <LayersIcon />,
   //   },
 ];
-
-const demoTheme = createTheme({
-  cssVariables: {
-    colorSchemeSelector: "data-toolpad-color-scheme",
-  },
-
-  colorSchemes: { light: true, dark: true },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
-});
 
 function DemoPageContent({ pathname }) {
   const navigate = useNavigate();
