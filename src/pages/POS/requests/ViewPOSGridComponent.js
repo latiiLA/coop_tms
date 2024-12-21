@@ -228,7 +228,7 @@ const ViewPOSGridComponent = ({ rows, isRelocated, detailType }) => {
       let updatedPrmFile = prmFileContent
         .replace(/^HDR1=.*$/m, `HDR1=${configData.merchantName}`)
         .replace(/^HDR2=.*$/m, `HDR2=${configData.merchantAddress}`)
-        .replace(/^HDR3=.*$/m, `HDR3=${configData.merchantPhonenumber}`)
+        .replace(/^HDR3=.*$/m, `HDR3=TEL: ${configData.merchantPhonenumber}`)
         .replace(/^MID=.*$/m, `MID=${configData.merchantId}`)
         .replace(/^TID=.*$/m, `TID=${configData.posTerminalId}`)
         .replace(/^HOSTIP=.*$/m, `HOSTIP=${HOSTIP}`)
