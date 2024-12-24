@@ -110,11 +110,11 @@ const NAVIGATION = [
         title: "Request POS",
         icon: <Add />,
       },
-      {
-        segment: "bulkrequest",
-        title: "Bulk POS Request",
-        icon: <List />,
-      },
+      // {
+      //   segment: "bulkrequest",
+      //   title: "Bulk POS Request",
+      //   icon: <List />,
+      // },
       {
         segment: "viewpos",
         title: "Explore POS",
