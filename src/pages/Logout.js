@@ -6,23 +6,33 @@ import axios from "axios";
 
 const Logout = () => {
   const navigate = useNavigate();
-  const hasShownToast = useRef(false); // Use ref to track if the toast has been shown
+  const hasShownToast = useRef(false); // Track if the toast has been shown
   const { setRole } = useAuthContext();
+  const isMounted = useRef(true); // Track if the component is mounted
+
+  // Cleanup function to set isMounted to false when the component is unmounted
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const handleLogout = async () => {
       const recieved_token = localStorage.getItem("token");
       localStorage.removeItem("token");
+
       if (!recieved_token) {
-        // console.error("No authentication token found");
-        if (!hasShownToast.current) {
+        if (!hasShownToast.current && isMounted.current) {
           toast.error(
             "Error: User is not authenticated or is already logged out."
           );
           hasShownToast.current = true;
         }
         setRole(null);
-        navigate("/login");
+        if (isMounted.current) {
+          navigate("/login");
+        }
         return;
       }
 
@@ -41,18 +51,18 @@ const Logout = () => {
 
         if (response.status === 200) {
           localStorage.removeItem("token"); // Clear token from localStorage
-          if (!hasShownToast.current) {
-            // toast.success("Logout successful!");
+          if (!hasShownToast.current && isMounted.current) {
+            toast.success("Logout successful!");
             hasShownToast.current = true;
           }
           setRole(null);
-          navigate("/login"); // Redirect to login page
+          if (isMounted.current) {
+            navigate("/login"); // Redirect to login page
+          }
         } else {
-          // console.error("Logout failed");
           toast.error("Logout failed");
         }
       } catch (error) {
-        // console.error("An error occurred during logout", error);
         toast.error("An error occurred during logout");
       }
     };
