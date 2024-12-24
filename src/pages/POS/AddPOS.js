@@ -40,7 +40,7 @@ const AddPOS = () => {
 
   const FORM_VALIDATION = Yup.object().shape({
     serialNumber: Yup.string()
-      .required("Serial number is required")
+      .required("Serial number is required.")
       .min(16, "Serial number must at least 16 character.")
       .max(16, "Serial number must at least 16 character."),
     posTerminalId: Yup.string()
@@ -334,7 +334,9 @@ const AddPOS = () => {
                             gap: 1,
                           }}
                         >
-                          <Typography>Upload POS Agreement</Typography>
+                          <Typography>
+                            Upload POS Agreement (Optional)
+                          </Typography>
                           <Button
                             variant="outlined"
                             component="label"
