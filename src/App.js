@@ -14,7 +14,6 @@ import { Toaster } from "react-hot-toast";
 import SideDashboard from "./pages/sidebar/SideDashboard";
 import Login from "./pages/Login";
 const Home = React.lazy(() => import("./pages/Home"));
-const AnimatedHomePage = React.lazy(() => import("./pages/AnimatedHomepage"));
 // const SideDashboard = React.lazy(() => import("./pages/sidebar/SideDashboard"));
 const Dashboard = React.lazy(() => import("./pages/dashboard/Dashboard"));
 const ViewTerminal = React.lazy(
@@ -221,14 +220,6 @@ function App() {
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <Home />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/animatedhome"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <AnimatedHomePage />
                 </Suspense>
               }
             />
