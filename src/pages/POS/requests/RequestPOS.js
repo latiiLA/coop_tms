@@ -313,9 +313,7 @@ const RequestPOS = () => {
                             gap: 1,
                           }}
                         >
-                          <Typography>
-                            Upload POS Agreement (Optional)
-                          </Typography>
+                          <Typography>Upload POS Agreement</Typography>
                           <Button
                             variant="outlined"
                             component="label"

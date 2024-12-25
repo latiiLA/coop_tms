@@ -11,7 +11,7 @@ import { useDemoRouter } from "@toolpad/core/internal";
 import logo from "../../assets/coop.gif";
 import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer";
-import { Avatar, IconButton, Tooltip } from "@mui/material";
+import { Avatar, createTheme, IconButton, Tooltip } from "@mui/material";
 import propicture from "../../assets/profile_avatar.jpg";
 import {
   Add,
@@ -42,7 +42,8 @@ import {
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import { TbStatusChange } from "react-icons/tb";
-import demoTheme from "../../DarkMode/demoTheme";
+import customTheme from "../../DarkMode/customTheme";
+import DarkMode from "../../DarkMode/DarkMode";
 
 const NAVIGATION = [
   {
@@ -110,11 +111,11 @@ const NAVIGATION = [
         title: "Request POS",
         icon: <Add />,
       },
-      // {
-      //   segment: "bulkrequest",
-      //   title: "Bulk POS Request",
-      //   icon: <List />,
-      // },
+      {
+        segment: "bulkrequest",
+        title: "Bulk POS Request",
+        icon: <List />,
+      },
       {
         segment: "viewpos",
         title: "Explore POS",
@@ -336,7 +337,10 @@ DemoPageContent.propTypes = {
   pathname: PropTypes.string.isRequired,
 };
 
+const defaultTheme = createTheme();
+
 function SideDashboard(props) {
+  // const { theme, toggleTheme } = use;
   const navigate = useNavigate();
   const { role, currentUser } = useAuthContext();
 
@@ -423,7 +427,7 @@ function SideDashboard(props) {
       authentication={authentication}
       navigation={filteredNavigation}
       router={router}
-      theme={demoTheme}
+      // theme={defaultTheme}
       branding={{
         title: (
           <Typography variant="h5" fontSize="20px">

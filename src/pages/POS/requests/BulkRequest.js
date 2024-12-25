@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import * as yup from "yup";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { CloudUpload } from "@mui/icons-material";
+import { CloudUpload, Download } from "@mui/icons-material";
+import fileUrl from "../../../assets/POS_Request_Template.xlsx";
 
 const BulkRequest = () => {
   const [columns, setColumns] = useState([]);
@@ -154,6 +155,13 @@ const BulkRequest = () => {
         }
       );
       toast.success("The request has been successfully updated.");
+      navigate("/posdetail", {
+        state: {
+          isRequest: false,
+          relocated: false,
+          rows,
+        },
+      });
     } catch (error) {
       toast.error(
         error.response?.data?.message || error.message || "Something went wrong"
@@ -170,6 +178,13 @@ const BulkRequest = () => {
     fileInputRef.current.value = null;
   };
 
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = "POS_Request_Template";
+    link.click();
+  };
+
   return (
     <Box sx={{ margin: 2, gap: 2 }}>
       <Box sx={{ marginBottom: 2, display: "flex", gap: 2 }}>
@@ -179,7 +194,7 @@ const BulkRequest = () => {
           component="label"
           startIcon={<CloudUpload />}
         >
-          {selectedFile ? "Change File" : "Upload File"}
+          {selectedFile ? "Change Request File" : "Upload Request File"}
           <input
             type="file"
             hidden
@@ -209,6 +224,13 @@ const BulkRequest = () => {
             </Button>
           </>
         )}
+        <Button
+          startIcon={<Download />}
+          variant="contained"
+          onClick={handleDownload}
+        >
+          Request Template
+        </Button>
       </Box>
       <Box sx={{ width: "100%" }}>
         {columns.length > 0 && rows.length > 0 && (
@@ -217,8 +239,7 @@ const BulkRequest = () => {
             columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
-            checkboxSelection
-            disableSelectionOnClick
+            checkboxSelection={false}
             autoHeight
           />
         )}

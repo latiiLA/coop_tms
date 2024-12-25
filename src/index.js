@@ -5,13 +5,16 @@ import { BrowserRouter as Router } from "react-router-dom";
 import "./index.css";
 import { ThemeProvider } from "./context/ThemeProvider";
 import { AuthContextProvider } from "./context/AuthContext";
+import demoTheme from "./DarkMode/customTheme";
+import customTheme from "./DarkMode/customTheme";
+import { darkTheme } from "./context/Themes";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <Router>
     <AuthContextProvider>
-      <ThemeProvider>
+      <ThemeProvider theme={customTheme}>
         <App />
       </ThemeProvider>
     </AuthContextProvider>

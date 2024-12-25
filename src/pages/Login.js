@@ -30,7 +30,8 @@ import { useAuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner";
 import coop from "../assets/coop.gif";
-import demoTheme from "../DarkMode/demoTheme";
+import customTheme from "../DarkMode/customTheme";
+import DarkMode from "../DarkMode/DarkMode";
 
 const Login = () => {
   const INITIAL_FORM_STATE = {
@@ -101,7 +102,7 @@ const Login = () => {
   }
 
   return (
-    <ThemeProvider theme={demoTheme}>
+    <ThemeProvider theme={customTheme}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Box
@@ -389,6 +390,7 @@ const Login = () => {
           </Box>
         </Grid>
       </Grid>
+      //{" "}
     </ThemeProvider>
   );
 };

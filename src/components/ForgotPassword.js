@@ -17,8 +17,10 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
-import demoTheme from "../DarkMode/demoTheme";
+import demoTheme from "../DarkMode/customTheme";
 import LoadingButton from "@mui/lab/LoadingButton";
+import customTheme from "../DarkMode/customTheme";
+import { ThemeSwitcher } from "@toolpad/core/DashboardLayout";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -112,12 +114,15 @@ const ForgotPassword = () => {
   });
 
   return (
-    <ThemeProvider theme={demoTheme}>
+    <ThemeProvider theme={customTheme}>
       <Box
         sx={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
+          width: "100%",
+          height: "100%",
+          backgroundColor: ThemeSwitcher.palette.primary.main,
         }}
       >
         <Card

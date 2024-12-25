@@ -13,7 +13,7 @@ import { Box } from "@mui/material";
 import { Toaster } from "react-hot-toast";
 import SideDashboard from "./pages/sidebar/SideDashboard";
 import Login from "./pages/Login";
-const Home = React.lazy(() => import("./pages/Home"));
+import Home from "./pages/Home";
 // const SideDashboard = React.lazy(() => import("./pages/sidebar/SideDashboard"));
 const Dashboard = React.lazy(() => import("./pages/dashboard/Dashboard"));
 const ViewTerminal = React.lazy(
@@ -191,6 +191,7 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<SideDashboard router={Router} />}>
+          <Route element={<ProtectedRoutes requiredRole={[]} />}></Route>
           <Route
             element={
               <ProtectedRoutes
@@ -214,15 +215,15 @@ function App() {
                 </Suspense>
               }
             />
-            <Route path="/logout" element={<Logout />} />
             <Route
-              path="/home"
+              path="/logout"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
-                  <Home />
+                  <Logout />
                 </Suspense>
               }
             />
+            <Route path="/home" element={<Home />} />
           </Route>
 
           <Route

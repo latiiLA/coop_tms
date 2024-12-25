@@ -22,7 +22,7 @@ export const ThemeProvider = ({ children }) => {
   const toggleTheme = () => {
     setDarkMode((prevMode) => !prevMode);
   };
-  const theme = darkMode ? darkTheme : lightTheme;
+  const theme = darkMode ? darkTheme : lightTheme; ;
   return (
     <ThemeContext.Provider value={{ darkMode, toggleTheme }}>
       <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>

@@ -1,11 +1,11 @@
 import { createTheme } from "@mui/material";
 
-const demoTheme = createTheme({
+const customTheme = createTheme({
   cssVariables: {
     colorSchemeSelector: "data-toolpad-color-scheme",
   },
 
-  colorSchemes: { light: true, dark: true },
+  colorSchemes: { light: true, dark: false },
   breakpoints: {
     values: {
       xs: 0,
@@ -17,4 +17,4 @@ const demoTheme = createTheme({
   },
 });
 
-export default demoTheme;
+export default customTheme;

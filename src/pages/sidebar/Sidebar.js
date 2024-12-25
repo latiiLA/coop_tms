@@ -54,7 +54,7 @@ import { MdMoving, MdSend, MdFiberNew } from "react-icons/md";
 import { TbStatusChange } from "react-icons/tb";
 
 const Sidebar = () => {
-  const theme = useTheme();
+  // const theme = useTheme();
   const navigate = useNavigate();
   const [openAdmin, setOpenAdmin] = useState(false);
   const [openReport, setOpenReport] = useState(false);
