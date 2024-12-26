@@ -159,11 +159,11 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
       navigator.clipboard
         .writeText(rowText)
         .then(() => {
-          toast.success("Terminal details copied to clipboard!");
+          toast.success("Copied to clipboard!");
         })
         .catch((err) => {
           // console.error("Failed to copy:", err);
-          toast.error("Failed to copy terminal details.");
+          toast.error("Failed to copy.");
         });
     } else {
       // Fallback for HTTP or unsupported browsers
@@ -206,20 +206,34 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     }
   };
 
-  const handleConfig = async (rowData) => {
+  const handleConfig = async (row) => {
     let type = "CBOBNA";
-    if (rowData.type === "NCR") {
+    if (row.type === "NCR") {
       type = "CBONCR";
     }
     // console.log(rowData);
 
-    const portName = await handlePortName(rowData.port);
+    const portName = await handlePortName(row.port);
     console.log("inside handle config", portName);
     const portNameLowercase = String(portName).toLowerCase();
 
-    const configData = `port.name  atm.1.${type}.${rowData.unitId}  CurrentNode  DnAtmServer  external  listen  <cmmt:CMMT_${portName}.*.${rowData.port}|${rowData.ipAddress}.*::cmmt_${portNameLowercase}>`;
-    setConfigData(configData); // Set config data
-    setOpen(true); // Open dialo
+    const rowData = `port.name  atm.1.${type}.${row.unitId}  CurrentNode  DnAtmServer  external  listen  <cmmt:CMMT_${portName}.*.${row.port}|${row.ipAddress}.*::cmmt_${portNameLowercase}>`;
+    // setConfigData(configData); // Set config data
+    // setOpen(true); // Open dialo
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(rowData)
+        .then(() => {
+          toast.success("Copied to clipboard!");
+        })
+        .catch((err) => {
+          // console.error("Failed to copy:", err);
+          toast.error("Failed to copy.");
+        });
+    } else {
+      // Fallback for HTTP or unsupported browsers
+      fallbackCopyText(rowData);
+    }
   };
 
   // Fallback method using a temporary textarea for older browsers or HTTP
@@ -243,29 +257,9 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     document.body.removeChild(textArea);
   };
 
-  const configCopy = (rowData) => {
-    // Format the row data into a string
-
-    // Check if the Clipboard API is available
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard
-        .writeText(rowData)
-        .then(() => {
-          toast.success("Terminal details copied to clipboard!");
-        })
-        .catch((err) => {
-          // console.error("Failed to copy:", err);
-          toast.error("Failed to copy terminal details.");
-        });
-    } else {
-      // Fallback for HTTP or unsupported browsers
-      fallbackCopyText(rowData);
-    }
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  // const handleClose = () => {
+  //   setOpen(false);
+  // };
 
   return (
     <Box>
@@ -318,7 +312,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
           checkboxSelection
         />
         {/* Dialog for Config Data */}
-        <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+        {/* <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
           <DialogTitle>Configuration Data</DialogTitle>
           <DialogContent>
             <Typography variant="body1">{configData}</Typography>
@@ -334,7 +328,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
               Copy
             </Button>
           </DialogActions>
-        </Dialog>
+        </Dialog> */}
       </Box>
     </Box>
   );
