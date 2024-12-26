@@ -233,44 +233,33 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
 
     try {
       document.execCommand("copy"); // Fallback to execCommand for unsupported environments
-      toast.success("Terminal details copied to clipboard!");
+      toast.success("Copied to clipboard!");
     } catch (err) {
       // console.error("Fallback: Failed to copy:", err);
-      toast.error("Failed to copy terminal details.");
+      toast.error("Failed to copy.");
     }
 
     // Remove the textarea element after copying
     document.body.removeChild(textArea);
   };
-  const configCopy = (text) => {
-    if (!text) {
-      toast.error("No config details to copy!");
-      return;
-    }
 
-    // Ensure the text is a string
-    const textToCopy =
-      typeof text === "object" ? JSON.stringify(text, null, 2) : text;
-    console.log("textToCopy", textToCopy);
+  const configCopy = (rowData) => {
+    // Format the row data into a string
 
-    try {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(textToCopy); // Modern API
-        toast.success("Config details copied to clipboard!");
-      } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = textToCopy;
-        textArea.style.position = "fixed"; // Prevent scrolling
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-        toast.success("Config details copied to clipboard!");
-      }
-    } catch (err) {
-      // console.error("Copy failed:", err);
-      toast.error("Failed to copy config details.");
+    // Check if the Clipboard API is available
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(rowData)
+        .then(() => {
+          toast.success("Terminal details copied to clipboard!");
+        })
+        .catch((err) => {
+          // console.error("Failed to copy:", err);
+          toast.error("Failed to copy terminal details.");
+        });
+    } else {
+      // Fallback for HTTP or unsupported browsers
+      fallbackCopyText(rowData);
     }
   };
 
