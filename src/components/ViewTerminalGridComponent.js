@@ -1,15 +1,5 @@
 import { ContentCopy, Edit, Preview } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,8 +22,24 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     { field: "unitId", headerName: "Unit ID", type: "number", flex: 0.4 },
     { field: "terminalId", headerName: "Terminal ID", flex: 0.6 },
     { field: "terminalName", headerName: "Terminal Name", flex: 1 },
-    { field: "branchName", headerName: "Branch Name", flex: 1 },
-    { field: "district", headerName: "District", flex: 0.7 },
+    {
+      field: "branchName",
+      headerName: "Branch Name",
+      flex: 1,
+      renderCell: (params) => {
+        return params.row.branchName
+          ? params.row.branchName.companyName
+          : "N/A";
+      },
+    },
+    {
+      field: "district",
+      headerName: "District",
+      flex: 0.7,
+      renderCell: (params) => {
+        return params.row.district ? params.row.district.districtName : "N/A";
+      },
+    },
     { field: "cbsAccount", headerName: "CBS Account", flex: 0.8 },
     { field: "port", headerName: "Port", flex: 0.1 },
     { field: "ipAddress", headerName: "IP Address", flex: 0.8 },
@@ -145,7 +151,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     ${rowData.terminalId}
     ${rowData.terminalName}
     ${rowData.branchName}
-    ${rowData.district}
+    ${rowData.district.districtName}
     ${rowData.cbsAccount}
     ${rowData.port}
     ${rowData.ipAddress}
