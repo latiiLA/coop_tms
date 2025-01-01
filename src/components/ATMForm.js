@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { atm_types, atm_status, sites, districts } from "./DropDownFormData";
+import { atm_types, atm_status, sites } from "./DropDownFormData";
 import { CustomSelect, CustomTextField } from "./CustomFields";
 
 const fetchAvailablePorts = async (
@@ -52,6 +52,11 @@ const ATMForm = ({
 }) => {
   const [selectedType, setSelectedType] = useState(initialValues.type || "");
   const [selectedSite, setSelectedSite] = useState(initialValues.site || "");
+  const [districts, setDistricts] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState(
+    initialValues.district?._id || ""
+  );
   const navigate = useNavigate();
 
   const [availablePorts, setAvailablePorts] = useState([]);
@@ -118,6 +123,86 @@ const ATMForm = ({
     fetchPorts();
   }, [selectedSite, selectedType, initialValues.port]);
 
+  useEffect(() => {
+    const fetchRows = async () => {
+      const token = localStorage.getItem("token");
+      const apiUrl = process.env.REACT_APP_API_URL;
+
+      if (!token) {
+        toast.error("User is not authenticated");
+        navigate("/home");
+        return;
+      }
+
+      console.log("API URL:", apiUrl); // Check API URL
+      console.log("Token:", token); // Check the token
+
+      try {
+        const response = await axios.get(`${apiUrl}/district/getDistrict`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+
+        console.log("API Response:", response.data); // Log the response
+
+        const formattedDistricts = response.data.alldistricts.map(
+          (district) => ({
+            value: district._id,
+            label: district.districtName.toString(),
+          })
+        );
+        setDistricts(formattedDistricts);
+        console.log("Formatted Districts:", formattedDistricts);
+      } catch (error) {
+        console.log("Error Details:", error); // Log the error
+        toast.error(`Error: ${error.response?.data?.message || error.message}`);
+        navigate("/home");
+      }
+    };
+
+    fetchRows();
+  }, [navigate]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      const fetchBranches = async () => {
+        const token = localStorage.getItem("token");
+        const apiUrl = process.env.REACT_APP_API_URL;
+
+        try {
+          const response = await axios.get(`${apiUrl}/branch/getBranch`, {
+            params: { districtId: selectedDistrict },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+
+          setBranches(
+            response.data.branches.map((branch) => ({
+              value: branch._id,
+              label: branch.companyName,
+            }))
+          );
+        } catch (error) {
+          toast.error(
+            `Error fetching branches: ${
+              error.response?.data?.message || error.message
+            }`
+          );
+        }
+      };
+
+      fetchBranches();
+    } else {
+      setBranches([]);
+    }
+  }, [selectedDistrict]);
+
+  console.log("initial values in ATM FORM are", initialValues);
+
   return (
     <Box sx={{ width: "100%", marginY: 1, marginX: 10 }}>
       <Typography variant="h5" sx={{ textAlign: "center" }}>
@@ -175,12 +260,69 @@ const ATMForm = ({
                       name="terminalName"
                       label="Terminal Name"
                     />
-                    <CustomTextField name="branchName" label="Branch Name" />
-                    <CustomSelect
-                      name="district"
-                      label="District"
-                      options={districts}
-                    />
+                    {isEdit && (
+                      <>
+                        <CustomTextField
+                          name="district"
+                          value={initialValues.district.districtName}
+                          label="Current District Name"
+                          disabled
+                        />
+                        <CustomSelect
+                          name="district"
+                          label="Update District"
+                          options={districts}
+                          onChange={(e) => {
+                            handleChange(e);
+                            setSelectedDistrict(e.target.value);
+                            setBranches([]);
+                            validateForm();
+                          }}
+                        />
+                        <CustomTextField
+                          name="branchName"
+                          value={initialValues.branchName}
+                          label="Current Branch Name"
+                          disabled
+                        />
+                        <CustomSelect
+                          name="branchName"
+                          label="Update Branch Name"
+                          options={branches}
+                          onChange={(e) => {
+                            handleChange(e);
+                            validateForm();
+                          }}
+                          disabled={branches.length === 0}
+                        />
+                      </>
+                    )}
+                    {!isEdit && (
+                      <>
+                        <CustomSelect
+                          name="district"
+                          label="District"
+                          options={districts}
+                          onChange={(e) => {
+                            handleChange(e);
+                            setSelectedDistrict(e.target.value);
+                            setBranches([]);
+                            validateForm();
+                          }}
+                        />
+
+                        <CustomSelect
+                          name="branchName"
+                          label="Branch Name"
+                          options={branches}
+                          onChange={(e) => {
+                            handleChange(e);
+                            validateForm();
+                          }}
+                          disabled={branches.length === 0}
+                        />
+                      </>
+                    )}
                   </Box>
                   <Box
                     sx={{
