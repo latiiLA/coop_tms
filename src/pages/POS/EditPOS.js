@@ -1,6 +1,6 @@
 import { Box, Button, Card, Typography } from "@mui/material";
-import { Form, Formik } from "formik";
-import React, { useState } from "react";
+import { Form, Field, Formik } from "formik";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CustomSelect, CustomTextField } from "../../components/CustomFields";
 import { pos_sites, pos_status } from "../../components/DropDownFormData";
@@ -9,26 +9,32 @@ import * as Yup from "yup";
 import toast from "react-hot-toast";
 import axios from "axios";
 import LoadingButton from "@mui/lab/LoadingButton";
+import ComboBox from "../../components/ComboBox";
 
 const EditPOS = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { row } = location.state;
   const { role } = useAuthContext();
-  // console.log("console", row);
+  console.log("console rows", row);
   const [loading, setLoading] = useState(false);
+  const [districts, setDistricts] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState(
+    row?.district?._id || ""
+  );
 
   const phoneRegExp = /^[0-9]{10}$/;
 
   const FORM_VALIDATION = Yup.object().shape({
     serialNumber: Yup.string().required("Serial number is required"),
-    posTerminalId: Yup.string()
+    terminalId: Yup.string()
       .required("Terminal ID is required")
       .min(8, "Terminal ID must be at least 8 characters"),
 
-    posBranchName: Yup.string().required("Branch Name is required"),
-    posDistrict: Yup.string().required("District is required"),
-    posSite: Yup.string().required("Terminal site assignment is required"),
+    branchName: Yup.string().required("Branch Name is required"),
+    district: Yup.string().required("District is required"),
+    site: Yup.string().required("Terminal site assignment is required"),
     merchantId: Yup.string(),
     merchantName: Yup.string().required("Merchant name is required"),
     merchantAddress: Yup.string().required("Merchant Address is required"),
@@ -38,8 +44,8 @@ const EditPOS = () => {
     posCbsAccount: Yup.string()
       .required("CBS Account is required")
       .min(12, "CBS Account must be at least 12 characters"),
-    simCardNumber: Yup.string()
-      .required("SIM Card Number is required")
+    serviceNumber: Yup.string()
+      .required("Service Number is required")
       .matches(phoneRegExp, "Phone number must be 10 digits"),
     staticIp: Yup.string()
       .required("IP Address is required")
@@ -52,6 +58,7 @@ const EditPOS = () => {
           return !isNaN(num) && num >= 0 && num <= 255;
         });
       }),
+    comment: Yup.string(),
   });
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -96,6 +103,79 @@ const EditPOS = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchRows = async () => {
+      const token = localStorage.getItem("token");
+      const apiUrl = process.env.REACT_APP_API_URL;
+
+      if (!token) {
+        toast.error("User is not authenticated");
+        navigate("/home");
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${apiUrl}/district/getDistrict`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+
+        console.log("API Response:", response.data); // Log the response
+
+        const formattedDistricts = response.data.alldistricts.map(
+          (district) => ({
+            value: district._id,
+            label: district.districtName.toString(),
+          })
+        );
+        setDistricts(formattedDistricts);
+        console.log("Formatted Districts:", formattedDistricts);
+      } catch (error) {
+        console.log("Error Details:", error); // Log the error
+        toast.error(`Error: ${error.response?.data?.message || error.message}`);
+        navigate("/home");
+      }
+    };
+
+    fetchRows();
+  }, [navigate]);
+
+  useEffect(() => {
+    console.log("selectedDistrict", selectedDistrict);
+    if (selectedDistrict) {
+      const fetchBranches = async () => {
+        const token = localStorage.getItem("token");
+        const apiUrl = process.env.REACT_APP_API_URL;
+        try {
+          const response = await axios.get(`${apiUrl}/branch/getBranch`, {
+            params: { districtId: selectedDistrict },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+          setBranches(
+            response.data.branches.map((branch) => ({
+              value: branch._id,
+              label: branch.companyName,
+            }))
+          );
+        } catch (error) {
+          toast.error(
+            `Error fetching branches: ${
+              error.response?.data?.message || error.message
+            }`
+          );
+        }
+      };
+      fetchBranches();
+    } else {
+      setBranches([]);
+    }
+  }, [selectedDistrict]);
+
   return (
     <Box>
       <Box
@@ -120,12 +200,17 @@ const EditPOS = () => {
           }}
         >
           <Formik
-            initialValues={row}
+            initialValues={{
+              ...row,
+              branchName: row?.branchName?._id,
+              district: row?.district?._id,
+              serialNumber: row?.serialNumber?._id,
+            }}
             validationSchema={FORM_VALIDATION}
             onSubmit={handleSubmit}
             validateOnMount
           >
-            {({ isValid, errors, resetForm }) => (
+            {({ isValid, errors, resetForm, validateForm, handleChange }) => (
               <Form>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   <Typography variant="h5" sx={{ textAlign: "center" }}>
@@ -141,35 +226,45 @@ const EditPOS = () => {
                         width: "50%",
                       }}
                     >
-                      <CustomTextField
+                      <Field
                         name="serialNumber"
+                        component={ComboBox}
                         label="Serial Number"
+                        required
                       />
-                      <CustomTextField
-                        name="posTerminalId"
-                        label="POS Terminal ID"
-                      />
+
+                      <CustomTextField name="terminalId" label="Terminal ID" />
                       <CustomTextField
                         name="merchantName"
                         label="Merchant Name"
+                        required
                       />
                       <CustomTextField
                         name="merchantAddress"
                         label="Merchant Address"
+                        required
                       />
                       <CustomTextField
                         name="merchantPhonenumber"
                         label="Merchant Phone Number"
+                        required
                       />
                       <CustomTextField
                         name="contactName"
                         label="Contact Name"
+                        required
+                      />
+
+                      <CustomTextField
+                        name="merchantId"
+                        label="Merchant ID"
+                        required
                       />
                       <CustomTextField
-                        name="posBranchName"
-                        label="Branch Name"
+                        name="posCbsAccount"
+                        label="CBS Account"
+                        required
                       />
-                      <CustomTextField name="merchantId" label="Merchant ID" />
                     </Box>
                     <Box
                       sx={{
@@ -179,30 +274,61 @@ const EditPOS = () => {
                         width: "50%",
                       }}
                     >
-                      <CustomTextField name="posDistrict" label="District" />
                       <CustomSelect
-                        name="posSite"
+                        name="district"
+                        label="District"
+                        options={districts}
+                        onChange={(e) => {
+                          handleChange(e);
+                          setSelectedDistrict(e.target.value);
+                          setBranches([]);
+                          validateForm();
+                        }}
+                      />
+
+                      <CustomSelect
+                        name="branchName"
+                        label="Branch Name"
+                        options={branches}
+                        onChange={(e) => {
+                          handleChange(e);
+                          validateForm();
+                        }}
+                        disabled={branches.length === 0}
+                        required
+                      />
+                      <CustomSelect
+                        name="site"
                         label="Terminal Site *"
                         options={pos_sites}
                         required
+                        onChange={(e) => {
+                          handleChange(e);
+                          validateForm();
+                        }}
                       />
+
                       <CustomTextField
-                        name="posCbsAccount"
-                        label="CBS Account"
-                      />
-                      <CustomTextField
-                        name="simCardNumber"
-                        label="SIM Card Number"
+                        name="serviceNumber"
+                        label="service Number"
+                        required
                       />
                       <CustomTextField
                         name="staticIp"
                         label="Static IP Address"
+                        required
                       />
                       <CustomSelect
                         name="status"
                         label="Status"
                         options={pos_status}
+                        required
+                        onChange={(e) => {
+                          handleChange(e);
+                          validateForm();
+                        }}
                       />
+                      <CustomTextField name="comment" label="Comment" />
                     </Box>
                   </Box>
                 </Box>
