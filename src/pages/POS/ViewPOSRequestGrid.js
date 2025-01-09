@@ -21,15 +21,26 @@ const ViewPOSRequestGrid = ({ rows, isRelocated }) => {
       headerName: "Serial No",
       type: "String",
       flex: 0.5,
+      valueGetter: (params) => params?.serialNumber || "N/A",
     },
     { field: "merchantName", headerName: "Merchant Name", flex: 1 },
-    { field: "posBranchName", headerName: "Branch Name", flex: 1 },
-    { field: "posDistrict", headerName: "District", flex: 0.5 },
-    { field: "posSite", headerName: "Site", flex: 0.5 },
+    {
+      field: "branchName",
+      headerName: "Branch Name",
+      flex: 1,
+      valueGetter: (params) => params?.companyName || "N/A",
+    },
+    {
+      field: "district",
+      headerName: "District",
+      flex: 0.5,
+      valueGetter: (params) => params?.districtName || "N/A",
+    },
+    { field: "site", headerName: "Site", flex: 0.5 },
     { field: "contactName", headerName: "Contact Name", flex: 0.8 },
     { field: "posCbsAccount", headerName: "CBS Account", flex: 0.8 },
-    { field: "simCardNumber", headerName: "SIM Card No", flex: 0.6 },
-    { field: "staticIp", headerName: "IP Address", flex: 0.8 },
+    { field: "serviceNumber", headerName: "Service Number", flex: 0.6 },
+    { field: "staticIp", headerName: "IP Address", flex: 0.9 },
     { field: "status", headerName: "Status", flex: 0.5 },
     {
       field: "actions",
@@ -52,16 +63,28 @@ const ViewPOSRequestGrid = ({ rows, isRelocated }) => {
               <IconButton
                 color="primary"
                 size="small"
-                disabled={role === "posuser" || role === "user"}
-                style={{
-                  display:
-                    role === "user" || role === "posuser"
-                      ? "none"
-                      : "inline-flex",
-                }}
-                onClick={() =>
-                  navigate("/approverequest", { state: { row: params.row } })
+                disabled={
+                  params.row.status === "Approved" ||
+                  (params.row.status === "Rejected" &&
+                    (role === "admin" || role === "superadmin"))
                 }
+                // style={{
+                //   display:
+                //     role === "user" || role === "posuser"
+                //       ? "none"
+                //       : "inline-flex",
+                // }}
+                onClick={() => {
+                  if (role === "admin" || role === "superadmin") {
+                    navigate("/approverequest", {
+                      state: { row: params.row },
+                    });
+                  } else {
+                    navigate("/request/request", {
+                      state: { row: params.row, isEdit: true },
+                    });
+                  }
+                }}
               >
                 <Edit />
               </IconButton>
@@ -97,16 +120,15 @@ const ViewPOSRequestGrid = ({ rows, isRelocated }) => {
   const handleCopy = (rowData) => {
     // Format the row data into a string
     const rowText = `
-    ${rowData.serialNumber}
+    ${rowData.serialNumber.serialNumber}
     ${rowData.merchantName}
-    ${rowData.posBranchName}
-    ${rowData.posDistrict}
-    ${rowData.posSite}
-    ${rowData.merchantId}
+    ${rowData.branchName.companyName}
+    ${rowData.district.districtName}
+    ${rowData.site}
     ${rowData.merchantAddress}
     ${rowData.merchantPhonenumber}
     ${rowData.posCbsAccount}
-    ${rowData.simCardNumber}
+    ${rowData.serviceNumber}
     ${rowData.staticIp}
     ${rowData.status}
   `;
@@ -172,10 +194,10 @@ const ViewPOSRequestGrid = ({ rows, isRelocated }) => {
             overflow: "hidden",
           },
           "& .MuiDataGrid-virtualScroller": {
-            overflowY: "hidden !important", // Hides the vertical scrollbar
+            overflowY: "hidden !important",
           },
           "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none", // Hides the scrollbar for WebKit browsers
+            display: "none",
           },
           "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
             display: "none",
