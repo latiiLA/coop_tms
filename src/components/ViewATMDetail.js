@@ -7,7 +7,7 @@ const ViewATMDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { row } = location.state;
-  // console.log("inside view detail", row);
+  console.log("inside view detail", row);
 
   return (
     <Box
@@ -86,16 +86,6 @@ const ViewATMDetail = () => {
             defaultValue={row.terminalName}
           />
           <TextField
-            name="branchName"
-            label="Branch Name"
-            variant="outlined"
-            fullWidth
-            InputProps={{
-              readOnly: true,
-            }}
-            defaultValue={row.branchName}
-          />
-          <TextField
             name="district"
             label="District"
             variant="outlined"
@@ -103,8 +93,19 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.district}
+            defaultValue={row.district.districtName}
           />
+          <TextField
+            name="branchName"
+            label="Branch Name"
+            variant="outlined"
+            fullWidth
+            InputProps={{
+              readOnly: true,
+            }}
+            defaultValue={row.branchName.companyName}
+          />
+
           <TextField
             name="site"
             label="Terminal Site"
@@ -154,28 +155,33 @@ const ViewATMDetail = () => {
             }}
             defaultValue={row.ipAddress}
           />
+
+          {/* {row.isDeleted === false && ( */}
+          <TextField
+            name="createdBy"
+            label="Created By"
+            variant="outlined"
+            fullWidth
+            InputProps={{
+              readOnly: true,
+            }}
+            value={row.createdBy.firstName + " " + row.createdBy.fatherName} // Fallback to user ID if name is not available
+          />
+          {/* )} */}
           {row.isDeleted === true && (
             <TextField
-              name="relocatorName"
+              name="deletedBy"
               label="Relocated By"
               variant="outlined"
               fullWidth
               InputProps={{
                 readOnly: true,
               }}
-              value={row.relocatorName} // Fallback to user ID if name is not available
-            />
-          )}
-          {row.isDeleted === false && (
-            <TextField
-              name="creatorName"
-              label="Created By"
-              variant="outlined"
-              fullWidth
-              InputProps={{
-                readOnly: true,
-              }}
-              value={row.creatorName} // Fallback to user ID if name is not available
+              value={
+                (row?.deletedBy?.firstName || "Unknown") +
+                " " +
+                (row?.deletedBy?.fatherName || "Unknown")
+              }
             />
           )}
 
@@ -235,7 +241,7 @@ const ViewATMDetail = () => {
         }}
       >
         <Button onClick={() => navigate("/")}>Home</Button>
-        <Button onClick={() => navigate(-1)}>View Terminals</Button>
+        <Button onClick={() => navigate(-1)}>Back</Button>
       </Box>
     </Box>
   );
