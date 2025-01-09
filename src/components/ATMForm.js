@@ -55,7 +55,7 @@ const ATMForm = ({
   const [districts, setDistricts] = useState([]);
   const [branches, setBranches] = useState([]);
   const [selectedDistrict, setSelectedDistrict] = useState(
-    initialValues.district?._id || ""
+    initialValues?.district?._id || ""
   );
   const navigate = useNavigate();
 
@@ -69,7 +69,7 @@ const ATMForm = ({
       .min(8, "Terminal ID must be at least 8 characters"),
     terminalName: Yup.string().required("Terminal Name is required"),
     branchName: Yup.string().required("Branch Name is required"),
-    district: Yup.string().required("District is required"),
+    district: Yup.string().required("District ID is required"),
     site: Yup.string().required("Terminal site assignment is required"),
     cbsAccount: Yup.string()
       .required("CBS Account is required")
@@ -134,9 +134,6 @@ const ATMForm = ({
         return;
       }
 
-      console.log("API URL:", apiUrl); // Check API URL
-      console.log("Token:", token); // Check the token
-
       try {
         const response = await axios.get(`${apiUrl}/district/getDistrict`, {
           headers: {
@@ -166,11 +163,11 @@ const ATMForm = ({
   }, [navigate]);
 
   useEffect(() => {
+    console.log("selectedDistrict", selectedDistrict);
     if (selectedDistrict) {
       const fetchBranches = async () => {
         const token = localStorage.getItem("token");
         const apiUrl = process.env.REACT_APP_API_URL;
-
         try {
           const response = await axios.get(`${apiUrl}/branch/getBranch`, {
             params: { districtId: selectedDistrict },
@@ -179,7 +176,6 @@ const ATMForm = ({
             },
             withCredentials: true,
           });
-
           setBranches(
             response.data.branches.map((branch) => ({
               value: branch._id,
@@ -194,14 +190,13 @@ const ATMForm = ({
           );
         }
       };
-
       fetchBranches();
     } else {
       setBranches([]);
     }
   }, [selectedDistrict]);
 
-  console.log("initial values in ATM FORM are", initialValues);
+  // console.log("initial values in ATM FORM are", initialValues);
 
   return (
     <Box sx={{ width: "100%", marginY: 1, marginX: 10 }}>
@@ -224,7 +219,11 @@ const ATMForm = ({
         }}
       >
         <Formik
-          initialValues={initialValues}
+          initialValues={{
+            ...initialValues,
+            branchName: initialValues?.branchName?._id,
+            district: initialValues?.district?._id,
+          }}
           validationSchema={FORM_VALIDATION}
           onSubmit={onSubmit}
           validateOnMount
@@ -260,69 +259,29 @@ const ATMForm = ({
                       name="terminalName"
                       label="Terminal Name"
                     />
-                    {isEdit && (
-                      <>
-                        <CustomTextField
-                          name="district"
-                          value={initialValues.district.districtName}
-                          label="Current District Name"
-                          disabled
-                        />
-                        <CustomSelect
-                          name="district"
-                          label="Update District"
-                          options={districts}
-                          onChange={(e) => {
-                            handleChange(e);
-                            setSelectedDistrict(e.target.value);
-                            setBranches([]);
-                            validateForm();
-                          }}
-                        />
-                        <CustomTextField
-                          name="branchName"
-                          value={initialValues.branchName}
-                          label="Current Branch Name"
-                          disabled
-                        />
-                        <CustomSelect
-                          name="branchName"
-                          label="Update Branch Name"
-                          options={branches}
-                          onChange={(e) => {
-                            handleChange(e);
-                            validateForm();
-                          }}
-                          disabled={branches.length === 0}
-                        />
-                      </>
-                    )}
-                    {!isEdit && (
-                      <>
-                        <CustomSelect
-                          name="district"
-                          label="District"
-                          options={districts}
-                          onChange={(e) => {
-                            handleChange(e);
-                            setSelectedDistrict(e.target.value);
-                            setBranches([]);
-                            validateForm();
-                          }}
-                        />
 
-                        <CustomSelect
-                          name="branchName"
-                          label="Branch Name"
-                          options={branches}
-                          onChange={(e) => {
-                            handleChange(e);
-                            validateForm();
-                          }}
-                          disabled={branches.length === 0}
-                        />
-                      </>
-                    )}
+                    <CustomSelect
+                      name="district"
+                      label="District"
+                      options={districts}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setSelectedDistrict(e.target.value);
+                        setBranches([]);
+                        validateForm();
+                      }}
+                    />
+
+                    <CustomSelect
+                      name="branchName"
+                      label="Branch Name"
+                      options={branches}
+                      onChange={(e) => {
+                        handleChange(e);
+                        validateForm();
+                      }}
+                      disabled={branches.length === 0}
+                    />
                   </Box>
                   <Box
                     sx={{
