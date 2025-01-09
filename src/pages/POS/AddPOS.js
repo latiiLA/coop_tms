@@ -1,29 +1,40 @@
-import { Box, Button, Card, Divider, Typography } from "@mui/material";
-import { Form, Formik } from "formik";
+import {
+  Box,
+  Button,
+  Card,
+  CircularProgress,
+  Divider,
+  Typography,
+} from "@mui/material";
+import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { CustomSelect, CustomTextField } from "../../components/CustomFields";
-import { districts, pos_sites } from "../../components/DropDownFormData";
+import { pos_sites } from "../../components/DropDownFormData";
 import { CloudUpload } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
+import ComboBox from "../../components/ComboBox";
 
 const AddPOS = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [districts, setDistricts] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState("");
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
 
   const initialValues = {
     serialNumber: "",
-    posTerminalId: "",
-    posBranchName: "",
-    posDistrict: "",
-    posSite: "",
+    terminalId: "",
+    branchName: "",
+    district: "",
+    site: "",
     merchantId: "",
     merchantName: "",
     contactName: "",
@@ -31,7 +42,7 @@ const AddPOS = () => {
     merchantPhonenumber: "",
     posCbsAccount: "",
     staticIp: "",
-    simCardNumber: "",
+    serviceNumber: "",
   };
 
   const phoneRegExp = /^[0-9]{10}$/;
@@ -40,19 +51,20 @@ const AddPOS = () => {
 
   const FORM_VALIDATION = Yup.object().shape({
     serialNumber: Yup.string()
-      .required("Serial number is required.")
-      .min(16, "Serial number must at least 16 character.")
-      .max(16, "Serial number must at least 16 character."),
-    posTerminalId: Yup.string()
+      .required("Serial number is required."),
+    terminalId: Yup.string()
       .required("Terminal ID is required")
-      .min(8, "Terminal ID must be at least 8 characters")
-      .max(8, "Terminal ID must be at least 8 characters"),
+      .min(8, "Terminal ID must be 8 characters")
+      .max(8, "Terminal ID must be 8 characters"),
 
-    posBranchName: Yup.string().required("Branch Name is required"),
-    posDistrict: Yup.string().required("District is required"),
-    posSite: Yup.string().required("Terminal site assignment is required"),
-    merchantId: Yup.string().required("Merchant Id is required"),
+    branchName: Yup.string().required("Branch Name is required"),
+    district: Yup.string().required("District is required"),
+    site: Yup.string().required("Terminal site assignment is required"),
+    merchantId: Yup.string().required("Merchant ID is required")
+      .min(15, "Merchant ID must be 15 characters")
+      .max(15, "Merchant ID must be 15 characters"),
     merchantName: Yup.string().required("Merchant name is required"),
+    contactName: Yup.string().required("Contact name is required"),
     merchantAddress: Yup.string().required("Merchant Address is required"),
     merchantPhonenumber: Yup.string()
       .required("Phone Number is required")
@@ -60,7 +72,7 @@ const AddPOS = () => {
     posCbsAccount: Yup.string()
       .required("CBS Account is required")
       .min(13, "CBS Account must be at least 13 characters"),
-    simCardNumber: Yup.string()
+    serviceNumber: Yup.string()
       .required("Service number is required")
       .matches(phoneRegExp, "Phone number must be 10 digits"),
     staticIp: Yup.string()
@@ -125,6 +137,85 @@ const AddPOS = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchRows = async () => {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const apiUrl = process.env.REACT_APP_API_URL;
+
+      if (!token) {
+        toast.error("User is not authenticated");
+        navigate("/home");
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${apiUrl}/district/getDistrict`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+
+        console.log("API Response:", response.data); // Log the response
+
+        const formattedDistricts = response.data.alldistricts.map(
+          (district) => ({
+            value: district._id,
+            label: district.districtName.toString(),
+          })
+        );
+        setDistricts(formattedDistricts);
+        console.log("Formatted Districts:", formattedDistricts);
+      } catch (error) {
+        console.log("Error Details:", error); // Log the error
+        toast.error(`Error: ${error.response?.data?.message || error.message}`);
+        navigate("/home");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRows();
+  }, [navigate]);
+
+  useEffect(() => {
+    console.log("selectedDistrict", selectedDistrict);
+    if (selectedDistrict) {
+      setLoading(true);
+      const fetchBranches = async () => {
+        const token = localStorage.getItem("token");
+        const apiUrl = process.env.REACT_APP_API_URL;
+        try {
+          const response = await axios.get(`${apiUrl}/branch/getBranch`, {
+            params: { districtId: selectedDistrict },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+          setBranches(
+            response.data.branches.map((branch) => ({
+              value: branch._id,
+              label: branch.companyName,
+            }))
+          );
+        } catch (error) {
+          toast.error(
+            `Error fetching branches: ${
+              error.response?.data?.message || error.message
+            }`
+          );
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchBranches();
+    } else {
+      setBranches([]);
+    }
+  }, [selectedDistrict]);
+
   return (
     <Box sx={{ position: "relative", width: "100%" }}>
       <Box sx={{ display: "flex", justifyContent: "center", margin: 1 }}>
@@ -147,7 +238,14 @@ const AddPOS = () => {
             onSubmit={handleSubmit}
             validateOnMount
           >
-            {({ isValid, errors, resetForm }) => (
+            {({
+              isValid,
+              errors,
+              touched,
+              resetForm,
+              validateForm,
+              handleChange,
+            }) => (
               <Form>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   <Typography variant="h5" sx={{ textAlign: "center" }}>
@@ -180,15 +278,25 @@ const AddPOS = () => {
                         }}
                       >
                         <CustomTextField
-                          name="posTerminalId"
+                          name="terminalId"
                           label="POS Terminal ID"
                           required
                         />
                         <CustomSelect
-                          name="posDistrict"
-                          label="District *"
+                          name="district"
+                          label="District"
                           options={districts}
-                          required
+                          onChange={(e) => {
+                            handleChange(e);
+                            setSelectedDistrict(e.target.value);
+                            setBranches([]);
+                            validateForm();
+                          }}
+                          endAdornment={
+                            loading ? (
+                              <CircularProgress size={20} color="inherit" />
+                            ) : null
+                          }
                         />
                       </Box>
 
@@ -200,15 +308,25 @@ const AddPOS = () => {
                         }}
                       >
                         <CustomSelect
-                          name="posSite"
+                          name="site"
                           label="Terminal Site *"
                           options={pos_sites}
                           required
                         />
-                        <CustomTextField
-                          name="posBranchName"
+                        <CustomSelect
+                          name="branchName"
                           label="Branch Name"
-                          required
+                          options={branches}
+                          onChange={(e) => {
+                            handleChange(e);
+                            validateForm();
+                          }}
+                          disabled={branches.length === 0}
+                          endAdornment={
+                            loading ? (
+                              <CircularProgress size={20} color="inherit" />
+                            ) : null
+                          }
                         />
                       </Box>
                     </Box>
@@ -296,17 +414,19 @@ const AddPOS = () => {
                           display: "flex",
                           flexDirection: { xs: "column", md: "row" },
                           gap: 2,
+                          justifyContent: "space-between",
                         }}
                       >
+                        <Box sx={{ flex: 1 }}>
+                          <Field name="serialNumber" component={ComboBox} />
+                          
+                        </Box>
+
                         <CustomTextField
-                          name="serialNumber"
-                          label="Serial Number"
-                          required
-                        />
-                        <CustomTextField
-                          name="simCardNumber"
+                          name="serviceNumber"
                           label="Service Number"
                           required
+                          sx={{ flex: 1 }}
                         />
                       </Box>
                       <Box
