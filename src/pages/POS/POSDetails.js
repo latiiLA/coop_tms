@@ -10,7 +10,7 @@ const POSDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isRequest, isRelocated, row } = location.state;
-  // console.log("console", row);
+  console.log("console", row);
 
   const handleDownload = () => {
     try {
@@ -84,9 +84,9 @@ const POSDetails = () => {
                         width: { md: "50%", xs: "100%" },
                       }}
                     >
-                      {!isRequest && (
+                      {(!isRequest || isRelocated) && (
                         <CustomTextField
-                          name="posTerminalId"
+                          name="terminalId"
                           label="Terminal ID"
                           InputProps={{
                             readOnly: true,
@@ -96,6 +96,7 @@ const POSDetails = () => {
                       <CustomTextField
                         name="serialNumber"
                         label="Serial Number"
+                        value={row?.serialNumber?.serialNumber}
                         InputProps={{
                           readOnly: true,
                         }}
@@ -108,21 +109,24 @@ const POSDetails = () => {
                         }}
                       />
                       <CustomTextField
-                        name="posBranchName"
+                        name="branchName"
                         label="Branch Name"
+                        value={row?.branchName?.companyName || "Unknown"}
                         InputProps={{
                           readOnly: true,
                         }}
                       />
                       <CustomTextField
-                        name="posDistrict"
+                        name="district"
                         label="District"
+                        value={row?.district?.districtName || "Unknown"}
                         InputProps={{
                           readOnly: true,
                         }}
                       />
+
                       <CustomTextField
-                        name="posSite"
+                        name="site"
                         label="Terminal Site"
                         InputProps={{
                           readOnly: true,
@@ -177,8 +181,8 @@ const POSDetails = () => {
                       )}
 
                       <CustomTextField
-                        name="simCardNumber"
-                        label="SIM Card Number"
+                        name="serviceNumber"
+                        label="Service Number"
                         InputProps={{
                           readOnly: true,
                         }}
@@ -193,6 +197,11 @@ const POSDetails = () => {
                       <CustomTextField
                         name="createdBy"
                         label="Created By"
+                        value={
+                          (row?.createdBy?.firstName || "Unknown") +
+                          " " +
+                          (row?.createdBy?.fatherName || "Unknown")
+                        }
                         InputProps={{
                           readOnly: true,
                         }}
@@ -208,6 +217,11 @@ const POSDetails = () => {
                         <CustomTextField
                           name="deletedBy"
                           label="Relocated By"
+                          value={
+                            (row?.deletedBy?.firstName || "Unknown") +
+                            " " +
+                            (row?.deletedBy?.fatherName || "Unknown")
+                          }
                           InputProps={{
                             readOnly: true,
                           }}
@@ -236,8 +250,17 @@ const POSDetails = () => {
                           }}
                         />
                       )}
+                      {!isRequest && (
+                        <CustomTextField
+                          name="comment"
+                          label="Comment"
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
                       {/* Download Button */}
-                      {row.file && (
+                      {row?.file && (
                         <Box
                           sx={{
                             display: "flex",
@@ -255,7 +278,7 @@ const POSDetails = () => {
                             onClick={handleDownload}
                             startIcon={<Download />}
                           >
-                            Download {row.file.fileName}
+                            Download {row?.file?.fileName}
                           </Button>
                         </Box>
                       )}
