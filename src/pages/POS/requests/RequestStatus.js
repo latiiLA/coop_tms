@@ -116,9 +116,9 @@ export default function RequestStatus() {
     return <Typography>Error: {error}</Typography>;
   }
 
-  // Split sorted rows into CRM and NCR
-  const branchRows = filteredRows.filter((row) => row.posSite === "Branch");
-  const merchantRows = filteredRows.filter((row) => row.posSite === "Merchant");
+  // Split sorted rows into Merchant and Branch
+  const branchRows = filteredRows.filter((row) => row.site === "BRANCH");
+  const merchantRows = filteredRows.filter((row) => row.site === "MERCHANT");
 
   return (
     <Box
@@ -132,9 +132,9 @@ export default function RequestStatus() {
         }}
       >
         <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
-          <Tab label="All Request Status" />
-          <Tab label="New Request Status" />
-          <Tab label="Relocation Request Status" />
+          <Tab label="All Request" />
+          <Tab label="Merchant POS Requests" />
+          <Tab label="Branch POS Requests" />
         </Tabs>
         <TextField
           label="Search"
