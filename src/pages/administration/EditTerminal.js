@@ -40,7 +40,7 @@ const EditTerminal = () => {
       );
 
       // console.log("The ATM is successfully updated:", response.data);
-      await toast.success(response.data.message);
+      toast.success(response.data.message);
       navigate("/viewdetail", { state: { row: data } });
     } catch (error) {
       if (
