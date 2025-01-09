@@ -95,8 +95,8 @@ export default function ViewPOSRequests() {
   }
 
   // Split sorted rows into CRM and NCR
-  const newRequest = rows.filter((row) => row.type === "New");
-  const relocationRequest = rows.filter((row) => row.type === "Relocation");
+  const merchantRequest = rows.filter((row) => row.site === "MERCHANT");
+  const branchRequest = rows.filter((row) => row.site === "BRANCH");
 
   return (
     <Box
@@ -110,9 +110,9 @@ export default function ViewPOSRequests() {
         }}
       >
         <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
-          <Tab label="All Requests" />
-          <Tab label="New POS Requests" />
-          <Tab label="Relocation POS Requests" />
+          <Tab label="All New Requests" />
+          <Tab label="Merchant New POS Requests" />
+          <Tab label="Branch New POS Requests" />
         </Tabs>
         <TextField
           label="Search"
@@ -134,11 +134,11 @@ export default function ViewPOSRequests() {
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <ViewPOSRequestGrid rows={newRequest} />
+        <ViewPOSRequestGrid rows={merchantRequest} />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <ViewPOSRequestGrid rows={relocationRequest} />
+        <ViewPOSRequestGrid rows={branchRequest} />
       </TabPanel>
     </Box>
   );
