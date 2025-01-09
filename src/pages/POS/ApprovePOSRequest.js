@@ -1,23 +1,29 @@
 import { Box, Button, Card, Typography } from "@mui/material";
-import { Form, Formik } from "formik";
-import React, { useState } from "react";
+import { Form, Formik, Field } from "formik";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CustomTextField } from "../../components/CustomFields";
+import { CustomSelect, CustomTextField } from "../../components/CustomFields";
 import axios from "axios";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import { Download } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
+import ComboBox from "../../components/ComboBox";
 
 const ApprovePOSRequest = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [posTerminalId, setPosTerminalId] = useState("");
-  // const [status, setStatus] = useState("");
   const location = useLocation();
   const { row } = location.state;
+  console.log(row, "row");
+  const [districts, setDistricts] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState(
+    row?.district?._id || ""
+  );
+  const [isRejecting, setIsRejecting] = useState(false);
 
-  // console.log(row, "row");
+  // const [status, setStatus] = useState("");
 
   const handleSubmit = async (values, { resetForm }) => {
     console.log("inside handle submit approval", values);
@@ -39,6 +45,7 @@ const ApprovePOSRequest = () => {
 
       toast.success(response.data.message);
       resetForm();
+      navigate(-1);
     } catch (error) {
       toast.error(
         error.response?.data?.message || error.message || "Something went wrong"
@@ -72,7 +79,8 @@ const ApprovePOSRequest = () => {
       );
 
       toast.success(response.data.message);
-      navigate("/posdetail", { state: { row } });
+      // resetForm();
+      navigate(-1);
     } catch (error) {
       toast.error(
         error.response?.data?.message || error.message || "Something went wrong"
@@ -83,54 +91,141 @@ const ApprovePOSRequest = () => {
     }
   };
 
-  const requestedrows = { ...row, posTerminalId };
+  // const requestedrows = { ...row, terminalId };
 
   const phoneRegExp = /^[0-9]{10}$/;
 
-  const FORM_VALIDATION = Yup.object().shape({
-    serialNumber: Yup.string().required("Serial number is required"),
-    posTerminalId: Yup.string()
-      .required("Terminal ID is required")
-      .min(8, "Terminal ID must be at least 8 characters"),
-    merchantId: Yup.string()
-      .required("Merchant ID is required")
-      .min(15, "Merchant ID must be at least 8 characters"),
-    posBranchName: Yup.string().required("Branch Name is required"),
-    posDistrict: Yup.string().required("District is required"),
-    posSite: Yup.string().required("Terminal site assignment is required"),
-    merchantName: Yup.string().required("Merchant name is required"),
-    merchantAddress: Yup.string().required("Merchant Address is required"),
-    contactName: Yup.string().required("Contact Name is required"),
-    merchantPhonenumber: Yup.string()
-      .required("Phone Number is required")
-      .matches(phoneRegExp, "Phone number must be 10 digits"),
-    posCbsAccount: Yup.string()
-      .required("CBS Account is required")
-      .min(12, "CBS Account must be at least 12 characters"),
-    simCardNumber: Yup.string()
-      .required("SIM Card Number is required")
-      .matches(phoneRegExp, "Phone number must be 10 digits"),
-    staticIp: Yup.string()
-      .required("IP Address is required")
-      .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
-      .test("is-valid-ip", "Invalid IP Address", (value) => {
-        const parts = value.split(".");
-        if (parts.length !== 4) return false;
-        return parts.every((part) => {
-          const num = parseInt(part, 10);
-          return !isNaN(num) && num >= 0 && num <= 255;
-        });
-      }),
-  });
+  const FORM_VALIDATION = (isRejecting) =>
+    Yup.object().shape({
+      serialNumber: Yup.string().required("Serial number is required"),
+      branchName: Yup.string().required("Branch Name is required"),
+      district: Yup.string().required("District is required"),
+      site: Yup.string().required("Terminal site assignment is required"),
+      merchantName: Yup.string().required("Merchant name is required"),
+      merchantAddress: Yup.string().required("Merchant Address is required"),
+      contactName: Yup.string().required("Contact Name is required"),
+      merchantPhonenumber: Yup.string()
+        .required("Phone Number is required")
+        .matches(phoneRegExp, "Phone number must be 10 digits"),
+      posCbsAccount: Yup.string()
+        .required("CBS Account is required")
+        .min(
+          12,
+          "CBS Account must be at least 12 characters, eg. ETB1000200010222"
+        ),
+      serviceNumber: Yup.string()
+        .required("Service Number is required")
+        .matches(phoneRegExp, "Phone number must be 10 digits"),
+
+      staticIp: Yup.string()
+        .required("IP Address is required")
+        .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
+        .test("is-valid-ip", "Invalid IP Address", (value) => {
+          const parts = value.split(".");
+          if (parts.length !== 4) return false;
+          return parts.every((part) => {
+            const num = parseInt(part, 10);
+            return !isNaN(num) && num >= 0 && num <= 255;
+          });
+        }),
+      terminalId: isRejecting
+        ? Yup.string().notRequired()
+        : Yup.string()
+            .required("Merchant ID is required")
+            .min(8, "Terminal ID is short. it must be  8 characters")
+            .max(8, "Terminal ID is long. it must be 8 characters"),
+
+      merchantId: isRejecting
+        ? Yup.string().notRequired()
+        : Yup.string()
+            .required("Merchant ID is required")
+            .min(15, "Merchant ID is short. it must be 15 characters")
+            .max(15, "Merchant ID is long. it must be 15 characters"),
+      remark: isRejecting
+        ? Yup.string().required("Remark is required for rejection")
+        : Yup.string(),
+    });
 
   const handleDownload = () => {
-    // Assumes the file path is relative to the server's public directory.
     console.log("file", row.file.filePath);
     const link = document.createElement("a");
-    link.href = `${process.env.REACT_APP_BASE_URL}/${row.file.filePath}`; // Adjust this based on server configuration
+    link.href = `${process.env.REACT_APP_BASE_URL}/${row.file.filePath}`;
     link.download = row.file.fileName;
     link.click();
   };
+
+  useEffect(() => {
+    const fetchRows = async () => {
+      const token = localStorage.getItem("token");
+      const apiUrl = process.env.REACT_APP_API_URL;
+
+      if (!token) {
+        toast.error("User is not authenticated");
+        navigate("/home");
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${apiUrl}/district/getDistrict`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+
+        console.log("API Response:", response.data); // Log the response
+
+        const formattedDistricts = response.data.alldistricts.map(
+          (district) => ({
+            value: district._id,
+            label: district.districtName.toString(),
+          })
+        );
+        setDistricts(formattedDistricts);
+        console.log("Formatted Districts:", formattedDistricts);
+      } catch (error) {
+        console.log("Error Details:", error); // Log the error
+        toast.error(`Error: ${error.response?.data?.message || error.message}`);
+        navigate("/home");
+      }
+    };
+
+    fetchRows();
+  }, [navigate]);
+
+  useEffect(() => {
+    console.log("selectedDistrict", selectedDistrict);
+    if (selectedDistrict) {
+      const fetchBranches = async () => {
+        const token = localStorage.getItem("token");
+        const apiUrl = process.env.REACT_APP_API_URL;
+        try {
+          const response = await axios.get(`${apiUrl}/branch/getBranch`, {
+            params: { districtId: selectedDistrict },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+          setBranches(
+            response.data.branches.map((branch) => ({
+              value: branch._id,
+              label: branch.companyName,
+            }))
+          );
+        } catch (error) {
+          toast.error(
+            `Error fetching branches: ${
+              error.response?.data?.message || error.message
+            }`
+          );
+        }
+      };
+      fetchBranches();
+    } else {
+      setBranches([]);
+    }
+  }, [selectedDistrict]);
 
   return (
     <Box>
@@ -156,12 +251,36 @@ const ApprovePOSRequest = () => {
           }}
         >
           <Formik
-            initialValues={requestedrows}
-            validationSchema={FORM_VALIDATION}
-            onSubmit={handleSubmit}
+            initialValues={{
+              ...row,
+              branchName: row?.branchName?._id,
+              district: row?.district?._id,
+              serialNumber: row?.serialNumber?._id,
+              terminalId: "",
+              merchantId: "",
+            }}
+            validationSchema={FORM_VALIDATION(isRejecting)}
+            onSubmit={(values, { resetForm }) => {
+              if (isRejecting) {
+                // Handle rejection
+                handleReject(values, { resetForm });
+              } else {
+                // Handle approval
+                handleSubmit(values, { resetForm });
+              }
+            }}
             validateOnMount
           >
-            {(isValid, resetForm) => (
+            {({
+              values,
+              errors,
+              touched,
+              isValid,
+              validateForm,
+              handleChange,
+              setFieldValue,
+              resetForm,
+            }) => (
               <Form>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   <Typography variant="h5" sx={{ textAlign: "center" }}>
@@ -183,19 +302,20 @@ const ApprovePOSRequest = () => {
                         width: { md: "50%", xs: "100%" },
                       }}
                     >
-                      <CustomTextField
-                        name="posTerminalId"
-                        label="Terminal ID"
-                        required
-                      />
-
-                      <CustomTextField
-                        name="serialNumber"
-                        label="Serial Number"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
+                      {row.status === "New" && (
+                        <CustomTextField
+                          name="terminalId"
+                          label="Terminal ID"
+                          required
+                        />
+                      )}
+                      <Box sx={{ flex: 1 }}>
+                        <Field
+                          name="serialNumber"
+                          component={ComboBox}
+                          disabled={true}
+                        />
+                      </Box>
                       <CustomTextField
                         name="merchantName"
                         label="Merchant Name"
@@ -203,22 +323,32 @@ const ApprovePOSRequest = () => {
                           readOnly: true,
                         }}
                       />
-                      <CustomTextField
-                        name="posBranchName"
-                        label="Branch Name"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-                      <CustomTextField
-                        name="posDistrict"
+                      <CustomSelect
+                        name="district"
                         label="District"
-                        InputProps={{
-                          readOnly: true,
+                        options={districts}
+                        onChange={(e) => {
+                          handleChange(e);
+                          setSelectedDistrict(e.target.value);
+                          setBranches([]);
+                          validateForm();
                         }}
                       />
+
+                      <CustomSelect
+                        name="branchName"
+                        label="Branch Name"
+                        options={branches}
+                        onChange={(e) => {
+                          handleChange(e);
+                          validateForm();
+                        }}
+                        disabled={branches.length === 0}
+                        required
+                      />
+
                       <CustomTextField
-                        name="posSite"
+                        name="site"
                         label="Terminal Site"
                         InputProps={{
                           readOnly: true,
@@ -268,8 +398,8 @@ const ApprovePOSRequest = () => {
                         required
                       />
                       <CustomTextField
-                        name="simCardNumber"
-                        label="SIM Card Number"
+                        name="serviceNumber"
+                        label="Service Number"
                         InputProps={{
                           readOnly: true,
                         }}
@@ -284,6 +414,11 @@ const ApprovePOSRequest = () => {
                       <CustomTextField
                         name="createdBy"
                         label="Created By"
+                        value={
+                          (row?.createdBy?.firstName || "Unknown") +
+                          " " +
+                          (row?.createdBy?.fatherName || "Unknown")
+                        }
                         disabled
                       />
                       <CustomTextField
@@ -337,6 +472,7 @@ const ApprovePOSRequest = () => {
                     </Box>
                   </Box>
                 </Box>
+
                 <Box
                   sx={{
                     display: "flex",
@@ -351,17 +487,28 @@ const ApprovePOSRequest = () => {
                     loading={loading}
                     variant="contained"
                     type="Submit"
+                    onClick={() => setIsRejecting(false)}
                   >
                     Approve
                   </LoadingButton>
                   <LoadingButton
                     loading={loading}
                     variant="contained"
-                    onClick={() => handleReject(row)}
                     style={{ backgroundColor: "red", color: "white" }}
+                    onClick={async () => {
+                      setIsRejecting(true);
+                      const errors = await validateForm();
+                      if (Object.keys(errors).length === 0) {
+                        // Submit rejection form
+                        handleReject(values);
+                      } else {
+                        toast.error("Please add remark before rejecting.");
+                      }
+                    }}
                   >
                     Reject
                   </LoadingButton>
+
                   <Button onClick={() => navigate(-1)}>Back</Button>
                 </Box>
               </Form>
