@@ -8,8 +8,8 @@ const sites = [
   { value: "Offsite", label: "Offsite" },
 ];
 const pos_sites = [
-  { value: "Merchant", label: "Merchant" },
-  { value: "Branch", label: "Branch" },
+  { value: "MERCHANT", label: "MERCHANT" },
+  { value: "BRANCH", label: "BRANCH" },
 ];
 
 const atm_status = [
@@ -24,6 +24,7 @@ const pos_status = [
   { value: "New", label: "New" },
   { value: "Active", label: "Active" },
   { value: "InActive", label: "InActive" },
+  { value: "ToBeRelocated", label: "ToBeRelocated" },
   { value: "Relocated", label: "Relocated" },
   { value: "Stopped", label: "Stopped" },
 ];
