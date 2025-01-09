@@ -26,18 +26,16 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
       field: "branchName",
       headerName: "Branch Name",
       flex: 1,
-      renderCell: (params) => {
-        return params.row.branchName
-          ? params.row.branchName.companyName
-          : "N/A";
+      valueGetter: (params) => {
+        return params?.companyName || "N/A";
       },
     },
     {
       field: "district",
       headerName: "District",
       flex: 0.7,
-      renderCell: (params) => {
-        return params.row.district ? params.row.district.districtName : "N/A";
+      valueGetter: (params) => {
+        return params?.districtName || "N/A";
       },
     },
     { field: "cbsAccount", headerName: "CBS Account", flex: 0.8 },
@@ -45,6 +43,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     { field: "ipAddress", headerName: "IP Address", flex: 0.8 },
     { field: "type", headerName: "Type", flex: 0.1 },
     { field: "site", headerName: "Site", flex: 0.4 },
+    { field: "status", headerName: "Status", flex: 0.5 },
     // // ip_terminal_id
     // {!isRelocated && (
     //   {
@@ -78,7 +77,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     {
       field: "actions",
       headerName: "Actions",
-      flex: 0.8,
+      flex: 0.9,
       renderCell: (params) => (
         <Box
           sx={{
@@ -150,7 +149,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     ${rowData.unitId}
     ${rowData.terminalId}
     ${rowData.terminalName}
-    ${rowData.branchName}
+    ${rowData.branchName.companyName}
     ${rowData.district.districtName}
     ${rowData.cbsAccount}
     ${rowData.port}
