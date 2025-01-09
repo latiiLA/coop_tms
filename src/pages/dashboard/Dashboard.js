@@ -94,7 +94,7 @@ const Dashboard = () => {
         <TotalTerminalPieChart data={dataRows} />
       </Box>
       {/* <PortGraph data={dataRows} /> */}
-      <TerminalCountPerDistrict data={dataRows} />
+      <TerminalCountPerDistrict />
     </Box>
   );
 };
