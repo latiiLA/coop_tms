@@ -1,7 +1,25 @@
-import { ContentCopy, Edit, Preview } from "@mui/icons-material";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import {
+  ContentCopy,
+  Delete,
+  Download,
+  Edit,
+  Preview,
+  Stop,
+} from "@mui/icons-material";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
@@ -17,144 +35,186 @@ import emvCtlsKeys from "../../../assets/posconfig/EMV_CTLS_Keys.xml";
 import emvCtlsTerminal from "../../../assets/posconfig/EMV_CTLS_Terminal.xml";
 import emvKeys from "../../../assets/posconfig/EMV_Keys.xml";
 import emvTerminal from "../../../assets/posconfig/EMV_Terminal.xml";
+import axios from "axios";
+import * as XLSX from "xlsx";
 
-const ViewPOSGridComponent = ({ rows, isRelocated, detailType }) => {
+const ViewPOSGridComponent = ({
+  rows,
+  isRelocated,
+  isRelocatedReq,
+  detailType,
+}) => {
   const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [copiedData, setCopiedData] = React.useState("");
 
   const { role } = useAuthContext();
   // console.log(pings);
   const columns = [
-    // { field: "id", headerName: "No", type: "number", width: 10 },
     {
       field: "serialNumber",
       headerName: "Serial No",
       type: "String",
       flex: 0.5,
+      valueGetter: (params) => {
+        return params?.serialNumber || "N/A";
+      },
     },
-    { field: "posTerminalId", headerName: "Terminal ID", flex: 0.6 },
+    { field: "terminalId", headerName: "Terminal ID", flex: 0.6 },
     { field: "merchantName", headerName: "Merchant Name", flex: 1 },
-    { field: "posBranchName", headerName: "Branch Name", flex: 1 },
-    { field: "posDistrict", headerName: "District", flex: 0.5 },
-    { field: "posSite", headerName: "Site", flex: 0.5 },
+    {
+      field: "branchName",
+      headerName: "Branch Name",
+      flex: 1,
+      valueGetter: (params) => params?.companyName || "N/A",
+    },
+    {
+      field: "district",
+      headerName: "District",
+      flex: 0.5,
+      valueGetter: (params) => params?.districtName || "N/A",
+    },
+    { field: "site", headerName: "Site", flex: 0.5 },
     { field: "merchantId", headerName: "Merchant Id", flex: 0.8 },
     { field: "posCbsAccount", headerName: "CBS Account", flex: 0.8 },
-    { field: "simCardNumber", headerName: "SIM Card No", flex: 0.6 },
+    { field: "serviceNumber", headerName: "Service Number", flex: 0.6 },
     { field: "staticIp", headerName: "IP Address", flex: 0.8 },
     { field: "status", headerName: "Status", flex: 0.5 },
-    {
-      field: "actions",
-      headerName: "Actions",
-      flex: 1,
-      renderCell: (params) => (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-around",
-            width: "100%",
-            height: "100%",
-            margin: "auto",
-            alignItems: "center",
-          }}
-        >
-          {!isRelocated && (
-            <Tooltip title="Edit POS">
-              <IconButton
-                color="primary"
-                size="small"
-                disabled={role === "user" || role === "posuser"}
-                style={{
-                  display:
-                    role === "user" || role === "posuser"
-                      ? "none"
-                      : "inline-flex",
+
+    // Actions Column (Still using renderCell because it involves buttons)
+    ...(role !== "posuser" || !isRelocatedReq
+      ? [
+          {
+            field: "actions",
+            headerName: "Actions",
+            flex: 1,
+            renderCell: (params) => (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  width: "100%",
+                  height: "100%",
+                  margin: "auto",
+                  alignItems: "center",
                 }}
-                onClick={() =>
-                  navigate("/editpos", { state: { row: params.row } })
-                }
               >
-                <Edit />
-              </IconButton>
-            </Tooltip>
-          )}
-          {detailType && (
-            <Tooltip Tooltip title="View POS">
-              <IconButton
-                color="primary"
-                size="small"
-                onClick={() =>
-                  navigate("/requestdetail", { state: { row: params.row } })
-                }
-              >
-                <Preview />
-              </IconButton>
-            </Tooltip>
-          )}
-          {!detailType && (
-            <Tooltip title="View POS">
-              <IconButton
-                color="primary"
-                size="small"
-                onClick={() =>
-                  navigate("/posdetail", {
-                    state: {
-                      isRequest: false,
-                      relocated: false,
-                      row: params.row,
-                    },
-                  })
-                }
-              >
-                <Preview />
-              </IconButton>
-            </Tooltip>
-          )}
-          <Tooltip title="Copy POS Information">
-            <IconButton
-              color="primary"
-              size="small"
-              onClick={() => handleCopy(params.row)}
-            >
-              <ContentCopy />
-            </IconButton>
-          </Tooltip>
-          {!isRelocated && (
-            <Tooltip title="Generate Config">
-              <IconButton
-                color="primary"
-                size="small"
-                disabled={role === "user"}
-                style={{
-                  display:
-                    role === "user" || role === "posuser"
-                      ? "none"
-                      : "inline-flex",
-                }}
-                onClick={() => handleConfig(params.row)}
-              >
-                <GrConfigure />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
-      ),
-    },
+                {!isRelocated && (
+                  <Tooltip title="Edit POS">
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      disabled={role === "user" || role === "posuser"}
+                      style={{
+                        display:
+                          role === "user" || role === "posuser"
+                            ? "none"
+                            : "inline-flex",
+                      }}
+                      onClick={() =>
+                        navigate("/editpos", { state: { row: params.row } })
+                      }
+                    >
+                      <Edit />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {detailType && (
+                  <Tooltip Tooltip title="View POS">
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      onClick={() =>
+                        navigate("/requestdetail", {
+                          state: { row: params.row },
+                        })
+                      }
+                    >
+                      <Preview />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {!detailType && (
+                  <Tooltip title="View POS">
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      onClick={() =>
+                        navigate("/posdetail", {
+                          state: {
+                            isRequest: false,
+                            relocated: false,
+                            row: params.row,
+                          },
+                        })
+                      }
+                    >
+                      <Preview />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                <Tooltip title="Copy POS Information">
+                  <IconButton
+                    color="primary"
+                    size="small"
+                    onClick={() => handleCopy(params.row)}
+                  >
+                    <ContentCopy />
+                  </IconButton>
+                </Tooltip>
+                {role === "posuser" && (
+                  <Tooltip title="Stop POS">
+                    <IconButton
+                      sx={{ color: "#ff0000" }}
+                      size="small"
+                      onClick={() => handleRelocate(params.row._id)}
+                    >
+                      <Stop />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {!isRelocated && (
+                  <Tooltip title="Generate Config">
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      disabled={role === "user"}
+                      style={{
+                        display:
+                          role === "user" || role === "posuser"
+                            ? "none"
+                            : "inline-flex",
+                      }}
+                      onClick={() => handleConfig(params.row)}
+                    >
+                      <GrConfigure />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Box>
+            ),
+          },
+        ]
+      : []),
   ];
 
   const handleCopy = (rowData) => {
     // Format the row data into a string
     const rowText = `
-    ${rowData.serialNumber}
-    ${rowData.posTerminalId}
+    ${rowData.serialNumber.serialNumber}
+    ${rowData.terminalId}
     ${rowData.merchantName}
-    ${rowData.posBranchName}
-    ${rowData.posDistrict}
-    ${rowData.posSite}
+    ${rowData.branchName.companyName}
+    ${rowData.district.districtName}
+    ${rowData.site}
     ${rowData.merchantId}
     ${rowData.merchantAddress}
     ${rowData.merchantPhonenumber}
     ${rowData.posCbsAccount}
-    ${rowData.simCardNumber}
+    ${rowData.serviceNumber}
     ${rowData.staticIp}
     ${rowData.status}
   `;
@@ -173,6 +233,40 @@ const ViewPOSGridComponent = ({ rows, isRelocated, detailType }) => {
     } else {
       // Fallback for HTTP or unsupported browsers
       fallbackCopyText(rowText);
+    }
+  };
+
+  const handleDelete = async (row) => {
+    setLoading(true);
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const token = localStorage.getItem("token");
+
+    console.log("handle pos creation", row);
+    if (!token) {
+      navigate("/home");
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `${apiUrl}/pos/relocate/${row}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      toast.success(response.data.message);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || error.message || "Something went wrong"
+      );
+    } finally {
+      // setSubmitting(false);
+      setLoading(false);
     }
   };
 
@@ -198,8 +292,9 @@ const ViewPOSGridComponent = ({ rows, isRelocated, detailType }) => {
   };
 
   const handleConfig = async (configData) => {
-    const HOSTIP = "10.1.162.10";
-    const PORT = 5858;
+    const HOSTIP = process.env.REACT_APP_HOSTIP;
+    const HOSTPORT = process.env.REACT_APP_HOSTPORT;
+
     let MCC = 5411;
     if (configData === "Branch") {
       MCC = 6010;
@@ -217,9 +312,9 @@ const ViewPOSGridComponent = ({ rows, isRelocated, detailType }) => {
         .replace(/^HDR2=.*$/m, `HDR2=${configData.merchantAddress}`)
         .replace(/^HDR3=.*$/m, `HDR3=TEL: ${configData.merchantPhonenumber}`)
         .replace(/^MID=.*$/m, `MID=${configData.merchantId}`)
-        .replace(/^TID=.*$/m, `TID=${configData.posTerminalId}`)
+        .replace(/^TID=.*$/m, `TID=${configData.terminalId}`)
         .replace(/^HOSTIP=.*$/m, `HOSTIP=${HOSTIP}`)
-        .replace(/^PORT=.*$/m, `PORT=${PORT}`)
+        .replace(/^PORT=.*$/m, `PORT=${HOSTPORT}`)
         .replace(/^\*MCC=.*$/m, `*MCC=${MCC}`);
 
       // Initialize JSZip
@@ -257,57 +352,87 @@ const ViewPOSGridComponent = ({ rows, isRelocated, detailType }) => {
     }
   };
 
+  const handleRelocate = (row) => {
+    setSelectedRow(row);
+    setOpenDialog(true);
+  };
+
+  // Function to confirm relocation and proceed with delete
+  const handleConfirmRelocate = () => {
+    setOpenDialog(false);
+    handleDelete(selectedRow);
+  };
+
+  const handleCancel = () => {
+    setOpenDialog(false);
+  };
+
   return (
     <Box>
       <Box
         sx={{
           width: "auto",
           margin: 1,
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: "#0693e3",
             color: "#fff",
             fontSize: 13,
             fontWeight: "bold",
           },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-          },
-          "& .MuiDataGrid-root": {
-            overflow: "hidden",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            overflowY: "hidden !important", // Hides the vertical scrollbar
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none", // Hides the scrollbar for WebKit browsers
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
-            display: "none",
-          },
         }}
       >
         <DataGrid
           rows={rows}
           columns={columns}
-          slots={
-            role !== "user"
-              ? { toolbar: GridToolbar }
-              : { toolbar: CustomToolbar }
-          }
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },
             },
           }}
+          loading={loading}
+          slots={
+            role !== "user"
+              ? { toolbar: GridToolbar }
+              : { toolbar: CustomToolbar }
+          }
           pageSizeOptions={[20, 50, 100]}
           autoHeight
           checkboxSelection
+          onClipboardCopy={(copiedString) => setCopiedData(copiedString)}
         />
       </Box>
+      <Alert severity="info" sx={{ width: "100%", mt: 1 }}>
+        <AlertTitle>Copied data:</AlertTitle>
+        <code
+          style={{
+            display: "block",
+            maxHeight: 200,
+            overflow: "auto",
+            whiteSpace: "pre-line",
+          }}
+        >
+          {copiedData}
+        </code>
+      </Alert>
+      <Dialog open={openDialog} onClose={handleCancel}>
+        <DialogTitle>Confirm Relocation</DialogTitle>
+        <DialogContent>
+          Are you sure you want to stop/terminate POS? This action cannot be
+          undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel} color="secondary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmRelocate}
+            color="primary"
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Confirm"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
