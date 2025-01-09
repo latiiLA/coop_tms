@@ -58,6 +58,7 @@ export default function ViewTerminal() {
       });
 
       setDataRows(response.data.terminals);
+      console.log("terminal list", response.data.terminals);
     } catch (error) {
       // console.error("Error fetching terminals:", error);
       setError(error.message);
