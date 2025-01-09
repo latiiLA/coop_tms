@@ -114,7 +114,7 @@ export default function RelocatedPOS() {
         }}
       >
         <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
-          <Tab label="Relocated POS" />
+          <Tab label="All Relocated POS" />
           <Tab label="Relocated Merchant POS" />
           <Tab label="Relocated Branch POS" />
         </Tabs>
