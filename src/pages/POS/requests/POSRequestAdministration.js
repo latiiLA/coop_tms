@@ -1,7 +1,7 @@
 import { Box, Divider, Typography } from "@mui/material";
 import React from "react";
 import RequestPOS from "./RequestPOS";
-import RelocatedRequest from "./RelocateRequest";
+import RelocatedRequest from "./RelocationRequest";
 import RequestStatus from "./RequestStatus";
 import ManagePOS from "../ManagePOS";
 
