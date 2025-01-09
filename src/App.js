@@ -63,7 +63,10 @@ const UserActivityLog = React.lazy(
 const ViewRelocated = React.lazy(
   () => import("./pages/administration/ViewRelocated")
 );
+const CreateDistrict = React.lazy(() => import("./components/CreateDistrict"));
+const CreateBranch = React.lazy(() => import("./components/CreateBranch"));
 const ViewBranch = React.lazy(() => import("./components/ViewBranch"));
+const ViewDistrict = React.lazy(() => import("./components/ViewDistrict"));
 const Analytics = React.lazy(() => import("./pages/dashboard/Analytics"));
 const Feedback = React.lazy(() => import("./components/Feedback"));
 const ViewFeedback = React.lazy(() => import("./components/ViewFeedback"));
@@ -78,9 +81,13 @@ const ManagePOS = React.lazy(() => import("./pages/POS/ManagePOS"));
 const POSDetails = React.lazy(() => import("./pages/POS/POSDetails"));
 const EditPOS = React.lazy(() => import("./pages/POS/EditPOS"));
 const RequestPOS = React.lazy(() => import("./pages/POS/requests/RequestPOS"));
+const RelocationRequests = React.lazy(
+  () => import("./pages/POS/RelocationRequests")
+);
 const RelocatedPOS = React.lazy(() => import("./pages/POS/RelocatedPOS"));
+const ViewDevices = React.lazy(() => import("./pages/POS/ViewDevices"));
 const RelocatedRequest = React.lazy(
-  () => import("./pages/POS/requests/RelocateRequest")
+  () => import("./pages/POS/requests/RelocationRequest")
 );
 const ViewPOSRequests = React.lazy(() => import("./pages/POS/ViewPOSRequests"));
 const RequestStatus = React.lazy(
@@ -248,6 +255,14 @@ function App() {
               }
             />
             <Route
+              path="relocatedterminal"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ViewRelocated />
+                </Suspense>
+              }
+            />
+            <Route
               path="/reports"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
@@ -386,6 +401,31 @@ function App() {
               }
             />
             <Route
+              path="/atm/adddistrict"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <CreateDistrict />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/atm/viewdistrict"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ViewDistrict />
+                </Suspense>
+              }
+            />
+
+            <Route
+              path="/atm/addbranch"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <CreateBranch />
+                </Suspense>
+              }
+            />
+            <Route
               path="/atm/relocatedterminal"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
@@ -409,7 +449,6 @@ function App() {
                 </Suspense>
               }
             />
-
             {/* POS ROUTES */}
             <Route
               path="/pos"
@@ -443,6 +482,7 @@ function App() {
                 </Suspense>
               }
             />
+
             <Route
               path="/pos/requests"
               element={
@@ -460,6 +500,14 @@ function App() {
               }
             />
             <Route
+              path="/pos/devices"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ViewDevices />
+                </Suspense>
+              }
+            />
+            <Route
               path="/editpos"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
@@ -467,7 +515,6 @@ function App() {
                 </Suspense>
               }
             />
-
             <Route
               path="/manual/atmcreationmanual"
               element={
@@ -506,6 +553,30 @@ function App() {
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <RequestStatus />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/pos/requeststatus"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RequestStatus />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/request/relocationrequests"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RelocationRequests />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/pos/relocationrequests"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RelocationRequests />
                 </Suspense>
               }
             />
