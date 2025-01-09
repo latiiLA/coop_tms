@@ -39,6 +39,8 @@ import {
   BugReport,
   Analytics,
   LocalActivity,
+  DeviceHub,
+  AirlineStops,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import { TbStatusChange } from "react-icons/tb";
@@ -67,6 +69,12 @@ const NAVIGATION = [
     segment: "view",
     title: "Explore Terminal",
     icon: <Explore />,
+    roles: ["user"],
+  },
+  {
+    segment: "relocatedterminal",
+    title: "Relocated ATM",
+    icon: <MoveDown />,
     roles: ["user"],
   },
   {
@@ -121,15 +129,20 @@ const NAVIGATION = [
         title: "Explore POS",
         icon: <Explore />,
       },
-      {
-        segment: "relocate",
-        title: "Relocate POS",
-        icon: <TbStatusChange />,
-      },
+      // {
+      //   segment: "relocate",
+      //   title: "Relocate POS",
+      //   icon: <TbStatusChange />,
+      // },
       {
         segment: "requeststatus",
         title: "Request Status",
         icon: <ChangeCircle />,
+      },
+      {
+        segment: "relocationrequests",
+        title: "Relocation Requests",
+        icon: <AirlineStops />,
       },
     ],
   },
@@ -158,7 +171,7 @@ const NAVIGATION = [
       {
         segment: "relocatedterminal",
         title: "Relocated ATM",
-        icon: <TbStatusChange />,
+        icon: <MoveDown />,
       },
       {
         segment: "viewports",
@@ -183,14 +196,25 @@ const NAVIGATION = [
         icon: <BookmarkAdd />,
       },
       {
-        segment: "createbranch",
-        title: "Create Branch",
+        segment: "adddistrict",
+        title: "Add District",
+        icon: <DescriptionIcon />,
+      },
+
+      {
+        segment: "addbranch",
+        title: "Add Branch",
         icon: <DescriptionIcon />,
       },
       {
         segment: "ports",
         title: "Create Port",
         icon: <GroupWork />,
+      },
+      {
+        segment: "viewdistrict",
+        title: "Explore District",
+        icon: <DescriptionIcon />,
       },
     ],
   },
@@ -215,10 +239,26 @@ const NAVIGATION = [
         title: "Relocated POS",
         icon: <MoveDown />,
       },
+
       {
         segment: "requests",
-        title: "POS Requests",
+        title: "New POS Requests",
         icon: <TrackChanges />,
+      },
+      {
+        segment: "requeststatus",
+        title: "All POS Requests",
+        icon: <ChangeCircle />,
+      },
+      {
+        segment: "relocationrequests",
+        title: "Relocation Requests",
+        icon: <AirlineStops />,
+      },
+      {
+        segment: "devices",
+        title: "POS Devices",
+        icon: <DeviceHub />,
       },
     ],
   },
@@ -313,7 +353,7 @@ const NAVIGATION = [
       },
       {
         segment: "branchguide",
-        title: "POS Merchant Manual",
+        title: "POS Branch Manual",
         icon: <DescriptionIcon />,
       },
     ],
