@@ -117,6 +117,15 @@ export default function ViewBranch() {
       flex: 0.5,
     },
     {
+      field: "district",
+      headerName: "District",
+      type: "string",
+      flex: 0.5,
+      renderCell: (params) => {
+        return params.row.district ? params.row.district.districtName : "N/A";
+      },
+    },
+    {
       field: "actions",
       headerName: "Actions",
       flex: 0.3,
