@@ -60,6 +60,7 @@ export default function ManagePOS() {
 
       setDataRows(response.data.posTerminals);
       setRole(response.data.role);
+      console.log("pos", response.data.posTerminals)
     } catch (error) {
       // console.error("Error fetching terminals:", error);
       setError(error.message);
