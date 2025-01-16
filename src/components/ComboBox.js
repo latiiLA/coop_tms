@@ -69,6 +69,13 @@ export default function ComboBox({
   }, [navigate]);
   // initialValue, form, field.name;
 
+  useEffect(() => {
+    const matchedDevice = devices.find(
+      (device) => device.value === field.value
+    );
+    setSelectedDevice(matchedDevice || null);
+  }, [field.value, devices]);
+
   const handleDeviceChange = (event, newValue) => {
     setSelectedDevice(newValue);
     form.setFieldValue(field.name, newValue?.value || "");
