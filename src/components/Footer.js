@@ -2,12 +2,13 @@ import { Box, Typography } from "@mui/material";
 import React from "react";
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
   return (
     <Box>
       <Typography fontSize={10}>
         {" "}
-        &copy; 2024 Cooperative Bank of Oromia. All Rights Reserved | Designed,
-        Built and Maintained by{" "}
+        &copy; {currentYear} Cooperative Bank of Oromia. All Rights Reserved |
+        Designed, Built and Maintained by{" "}
         <a
           href="https://www.linkedin.com/in/latiiLA/"
           target="_blank"
