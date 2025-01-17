@@ -194,6 +194,34 @@ const POSDetails = () => {
                           readOnly: true,
                         }}
                       />
+                      {!isRequest && (
+                        <>
+                          <CustomTextField
+                            name="reqCreatedBy"
+                            label="Request Created By"
+                            value={
+                              (row?.reqCreatedBy?.firstName || "Unknown") +
+                              " " +
+                              (row?.reqCreatedBy?.fatherName || "Unknown")
+                            }
+                            InputProps={{
+                              readOnly: true,
+                            }}
+                          />
+                          <CustomTextField
+                            name="reqAuthorizedBy"
+                            label="Request Authorized By"
+                            value={
+                              (row?.reqAuthorizedBy?.firstName || "Unknown") +
+                              " " +
+                              (row?.reqAuthorizedBy?.fatherName || "Unknown")
+                            }
+                            InputProps={{
+                              readOnly: true,
+                            }}
+                          />
+                        </>
+                      )}
                       <CustomTextField
                         name="createdBy"
                         label="Created By"
@@ -206,6 +234,20 @@ const POSDetails = () => {
                           readOnly: true,
                         }}
                       />
+                      {isRequest && row?.reqAuthorizedBy && (
+                        <CustomTextField
+                          name="reqAuthorizedBy"
+                          label="Request Authorized By"
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                          value={
+                            (row?.reqAuthorizedBy?.firstName || "Unknown") +
+                            " " +
+                            (row?.reqAuthorizedBy?.fatherName || "Unknown")
+                          }
+                        />
+                      )}
                       <CustomTextField
                         name="createdAt"
                         label="Created At"
@@ -241,6 +283,36 @@ const POSDetails = () => {
                           readOnly: true,
                         }}
                       />
+
+                      {isRequest && row?.status === "Rejected" && (
+                        <CustomTextField
+                          name="rejectedBy"
+                          label="Rejected By"
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                          value={
+                            (row?.rejectedBy?.firstName || "Unknown") +
+                            " " +
+                            (row?.rejectedBy?.fatherName || "Unknown")
+                          }
+                        />
+                      )}
+                      {isRequest && row?.status === "Approved" && (
+                        <CustomTextField
+                          name="approvedBy"
+                          label="Approved By"
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                          value={
+                            (row?.approvedBy?.firstName || "Unknown") +
+                            " " +
+                            (row?.approvedBy?.fatherName || "Unknown")
+                          }
+                        />
+                      )}
+
                       {isRequest && (
                         <CustomTextField
                           name="remark"
