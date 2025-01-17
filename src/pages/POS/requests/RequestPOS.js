@@ -492,8 +492,9 @@ const RequestPOS = () => {
                     color="primary"
                     width={200}
                   >
-                    {isEdit ? "Update" : "Submit"}
+                    {isEdit ? "Update Request" : "Add Request"}
                   </LoadingButton>
+                  <Button onClick={() => navigate(-1)}>Back</Button>
                 </Box>
               </Form>
             )}
