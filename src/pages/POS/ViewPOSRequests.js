@@ -86,6 +86,42 @@ export default function ViewPOSRequests() {
       ...row,
     })) ?? [];
 
+  let filteredRows = rows.filter((row) =>
+    Object.keys(row).some((key) => {
+      if (key === "branchName") {
+        console.log(
+          searchText,
+          key,
+          String(row[key]?.companyName)
+            .toLowerCase()
+            .includes(searchText.toLowerCase()),
+          row[key]?.companyName
+        );
+        return String(row[key]?.companyName)
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      } else if (key === "district") {
+        return String(row[key]?.districtName)
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      } else if (key === "serialNumber") {
+        return String(row[key]?.serialNumber)
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      } else {
+        return String(row[key])
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      }
+    })
+  );
+
+  console.log(filteredRows, "filtered");
+
+  // Split sorted rows into CRM and NCR
+  const merchantRequest = filteredRows.filter((row) => row.site === "MERCHANT");
+  const branchRequest = filteredRows.filter((row) => row.site === "BRANCH");
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -93,10 +129,6 @@ export default function ViewPOSRequests() {
   if (error) {
     return <Typography>Error: {error}</Typography>;
   }
-
-  // Split sorted rows into CRM and NCR
-  const merchantRequest = rows.filter((row) => row.site === "MERCHANT");
-  const branchRequest = rows.filter((row) => row.site === "BRANCH");
 
   return (
     <Box
@@ -130,7 +162,7 @@ export default function ViewPOSRequests() {
         />
       </Box>
       <TabPanel value={value} index={0}>
-        <ViewPOSRequestGrid rows={rows} />
+        <ViewPOSRequestGrid rows={filteredRows} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
