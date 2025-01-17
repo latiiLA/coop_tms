@@ -90,9 +90,21 @@ export default function ViewTerminal() {
   // Filtered rows
   let filteredRows = rows
     .filter((row) =>
-      Object.keys(row).some((key) =>
-        String(row[key]).toLowerCase().includes(searchText.toLowerCase())
-      )
+      Object.keys(row).some((key) => {
+        if (key === "branchName") {
+          return String(row[key]?.companyName)
+            .toLowerCase()
+            .includes(searchText.toLowerCase());
+        } else if (key === "district") {
+          return String(row[key]?.districtName)
+            .toLowerCase()
+            .includes(searchText.toLowerCase());
+        } else {
+          return String(row[key])
+            .toLowerCase()
+            .includes(searchText.toLowerCase());
+        }
+      })
     )
     .sort((a, b) => {
       // First sort by type (CRM should come first)
@@ -107,6 +119,9 @@ export default function ViewTerminal() {
     });
 
   // console.log(filteredRows);
+  // Split sorted rows into CRM and NCR
+  const crmRows = filteredRows.filter((row) => row.type === "CRM");
+  const ncrRows = filteredRows.filter((row) => row.type === "NCR");
 
   if (loading) {
     return <LoadingSpinner />;
@@ -115,10 +130,6 @@ export default function ViewTerminal() {
   if (error) {
     return <Typography>Error: {error}</Typography>;
   }
-
-  // Split sorted rows into CRM and NCR
-  const crmRows = filteredRows.filter((row) => row.type === "CRM");
-  const ncrRows = filteredRows.filter((row) => row.type === "NCR");
 
   return (
     <Box

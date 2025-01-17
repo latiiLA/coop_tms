@@ -101,9 +101,21 @@ export default function ViewRelocated() {
 
   // Filtered rows
   let filteredRows = rows.filter((row) =>
-    Object.keys(row).some((key) =>
-      String(row[key]).toLowerCase().includes(searchText.toLowerCase())
-    )
+    Object.keys(row).some((key) => {
+      if (key === "branchName") {
+        return String(row[key]?.companyName)
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      } else if (key === "district") {
+        return String(row[key]?.districtName)
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      } else {
+        return String(row[key])
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      }
+    })
   );
 
   // Split sorted rows into CRM and NCR

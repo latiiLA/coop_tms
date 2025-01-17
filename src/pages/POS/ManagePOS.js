@@ -60,7 +60,7 @@ export default function ManagePOS() {
 
       setDataRows(response.data.posTerminals);
       setRole(response.data.role);
-      console.log("pos", response.data.posTerminals)
+      console.log("pos", response.data.posTerminals);
     } catch (error) {
       // console.error("Error fetching terminals:", error);
       setError(error.message);
@@ -89,26 +89,33 @@ export default function ManagePOS() {
       ...row,
     })) ?? [];
 
-  // Filtered rows
-  let filteredRows = rows
-    .filter((row) =>
-      Object.keys(row).some((key) =>
-        String(row[key]).toLowerCase().includes(searchText.toLowerCase())
-      )
-    )
-    .sort((a, b) => {
-      // First sort by type (CRM should come first)
-      if (a.type !== b.type) {
-        return a.type.localeCompare(b.type);
+  let filteredRows = rows.filter((row) =>
+    Object.keys(row).some((key) => {
+      if (key === "branchName") {
+        return String(row[key]?.companyName)
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      } else if (key === "district") {
+        return String(row[key]?.districtName)
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      } else if (key === "serialNumber") {
+        return String(row[key]?.serialNumber)
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      } else {
+        return String(row[key])
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
       }
-      // Sort by unitId numerically or by localeCompare for strings
-      if (typeof a.unitId === "string" && typeof b.unitId === "string") {
-        return a.unitId.localeCompare(b.unitId);
-      }
-      return (a.unitId || 0) - (b.unitId || 0); // Handle cases where unitId might be missing or non-numeric
-    });
+    })
+  );
 
-  // console.log(filteredRows);
+  // console.log(filteredRows, "filtered");
+
+  // Split sorted rows into CRM and NCR
+  const branchRows = filteredRows.filter((row) => row.site === "BRANCH");
+  const merchantRows = filteredRows.filter((row) => row.site === "MERCHANT");
 
   if (loading) {
     return <LoadingSpinner />;
@@ -117,10 +124,6 @@ export default function ManagePOS() {
   if (error) {
     return <Typography>Error: {error}</Typography>;
   }
-
-  // Split sorted rows into CRM and NCR
-  const branchRows = filteredRows.filter((row) => row.posSite === "Branch");
-  const merchantRows = filteredRows.filter((row) => row.posSite === "Merchant");
 
   return (
     <Box
