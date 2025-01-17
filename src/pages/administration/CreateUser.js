@@ -58,6 +58,7 @@ const CreateUser = () => {
     { value: "tempo_user", label: "User" },
     { value: "tempo_admin", label: "Admin" },
     { value: "tempo_posuser", label: "POS User" },
+    { value: "tempo_posauthorizer", label: "POS Request Authorizer" },
     // Add more options as needed
   ];
 
