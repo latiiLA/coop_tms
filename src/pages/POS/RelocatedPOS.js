@@ -90,6 +90,28 @@ export default function RelocatedPOS() {
       }))
       .reverse() ?? [];
 
+  let filteredRows = rows.filter((row) =>
+    Object.keys(row).some((key) => {
+      if (key === "branchName") {
+        return String(row[key]?.companyName)
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      } else if (key === "district") {
+        return String(row[key]?.districtName)
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      } else {
+        return String(row[key])
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+      }
+    })
+  );
+
+  // Split sorted rows into CRM and NCR
+  const branchRows = filteredRows.filter((row) => row.site === "BRANCH");
+  const merchantRows = filteredRows.filter((row) => row.site === "MERCHANT");
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -97,10 +119,6 @@ export default function RelocatedPOS() {
   if (error) {
     return <Typography>Error: {error}</Typography>;
   }
-
-  // Split sorted rows into CRM and NCR
-  const branchRows = rows.filter((row) => row.posSite === "Branch");
-  const merchantRows = rows.filter((row) => row.posSite === "Merchant");
 
   return (
     <Box
@@ -134,7 +152,7 @@ export default function RelocatedPOS() {
         />
       </Box>
       <TabPanel value={value} index={0}>
-        <ViewPOSGridComponent isRelocated={true} rows={rows} />
+        <ViewPOSGridComponent isRelocated={true} rows={filteredRows} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
