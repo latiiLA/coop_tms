@@ -31,7 +31,6 @@ import toast from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner";
 import coop from "../assets/coop.gif";
 import customTheme from "../DarkMode/customTheme";
-import DarkMode from "../DarkMode/DarkMode";
 
 const Login = () => {
   const INITIAL_FORM_STATE = {
@@ -390,7 +389,6 @@ const Login = () => {
           </Box>
         </Grid>
       </Grid>
-      //{" "}
     </ThemeProvider>
   );
 };
