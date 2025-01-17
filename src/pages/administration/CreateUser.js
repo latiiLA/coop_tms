@@ -65,6 +65,10 @@ const CreateUser = () => {
   const department = [
     { value: "digital banking", label: "Digital Banking" },
     { value: "monitoring", label: "Monitoring" },
+    {
+      value: "Merchant/Agent Growth and Support",
+      label: "Merchant/Agent Growth and Support",
+    },
     // Add more options as needed
   ];
 
