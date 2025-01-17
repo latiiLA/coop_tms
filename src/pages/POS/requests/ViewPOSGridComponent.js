@@ -84,7 +84,7 @@ const ViewPOSGridComponent = ({
     { field: "status", headerName: "Status", flex: 0.5 },
 
     // Actions Column (Still using renderCell because it involves buttons)
-    ...(role !== "posuser" || !isRelocatedReq
+    ...((role === "admin" || role === "superadmin") && !isRelocatedReq
       ? [
           {
             field: "actions",
