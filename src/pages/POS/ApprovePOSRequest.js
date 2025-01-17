@@ -302,7 +302,7 @@ const ApprovePOSRequest = () => {
                         width: { md: "50%", xs: "100%" },
                       }}
                     >
-                      {row.status === "New" && (
+                      {row.status === "Authorized" && (
                         <CustomTextField
                           name="terminalId"
                           label="Terminal ID"
@@ -333,6 +333,7 @@ const ApprovePOSRequest = () => {
                           setBranches([]);
                           validateForm();
                         }}
+                        disabled={true}
                       />
 
                       <CustomSelect
@@ -343,7 +344,7 @@ const ApprovePOSRequest = () => {
                           handleChange(e);
                           validateForm();
                         }}
-                        disabled={branches.length === 0}
+                        disabled={true}
                         required
                       />
 
@@ -435,7 +436,9 @@ const ApprovePOSRequest = () => {
                       <CustomTextField
                         name="status"
                         label="Request Status"
-                        disabled
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
 
                       {/* <CustomSelect
