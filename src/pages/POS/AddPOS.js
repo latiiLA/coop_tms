@@ -50,8 +50,7 @@ const AddPOS = () => {
   // Tom@J-Class.com
 
   const FORM_VALIDATION = Yup.object().shape({
-    serialNumber: Yup.string()
-      .required("Serial number is required."),
+    serialNumber: Yup.string().required("Serial number is required."),
     terminalId: Yup.string()
       .required("Terminal ID is required")
       .min(8, "Terminal ID must be 8 characters")
@@ -60,7 +59,8 @@ const AddPOS = () => {
     branchName: Yup.string().required("Branch Name is required"),
     district: Yup.string().required("District is required"),
     site: Yup.string().required("Terminal site assignment is required"),
-    merchantId: Yup.string().required("Merchant ID is required")
+    merchantId: Yup.string()
+      .required("Merchant ID is required")
       .min(15, "Merchant ID must be 15 characters")
       .max(15, "Merchant ID must be 15 characters"),
     merchantName: Yup.string().required("Merchant name is required"),
@@ -120,13 +120,13 @@ const AddPOS = () => {
 
       toast.success(response.data.message);
       resetForm();
-      navigate("/posdetail", {
-        state: {
-          isRequest: false,
-          relocated: false,
-          row: response.data.posTerminal,
-        },
-      });
+      // navigate("/posdetail", {
+      //   state: {
+      //     isRequest: false,
+      //     relocated: false,
+      //     row: response.data.posTerminal,
+      //   },
+      // });
     } catch (error) {
       toast.error(
         error.response?.data?.message || error.message || "Something went wrong"
@@ -419,7 +419,6 @@ const AddPOS = () => {
                       >
                         <Box sx={{ flex: 1 }}>
                           <Field name="serialNumber" component={ComboBox} />
-                          
                         </Box>
 
                         <CustomTextField
