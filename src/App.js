@@ -14,6 +14,7 @@ import { Toaster } from "react-hot-toast";
 import SideDashboard from "./pages/sidebar/SideDashboard";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import SendRequests from "./pages/POS/requests/SendRequests";
 // const SideDashboard = React.lazy(() => import("./pages/sidebar/SideDashboard"));
 const Dashboard = React.lazy(() => import("./pages/dashboard/Dashboard"));
 const ViewTerminal = React.lazy(
@@ -93,6 +94,9 @@ const ViewPOSRequests = React.lazy(() => import("./pages/POS/ViewPOSRequests"));
 const RequestStatus = React.lazy(
   () => import("./pages/POS/requests/RequestStatus")
 );
+const AuthorizedRequests = React.lazy(
+  () => import("./pages/POS/requests/AuthorizedRequests")
+);
 const ApprovePOSRequest = React.lazy(
   () => import("./pages/POS/ApprovePOSRequest")
 );
@@ -140,6 +144,7 @@ const ProtectedRoutes = ({ requiredRole }) => {
   if (
     role === "tempo_user" ||
     role === "tempo_posuser" ||
+    role === "tempo_posauthorizer" ||
     role === "tempo_admin" ||
     role === "tempo_superadmin"
   ) {
@@ -161,8 +166,9 @@ const ProtectedLogin = () => {
 
   useEffect(() => {
     if (
-      role === "posuser" ||
       role === "user" ||
+      role === "posuser" ||
+      role === "posauthorizer" ||
       role === "admin" ||
       role === "superadmin"
     ) {
@@ -170,6 +176,7 @@ const ProtectedLogin = () => {
     } else if (
       role === "tempo_user" ||
       role === "tempo_posuser" ||
+      role === "tempo_posauthorizer" ||
       role === "tempo_admin" ||
       role === "tempo_superadmin"
     ) {
@@ -202,7 +209,13 @@ function App() {
           <Route
             element={
               <ProtectedRoutes
-                requiredRole={["user", "posuser", "admin", "superadmin"]}
+                requiredRole={[
+                  "user",
+                  "posuser",
+                  "posauthorizer",
+                  "admin",
+                  "superadmin",
+                ]}
               />
             }
           >
@@ -215,12 +228,16 @@ function App() {
               }
             />
             <Route
-              path="/profile"
+              path="settings/profile"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <UserProfile />
                 </Suspense>
               }
+            />
+            <Route
+              path="/settings/changepassword"
+              element={<ForgotPassword />}
             />
             <Route
               path="/logout"
@@ -528,7 +545,12 @@ function App() {
           <Route
             element={
               <ProtectedRoutes
-                requiredRole={["posuser", "admin", "superadmin"]}
+                requiredRole={[
+                  "posuser",
+                  "admin",
+                  "superadmin",
+                  "posauthorizer",
+                ]}
               />
             }
           >
@@ -557,10 +579,10 @@ function App() {
               }
             />
             <Route
-              path="/pos/requeststatus"
+              path="/pos/authorizedrequests"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
-                  <RequestStatus />
+                  <AuthorizedRequests />
                 </Suspense>
               }
             />
@@ -651,7 +673,11 @@ function App() {
           </Route>
 
           {/* POS user Routes */}
-          <Route element={<ProtectedRoutes requiredRole={["posuser"]} />}>
+          <Route
+            element={
+              <ProtectedRoutes requiredRole={["posuser", "posauthorizer"]} />
+            }
+          >
             <Route
               path="/request"
               element={
@@ -676,6 +702,15 @@ function App() {
                 </Suspense>
               }
             />
+            <Route
+              path="/request/sendrequests"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <SendRequests />
+                </Suspense>
+              }
+            />
+
             <Route
               path="/request/bulkrequest"
               element={
@@ -715,7 +750,8 @@ function App() {
             path="*"
             element={
               role === "tempo_user" ||
-              role === "tempo_user" ||
+              role === "tempo_posuser" ||
+              role === "tempo_posauthorizer" ||
               role === "tempo_admin" ||
               role === "tempo_superadmin" ? (
                 <Navigate to="/changepassword" replace />
