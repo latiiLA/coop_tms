@@ -349,7 +349,7 @@ const EditPOS = () => {
                   >
                     Update
                   </LoadingButton>
-                  <Button
+                  {/* <Button
                     onClick={() =>
                       role === "posuser"
                         ? navigate("/request/managepos")
@@ -357,7 +357,8 @@ const EditPOS = () => {
                     }
                   >
                     View POS
-                  </Button>
+                  </Button> */}
+                  <Button onClick={() => navigate(-1)}>Back</Button>
                 </Box>
               </Form>
             )}
