@@ -1,18 +1,30 @@
 import { ContentCopy, Edit, Preview } from "@mui/icons-material";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Alert, AlertTitle, Box, IconButton, Tooltip } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
 import { useAuthContext } from "../../context/AuthContext";
 import CustomToolbar from "../../components/CustomToolbar";
+import LoadingButton from "@mui/lab/LoadingButton";
+import axios from "axios";
 
-const ViewPOSRequestGrid = ({ rows, isRelocated }) => {
+const ViewPOSRequestGrid = ({
+  rows: initialRows,
+  isRelocated,
+  isRequestApproval,
+}) => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [copiedData, setCopiedData] = React.useState("");
   // console.log("grid request", rows);
-
+  const [rowsState, setRowsState] = useState(initialRows);
   const { role } = useAuthContext();
+
+  useEffect(() => {
+    setRowsState(initialRows);
+  }, [initialRows]);
   // console.log(pings);
   const columns = [
     // { field: "id", headerName: "No", type: "number", width: 10 },
@@ -64,8 +76,10 @@ const ViewPOSRequestGrid = ({ rows, isRelocated }) => {
                 color="primary"
                 size="small"
                 disabled={
+                  role === "posauthorizer" ||
                   params.row.status === "Approved" ||
-                  (params.row.status === "Rejected" &&
+                  ((params.row.status === "New" ||
+                    params.row.status === "Rejected") &&
                     (role === "admin" || role === "superadmin"))
                 }
                 // style={{
@@ -171,6 +185,47 @@ const ViewPOSRequestGrid = ({ rows, isRelocated }) => {
     document.body.removeChild(textArea);
   };
 
+  const handleSend = async (rows) => {
+    if (rows.length === 0) {
+      toast.error("There is no request to be authorized!");
+      return;
+    }
+    setLoading(true);
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/home");
+      return;
+    }
+
+    // Create FormData object and populate it with values and file
+
+    console.log("rows to send", rows);
+
+    try {
+      const response = await axios.post(
+        `${apiUrl}/request/sendRequests`,
+        { rows },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      toast.success(response.data.message);
+      setRowsState([]);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || error.message || "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Box>
       <Box
@@ -185,10 +240,6 @@ const ViewPOSRequestGrid = ({ rows, isRelocated }) => {
             color: "#fff",
             fontSize: 13,
             fontWeight: "bold",
-          },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
           },
           "& .MuiDataGrid-root": {
             overflow: "hidden",
@@ -205,7 +256,7 @@ const ViewPOSRequestGrid = ({ rows, isRelocated }) => {
         }}
       >
         <DataGrid
-          rows={rows}
+          rows={rowsState}
           columns={columns}
           slots={
             role !== "user"
@@ -220,8 +271,37 @@ const ViewPOSRequestGrid = ({ rows, isRelocated }) => {
           pageSizeOptions={[20, 50, 100]}
           autoHeight
           checkboxSelection
+          onClipboardCopy={(copiedString) => setCopiedData(copiedString)}
         />
       </Box>
+      <Alert severity="info" sx={{ width: "100%", mt: 1 }}>
+        <AlertTitle>Copied data:</AlertTitle>
+        <code
+          style={{
+            display: "block",
+            maxHeight: 200,
+            overflow: "auto",
+            whiteSpace: "pre-line",
+          }}
+        >
+          {copiedData}
+        </code>
+      </Alert>
+      {isRequestApproval && role === "posauthorizer" && (
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onClick={() => handleSend(rowsState)}
+        >
+          <LoadingButton variant="contained">
+            Approve and Send All Requests
+          </LoadingButton>
+        </Box>
+      )}
     </Box>
   );
 };
