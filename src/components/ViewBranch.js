@@ -229,10 +229,6 @@ export default function ViewBranch() {
             fontSize: 13,
             fontWeight: "bold",
           },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-          },
           "& .MuiDataGrid-root": {
             overflow: "hidden",
           },

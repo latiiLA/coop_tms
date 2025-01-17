@@ -137,9 +137,6 @@ export default function Commands({ role = "admin" }) {
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: "#0693e3",
           },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#0693e3",
-          },
           margin: 1,
         }}
       >

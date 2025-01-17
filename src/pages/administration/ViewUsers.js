@@ -312,10 +312,6 @@ export default function ViewUsers() {
             backgroundColor: "#0693e3",
             color: "#fff",
           },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-          },
           margin: 1,
         }}
       >
