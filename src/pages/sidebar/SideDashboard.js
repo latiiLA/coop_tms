@@ -41,6 +41,10 @@ import {
   LocalActivity,
   DeviceHub,
   AirlineStops,
+  ApprovalRounded,
+  SettingsApplications,
+  Person2,
+  Password,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import { TbStatusChange } from "react-icons/tb";
@@ -51,7 +55,7 @@ const NAVIGATION = [
   {
     kind: "header",
     title: "Main items",
-    roles: ["superadmin", "admin", "user"],
+    roles: ["superadmin", "admin", "user", "posauthorizer"],
   },
   {
     segment: "dashboard",
@@ -63,7 +67,7 @@ const NAVIGATION = [
     segment: "posdashboard",
     title: "POS Dashboard",
     icon: <DashboardIcon />,
-    roles: ["superadmin", "admin", "posuser"],
+    roles: ["superadmin", "admin", "posuser", "posauthorizer"],
   },
   {
     segment: "view",
@@ -106,7 +110,7 @@ const NAVIGATION = [
   {
     kind: "header",
     title: "Requests",
-    roles: ["posuser"],
+    roles: ["posuser", "posauthorizer"],
   },
   {
     segment: "request",
@@ -134,6 +138,34 @@ const NAVIGATION = [
       //   title: "Relocate POS",
       //   icon: <TbStatusChange />,
       // },
+      {
+        segment: "requeststatus",
+        title: "Request Status",
+        icon: <ChangeCircle />,
+      },
+      {
+        segment: "relocationrequests",
+        title: "Relocation Requests",
+        icon: <AirlineStops />,
+      },
+    ],
+  },
+  {
+    segment: "request",
+    title: "POS Requests",
+    icon: <PointOfSale />,
+    roles: ["posauthorizer"],
+    children: [
+      {
+        segment: "sendrequests",
+        title: "Approve Requests",
+        icon: <ApprovalRounded />,
+      },
+      {
+        segment: "viewpos",
+        title: "Explore POS",
+        icon: <Explore />,
+      },
       {
         segment: "requeststatus",
         title: "Request Status",
@@ -245,8 +277,9 @@ const NAVIGATION = [
         title: "New POS Requests",
         icon: <TrackChanges />,
       },
+
       {
-        segment: "requeststatus",
+        segment: "authorizedrequests",
         title: "All POS Requests",
         icon: <ChangeCircle />,
       },
@@ -344,7 +377,7 @@ const NAVIGATION = [
     segment: "usermanual",
     title: "User Manual",
     icon: <IntegrationInstructions />,
-    roles: ["posuser"],
+    roles: ["posuser", "posauthorizer"],
     children: [
       {
         segment: "merchantguide",
@@ -363,6 +396,34 @@ const NAVIGATION = [
   //     title: "Integrations",
   //     icon: <LayersIcon />,
   //   },
+
+  {
+    kind: "divider",
+    roles: ["superadmin", "admin", "posuser", "posauthorizer"],
+  },
+  {
+    kind: "header",
+    title: "Settings",
+    roles: ["superadmin", "admin", "posuser", "posauthorizer"],
+  },
+  {
+    segment: "settings",
+    title: "Settings",
+    icon: <SettingsApplications />,
+    roles: ["superadmin", "admin", "posuser", "posauthorizer"],
+    children: [
+      {
+        segment: "profile",
+        title: "Profile",
+        icon: <Person2 />,
+      },
+      {
+        segment: "changepassword",
+        title: "Change Password",
+        icon: <Password />,
+      },
+    ],
+  },
 ];
 
 function DemoPageContent({ pathname }) {
