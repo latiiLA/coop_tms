@@ -17,10 +17,8 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
-import demoTheme from "../DarkMode/customTheme";
 import LoadingButton from "@mui/lab/LoadingButton";
 import customTheme from "../DarkMode/customTheme";
-import { ThemeSwitcher } from "@toolpad/core/DashboardLayout";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -68,6 +66,7 @@ const ForgotPassword = () => {
       if (
         role === "tempo_posuser" ||
         role === "tempo_user" ||
+        role === "tempo_posauthorizer" ||
         role === "tempo_admin" ||
         role === "tempo_superadmin"
       ) {
@@ -115,156 +114,156 @@ const ForgotPassword = () => {
 
   return (
     <ThemeProvider theme={customTheme}>
-      <Box
+      {/* <Box
         sx={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
           width: "100%",
           height: "100%",
-          backgroundColor: ThemeSwitcher.palette.primary.main,
+        }}
+      > */}
+      <Card
+        sx={{
+          p: 3,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          marginX: "auto",
+          borderRadius: 2,
+          boxShadow: "0 2px 4px rgba(96, 70, 70, 0.1)",
+          width: { xs: "80%", sm: "70%", md: "40%" },
         }}
       >
-        <Card
-          sx={{
-            p: 3,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            borderRadius: 2,
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            width: { xs: "80%", sm: "70%", md: "40%" },
-          }}
+        <Formik
+          initialValues={INITIAL_FORM_STATE}
+          validationSchema={FORM_VALIDATION}
+          onSubmit={(values) => handleSubmit(values)}
         >
-          <Formik
-            initialValues={INITIAL_FORM_STATE}
-            validationSchema={FORM_VALIDATION}
-            onSubmit={(values) => handleSubmit(values)}
-          >
-            {({ errors, touched }) => (
-              <Form>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Typography variant="h5" sx={{ textAlign: "center" }}>
-                    Update Password
-                  </Typography>
+          {({ errors, touched }) => (
+            <Form>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Typography variant="h5" sx={{ textAlign: "center" }}>
+                  Update Password
+                </Typography>
 
-                  <FormControl
-                    variant="outlined"
-                    error={touched.password && !!errors.password}
-                    fullWidth
-                  >
-                    <InputLabel htmlFor="outlined-adornment-password">
-                      Current Password
-                    </InputLabel>
-                    <Field
-                      as={OutlinedInput}
-                      id="outlined-adornment-password"
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                            edge="end"
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                      label="Current Password"
-                    />
-                    <ErrorMessage
-                      name="password"
-                      component="div"
-                      style={{ color: "red" }}
-                    />
-                  </FormControl>
-
-                  <FormControl
-                    variant="outlined"
-                    error={touched.newPassword && !!errors.newPassword}
-                    fullWidth
-                  >
-                    <InputLabel htmlFor="outlined-adornment-password2">
-                      New Password
-                    </InputLabel>
-                    <Field
-                      as={OutlinedInput}
-                      id="outlined-adornment-password2"
-                      type={showPassword2 ? "text" : "password"}
-                      name="newPassword"
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword2}
-                            onMouseDown={handleMouseDownPassword2}
-                            edge="end"
-                          >
-                            {showPassword2 ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                      label="New Password"
-                    />
-                    <ErrorMessage
-                      name="newPassword"
-                      component="div"
-                      style={{ color: "red" }}
-                    />
-                  </FormControl>
-
-                  <FormControl
-                    variant="outlined"
-                    error={
-                      touched.confirmNewPassword && !!errors.confirmNewPassword
+                <FormControl
+                  variant="outlined"
+                  error={touched.password && !!errors.password}
+                  fullWidth
+                >
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Current Password
+                  </InputLabel>
+                  <Field
+                    as={OutlinedInput}
+                    id="outlined-adornment-password"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
                     }
-                    fullWidth
-                  >
-                    <InputLabel htmlFor="outlined-adornment-password3">
-                      Confirm New Password
-                    </InputLabel>
-                    <Field
-                      as={OutlinedInput}
-                      id="outlined-adornment-password3"
-                      type={showPassword3 ? "text" : "password"}
-                      name="confirmNewPassword"
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword3}
-                            onMouseDown={handleMouseDownPassword3}
-                            edge="end"
-                          >
-                            {showPassword3 ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                      label="Confirm New Password"
-                    />
-                    <ErrorMessage
-                      name="confirmNewPassword"
-                      component="div"
-                      style={{ color: "red" }}
-                    />
-                  </FormControl>
+                    label="Current Password"
+                  />
+                  <ErrorMessage
+                    name="password"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </FormControl>
 
-                  <LoadingButton
-                    loading={loading}
-                    variant="contained"
-                    type="submit"
-                  >
-                    Submit
-                  </LoadingButton>
-                </Box>
-              </Form>
-            )}
-          </Formik>
-        </Card>
-      </Box>
+                <FormControl
+                  variant="outlined"
+                  error={touched.newPassword && !!errors.newPassword}
+                  fullWidth
+                >
+                  <InputLabel htmlFor="outlined-adornment-password2">
+                    New Password
+                  </InputLabel>
+                  <Field
+                    as={OutlinedInput}
+                    id="outlined-adornment-password2"
+                    type={showPassword2 ? "text" : "password"}
+                    name="newPassword"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword2}
+                          onMouseDown={handleMouseDownPassword2}
+                          edge="end"
+                        >
+                          {showPassword2 ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="New Password"
+                  />
+                  <ErrorMessage
+                    name="newPassword"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </FormControl>
+
+                <FormControl
+                  variant="outlined"
+                  error={
+                    touched.confirmNewPassword && !!errors.confirmNewPassword
+                  }
+                  fullWidth
+                >
+                  <InputLabel htmlFor="outlined-adornment-password3">
+                    Confirm New Password
+                  </InputLabel>
+                  <Field
+                    as={OutlinedInput}
+                    id="outlined-adornment-password3"
+                    type={showPassword3 ? "text" : "password"}
+                    name="confirmNewPassword"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword3}
+                          onMouseDown={handleMouseDownPassword3}
+                          edge="end"
+                        >
+                          {showPassword3 ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Confirm New Password"
+                  />
+                  <ErrorMessage
+                    name="confirmNewPassword"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </FormControl>
+
+                <LoadingButton
+                  loading={loading}
+                  variant="contained"
+                  type="submit"
+                >
+                  Submit
+                </LoadingButton>
+              </Box>
+            </Form>
+          )}
+        </Formik>
+      </Card>
+      {/* </Box> */}
     </ThemeProvider>
   );
 };
