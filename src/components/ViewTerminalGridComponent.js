@@ -1,5 +1,5 @@
 import { ContentCopy, Edit, Preview } from "@mui/icons-material";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Alert, AlertTitle, Box, IconButton, Tooltip } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ import axios from "axios";
 const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
   const navigate = useNavigate();
   const { role } = useAuthContext();
+  const [copiedData, setCopiedData] = React.useState("");
   // console.log(pings);
 
   const [open, setOpen] = useState(false);
@@ -280,10 +281,6 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
             fontSize: 13,
             fontWeight: "bold",
           },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-          },
           "& .MuiDataGrid-root": {
             overflow: "hidden",
           },
@@ -315,7 +312,21 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
           pageSizeOptions={[20, 50, 100]}
           autoHeight
           checkboxSelection
+          onClipboardCopy={(copiedString) => setCopiedData(copiedString)}
         />
+        <Alert severity="info" sx={{ width: "100%", mt: 1 }}>
+          <AlertTitle>Copied data:</AlertTitle>
+          <code
+            style={{
+              display: "block",
+              maxHeight: 200,
+              overflow: "auto",
+              whiteSpace: "pre-line",
+            }}
+          >
+            {copiedData}
+          </code>
+        </Alert>
         {/* Dialog for Config Data */}
         {/* <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
           <DialogTitle>Configuration Data</DialogTitle>
