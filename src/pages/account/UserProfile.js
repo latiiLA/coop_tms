@@ -151,8 +151,8 @@ const UserProfile = () => {
   }
 
   return (
-    <Box>
-      <Typography variant="h4">Profile Info</Typography>
+    <Box sx={{ margin: 2 }}>
+      <Typography variant="h5">Profile Info</Typography>
       <Box>
         <Box
           sx={{
