@@ -12,7 +12,7 @@ const AddTerminal = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values, { setSubmitting }) => {
-    console.log("values insude create terminal", values);
+    console.log("values inside create terminal", values);
     setLoading(true);
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem("token");
