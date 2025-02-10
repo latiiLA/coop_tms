@@ -55,7 +55,7 @@ const NAVIGATION = [
   {
     kind: "header",
     title: "Main items",
-    roles: ["superadmin", "admin", "user", "posauthorizer"],
+    roles: ["superadmin", "admin", "user", "posuser", "posauthorizer"],
   },
   {
     segment: "dashboard",
@@ -67,19 +67,7 @@ const NAVIGATION = [
     segment: "posdashboard",
     title: "POS Dashboard",
     icon: <DashboardIcon />,
-    roles: ["superadmin", "admin", "posuser", "posauthorizer"],
-  },
-  {
-    segment: "view",
-    title: "Explore Terminal",
-    icon: <Explore />,
-    roles: ["user"],
-  },
-  {
-    segment: "relocatedterminal",
-    title: "Relocated ATM",
-    icon: <MoveDown />,
-    roles: ["user"],
+    roles: ["superadmin", "admin", "posuser", "user", "posauthorizer"],
   },
   {
     segment: "links",
@@ -101,10 +89,56 @@ const NAVIGATION = [
       },
     ],
   },
+  {
+    segment: "posreports",
+    title: "POS Reports",
+    icon: <BarChartIcon />,
+    roles: ["superadmin", "admin", "user", "posuser", "posauthorizer"],
+  },
 
   {
     kind: "divider",
     roles: ["superadmin", "admin"],
+  },
+  {
+    kind: "divider",
+    roles: ["user"],
+  },
+  {
+    kind: "header",
+    title: "Terminal Items",
+    roles: ["user"],
+  },
+  {
+    segment: "view",
+    title: "Explore Terminals",
+    icon: <Explore />,
+    roles: ["user"],
+  },
+  {
+    segment: "relocatedterminal",
+    title: "Relocated Terminals",
+    icon: <MoveDown />,
+    roles: ["user"],
+  },
+  {
+    kind: "divider",
+    roles: ["user"],
+  },
+  {
+    kind: "header",
+    title: "POS items",
+    roles: ["user"],
+  },
+  {
+    segment: "explorepos",
+    title: "Explore POS",
+    icon: <Folder />,
+    roles: ["user"],
+  },
+  {
+    kind: "divider",
+    roles: ["user"],
   },
 
   {
@@ -404,13 +438,13 @@ const NAVIGATION = [
   {
     kind: "header",
     title: "Settings",
-    roles: ["superadmin", "admin", "posuser", "posauthorizer"],
+    roles: ["superadmin", "admin", "posuser", "posauthorizer", "user"],
   },
   {
     segment: "settings",
     title: "Settings",
     icon: <SettingsApplications />,
-    roles: ["superadmin", "admin", "posuser", "posauthorizer"],
+    roles: ["superadmin", "admin", "posuser", "posauthorizer", "user"],
     children: [
       {
         segment: "profile",
@@ -453,8 +487,8 @@ function SideDashboard(props) {
     // If no `roles` property, include the item by default
     return item.roles.includes("user");
   });
-
-  const router = useDemoRouter("/home");
+  const initialRoute = window.location.pathname || "/home";
+  const router = useDemoRouter(initialRoute);
   // console.log("router", router.pathname);
 
   // Session state
