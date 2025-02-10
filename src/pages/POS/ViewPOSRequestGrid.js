@@ -50,6 +50,7 @@ const ViewPOSRequestGrid = ({
     },
     { field: "site", headerName: "Site", flex: 0.5 },
     { field: "contactName", headerName: "Contact Name", flex: 0.8 },
+    { field: "merchantAddress", headerName: "Address", flex: 0.5 },
     { field: "posCbsAccount", headerName: "CBS Account", flex: 0.8 },
     { field: "serviceNumber", headerName: "Service Number", flex: 0.6 },
     { field: "staticIp", headerName: "IP Address", flex: 0.9 },
