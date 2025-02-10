@@ -14,7 +14,17 @@ import { Toaster } from "react-hot-toast";
 import SideDashboard from "./pages/sidebar/SideDashboard";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import SendRequests from "./pages/POS/requests/SendRequests";
+
+const POSReports = React.lazy(
+  () => import("./pages/POS/POSReports/POSReports")
+);
+const SendRequests = React.lazy(
+  () => import("./pages/POS/requests/SendRequests")
+);
+const Settings = React.lazy(() => import("./pages/account/Settings"));
+const AllPOSUserManual = React.lazy(
+  () => import("./pages/Manual/AllPOSUserManual")
+);
 // const SideDashboard = React.lazy(() => import("./pages/sidebar/SideDashboard"));
 const Dashboard = React.lazy(() => import("./pages/dashboard/Dashboard"));
 const ViewTerminal = React.lazy(
@@ -228,6 +238,22 @@ function App() {
               }
             />
             <Route
+              path="posreports"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <POSReports />
+                </Suspense>
+              }
+            />
+            <Route
+              path="settings"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Settings />
+                </Suspense>
+              }
+            />
+            <Route
               path="settings/profile"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
@@ -248,6 +274,14 @@ function App() {
               }
             />
             <Route path="/home" element={<Home />} />
+            <Route
+              path="/posdashboard"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Posdashboard />
+                </Suspense>
+              }
+            />
           </Route>
 
           <Route
@@ -276,6 +310,14 @@ function App() {
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <ViewRelocated />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/explorepos"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ManagePOS />
                 </Suspense>
               }
             />
@@ -555,14 +597,6 @@ function App() {
             }
           >
             <Route
-              path="/posdashboard"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Posdashboard />
-                </Suspense>
-              }
-            />
-            <Route
               path="/posdetail"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
@@ -724,6 +758,14 @@ function App() {
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <RelocatedRequest />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/usermanual"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AllPOSUserManual />
                 </Suspense>
               }
             />
