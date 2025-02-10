@@ -11,6 +11,10 @@ import { darkTheme } from "./context/Themes";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
+if (process.env.REACT_APP_NODE_ENV === "production") {
+  console.log = () => {};
+}
+
 root.render(
   <Router>
     <AuthContextProvider>
