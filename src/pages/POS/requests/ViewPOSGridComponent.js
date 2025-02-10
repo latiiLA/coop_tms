@@ -78,13 +78,14 @@ const ViewPOSGridComponent = ({
     },
     { field: "site", headerName: "Site", flex: 0.5 },
     { field: "merchantId", headerName: "Merchant Id", flex: 0.8 },
+    { field: "merchantAddress", headerName: "Address", flex: 0.5 },
     { field: "posCbsAccount", headerName: "CBS Account", flex: 0.8 },
     { field: "serviceNumber", headerName: "Service Number", flex: 0.6 },
     { field: "staticIp", headerName: "IP Address", flex: 0.8 },
     { field: "status", headerName: "Status", flex: 0.5 },
 
     // Actions Column (Still using renderCell because it involves buttons)
-    ...((role === "admin" || role === "superadmin") && !isRelocatedReq
+    ...(!isRelocated
       ? [
           {
             field: "actions",
@@ -107,10 +108,17 @@ const ViewPOSGridComponent = ({
                     <IconButton
                       color="primary"
                       size="small"
-                      disabled={role === "user" || role === "posuser"}
+                      disabled={
+                        role === "user" ||
+                        role === "posuser" ||
+                        role === "user" ||
+                        role === "posauthorizer"
+                      }
                       style={{
                         display:
-                          role === "user" || role === "posuser"
+                          role === "user" ||
+                          role === "posuser" ||
+                          role === "posauthorizer"
                             ? "none"
                             : "inline-flex",
                       }}
@@ -184,7 +192,9 @@ const ViewPOSGridComponent = ({
                       disabled={role === "user"}
                       style={{
                         display:
-                          role === "user" || role === "posuser"
+                          role === "user" ||
+                          role === "posuser" ||
+                          role === "posauthorizer"
                             ? "none"
                             : "inline-flex",
                       }}
