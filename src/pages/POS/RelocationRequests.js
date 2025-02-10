@@ -98,8 +98,8 @@ export default function RelocationRequests() {
   }
 
   // Split sorted rows into CRM and NCR
-  const branchRows = rows.filter((row) => row.posSite === "Branch");
-  const merchantRows = rows.filter((row) => row.posSite === "Merchant");
+  const branchRows = rows.filter((row) => row.site === "BRANCH");
+  const merchantRows = rows.filter((row) => row.site === "MERCHANT");
 
   return (
     <Box
