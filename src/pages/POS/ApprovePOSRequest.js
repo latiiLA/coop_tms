@@ -106,7 +106,9 @@ const ApprovePOSRequest = () => {
       contactName: Yup.string().required("Contact Name is required"),
       merchantPhonenumber: Yup.string()
         .required("Phone Number is required")
-        .matches(phoneRegExp, "Phone number must be 10 digits"),
+        .matches(phoneRegExp, "Phone number must be 10 digits")
+        .min(10, "Phone number is short. it must be 10 digits")
+        .max(10, "Phone number is long. it must be 10 digits"),
       posCbsAccount: Yup.string()
         .required("CBS Account is required")
         .min(
@@ -115,7 +117,9 @@ const ApprovePOSRequest = () => {
         ),
       serviceNumber: Yup.string()
         .required("Service Number is required")
-        .matches(phoneRegExp, "Phone number must be 10 digits"),
+        .matches(phoneRegExp, "Phone number must be 10 digits")
+        .min(10, "Service number is short. it must be 10 digits")
+        .max(10, "Service number is long. it must be 10 digits"),
 
       staticIp: Yup.string()
         .required("IP Address is required")
