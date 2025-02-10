@@ -193,7 +193,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={new Date(row.updatedAt).toLocaleString("en-US", {
+            defaultValue={new Date(row.createdAt).toLocaleString("en-US", {
               day: "2-digit",
               month: "2-digit",
               year: "numeric",
