@@ -45,6 +45,8 @@ import {
   SettingsApplications,
   Person2,
   Password,
+  Cancel,
+  RemoveDone,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import { TbStatusChange } from "react-icons/tb";
@@ -178,9 +180,19 @@ const NAVIGATION = [
         icon: <ChangeCircle />,
       },
       {
+        segment: "rejectedrequests",
+        title: "Rejected Requests",
+        icon: <RemoveDone />,
+      },
+      {
         segment: "relocationrequests",
         title: "Relocation Requests",
         icon: <AirlineStops />,
+      },
+      {
+        segment: "deletedrequests",
+        title: "Deleted Requests",
+        icon: <Cancel />,
       },
     ],
   },
