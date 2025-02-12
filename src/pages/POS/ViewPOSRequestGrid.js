@@ -1,5 +1,16 @@
-import { ContentCopy, Edit, Preview } from "@mui/icons-material";
-import { Alert, AlertTitle, Box, IconButton, Tooltip } from "@mui/material";
+import { ContentCopy, Delete, Edit, Preview } from "@mui/icons-material";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +31,8 @@ const ViewPOSRequestGrid = ({
   const [copiedData, setCopiedData] = React.useState("");
   // console.log("grid request", rows);
   const [rowsState, setRowsState] = useState(initialRows);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
   const { role } = useAuthContext();
 
   useEffect(() => {
@@ -58,7 +71,7 @@ const ViewPOSRequestGrid = ({
     {
       field: "actions",
       headerName: "Actions",
-      flex: 0.8,
+      flex: 1,
       renderCell: (params) => (
         <Box
           sx={{
@@ -71,38 +84,42 @@ const ViewPOSRequestGrid = ({
             alignItems: "center",
           }}
         >
-          {!isRelocated && (
+          {!isRelocated && params.row.isDeleted === false && (
             <Tooltip title="Edit Request">
-              <IconButton
-                color="primary"
-                size="small"
-                disabled={
-                  role === "posauthorizer" ||
-                  params.row.status === "Approved" ||
-                  ((params.row.status === "New" ||
-                    params.row.status === "Rejected") &&
-                    (role === "admin" || role === "superadmin"))
-                }
-                // style={{
-                //   display:
-                //     role === "user" || role === "posuser"
-                //       ? "none"
-                //       : "inline-flex",
-                // }}
-                onClick={() => {
-                  if (role === "admin" || role === "superadmin") {
-                    navigate("/approverequest", {
-                      state: { row: params.row },
-                    });
-                  } else {
-                    navigate("/request/request", {
-                      state: { row: params.row, isEdit: true },
-                    });
+              <Box>
+                <IconButton
+                  color="primary"
+                  size="small"
+                  disabled={
+                    role === "posauthorizer" ||
+                    (role === "posuser" &&
+                      params.row.status === "Authorized") ||
+                    params.row.status === "Approved" ||
+                    ((params.row.status === "New" ||
+                      params.row.status === "Rejected") &&
+                      (role === "admin" || role === "superadmin"))
                   }
-                }}
-              >
-                <Edit />
-              </IconButton>
+                  // style={{
+                  //   display:
+                  //     role === "user" || role === "posuser"
+                  //       ? "none"
+                  //       : "inline-flex",
+                  // }}
+                  onClick={() => {
+                    if (role === "admin" || role === "superadmin") {
+                      navigate("/approverequest", {
+                        state: { row: params.row },
+                      });
+                    } else {
+                      navigate("/request/request", {
+                        state: { row: params.row, isEdit: true },
+                      });
+                    }
+                  }}
+                >
+                  <Edit />
+                </IconButton>
+              </Box>
             </Tooltip>
           )}
           <Tooltip title="View Request">
@@ -127,6 +144,22 @@ const ViewPOSRequestGrid = ({
               <ContentCopy />
             </IconButton>
           </Tooltip>
+          {role === "posuser" &&
+            params.row.isDeleted === false &&
+            (params.row.status === "New" ||
+              params.row.status === "Rejected") && (
+              <Tooltip title="Delete Request">
+                <Box>
+                  <IconButton
+                    color="secondary"
+                    size="small"
+                    onClick={() => handleDeleteRequest(params.row._id)}
+                  >
+                    <Delete />
+                  </IconButton>
+                </Box>
+              </Tooltip>
+            )}
         </Box>
       ),
     },
@@ -163,6 +196,54 @@ const ViewPOSRequestGrid = ({
       // Fallback for HTTP or unsupported browsers
       fallbackCopyText(rowText);
     }
+  };
+
+  const handleDelete = async (row) => {
+    setLoading(true);
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const token = localStorage.getItem("token");
+
+    console.log("handle request deletion", row);
+    if (!token) {
+      navigate("/home");
+      return;
+    }
+
+    try {
+      const response = await axios.patch(
+        `${apiUrl}/request/deleteRequest/${row}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      toast.success(response.data.message);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || error.message || "Something went wrong"
+      );
+    } finally {
+      // setSubmitting(false);
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteRequest = (row) => {
+    setSelectedRow(row);
+    setOpenDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    setOpenDialog(false);
+    handleDelete(selectedRow);
+  };
+
+  const handleCancel = () => {
+    setOpenDialog(false);
   };
 
   // Fallback method using a temporary textarea for older browsers or HTTP
@@ -303,6 +384,25 @@ const ViewPOSRequestGrid = ({
           </LoadingButton>
         </Box>
       )}
+      <Dialog open={openDialog} onClose={handleCancel}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete POS request? This action cannot be
+          undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel} color="secondary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            color="primary"
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Confirm"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
