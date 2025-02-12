@@ -33,6 +33,7 @@ const request_status = [
   { value: "New", label: "New" },
   { value: "Approved", label: "Approved" },
   { value: "Rejected", label: "Rejected" },
+  { value: "Authorized", label: "Authorized" },
 ];
 
 const districts = [
