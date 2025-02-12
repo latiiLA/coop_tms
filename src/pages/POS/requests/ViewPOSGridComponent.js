@@ -63,26 +63,26 @@ const ViewPOSGridComponent = ({
       },
     },
     { field: "terminalId", headerName: "Terminal ID", flex: 0.6 },
+    { field: "merchantId", headerName: "Merchant Id", flex: 0.8 },
     { field: "merchantName", headerName: "Merchant Name", flex: 1 },
-    {
-      field: "branchName",
-      headerName: "Branch Name",
-      flex: 1,
-      valueGetter: (params) => params?.companyName || "N/A",
-    },
+    { field: "site", headerName: "Site", flex: 0.5 },
+    { field: "merchantAddress", headerName: "Address", flex: 0.5 },
+    { field: "posCbsAccount", headerName: "CBS Account", flex: 0.8 },
+    { field: "serviceNumber", headerName: "Service Number", flex: 0.6 },
+    { field: "staticIp", headerName: "IP Address", flex: 0.8 },
+    { field: "status", headerName: "Status", flex: 0.5 },
     {
       field: "district",
       headerName: "District",
       flex: 0.5,
       valueGetter: (params) => params?.districtName || "N/A",
     },
-    { field: "site", headerName: "Site", flex: 0.5 },
-    { field: "merchantId", headerName: "Merchant Id", flex: 0.8 },
-    { field: "merchantAddress", headerName: "Address", flex: 0.5 },
-    { field: "posCbsAccount", headerName: "CBS Account", flex: 0.8 },
-    { field: "serviceNumber", headerName: "Service Number", flex: 0.6 },
-    { field: "staticIp", headerName: "IP Address", flex: 0.8 },
-    { field: "status", headerName: "Status", flex: 0.5 },
+    {
+      field: "branchName",
+      headerName: "Branch Name",
+      flex: 1,
+      valueGetter: (params) => params?.companyName || "N/A",
+    },
 
     // Actions Column (Still using renderCell because it involves buttons)
     ...(!isRelocated
@@ -105,29 +105,31 @@ const ViewPOSGridComponent = ({
               >
                 {!isRelocated && (
                   <Tooltip title="Edit POS">
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      disabled={
-                        role === "user" ||
-                        role === "posuser" ||
-                        role === "user" ||
-                        role === "posauthorizer"
-                      }
-                      style={{
-                        display:
+                    <Box>
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        disabled={
                           role === "user" ||
                           role === "posuser" ||
+                          role === "user" ||
                           role === "posauthorizer"
-                            ? "none"
-                            : "inline-flex",
-                      }}
-                      onClick={() =>
-                        navigate("/editpos", { state: { row: params.row } })
-                      }
-                    >
-                      <Edit />
-                    </IconButton>
+                        }
+                        style={{
+                          display:
+                            role === "user" ||
+                            role === "posuser" ||
+                            role === "posauthorizer"
+                              ? "none"
+                              : "inline-flex",
+                        }}
+                        onClick={() =>
+                          navigate("/editpos", { state: { row: params.row } })
+                        }
+                      >
+                        <Edit />
+                      </IconButton>
+                    </Box>
                   </Tooltip>
                 )}
                 {detailType && (
