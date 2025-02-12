@@ -104,6 +104,12 @@ const ViewPOSRequests = React.lazy(() => import("./pages/POS/ViewPOSRequests"));
 const RequestStatus = React.lazy(
   () => import("./pages/POS/requests/RequestStatus")
 );
+const RejectedRequests = React.lazy(
+  () => import("./pages/POS/requests/RejectedRequests")
+);
+const DeletedRequests = React.lazy(
+  () => import("./pages/POS/requests/DeletedRequests")
+);
 const AuthorizedRequests = React.lazy(
   () => import("./pages/POS/requests/AuthorizedRequests")
 );
@@ -741,6 +747,22 @@ function App() {
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <SendRequests />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/request/rejectedrequests"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RejectedRequests />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/request/deletedrequests"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <DeletedRequests />
                 </Suspense>
               }
             />
