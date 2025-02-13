@@ -335,6 +335,11 @@ const NAVIGATION = [
         icon: <AirlineStops />,
       },
       {
+        segment: "masconfig",
+        title: "MAS Config",
+        icon: <DeviceHub />,
+      },
+      {
         segment: "devices",
         title: "POS Devices",
         icon: <DeviceHub />,

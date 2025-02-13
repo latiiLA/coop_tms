@@ -148,6 +148,8 @@ const BulkRequest = React.lazy(
   () => import("./pages/POS/requests/BulkRequest")
 );
 
+const MASConfig = React.lazy(() => import("./pages/POS/MASConfig/MASConfig"));
+
 // Protect routes based on role
 const ProtectedRoutes = ({ requiredRole }) => {
   const { role } = useAuthContext();
@@ -561,6 +563,14 @@ function App() {
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <ApprovePOSRequest />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/pos/masconfig"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <MASConfig />
                 </Suspense>
               }
             />
