@@ -194,6 +194,11 @@ const NAVIGATION = [
         title: "Deleted Requests",
         icon: <Cancel />,
       },
+      {
+        segment: "relocatedpos",
+        title: "Relocated POS",
+        icon: <MoveDown />,
+      },
     ],
   },
   {
@@ -211,6 +216,11 @@ const NAVIGATION = [
         segment: "viewpos",
         title: "Explore POS",
         icon: <Explore />,
+      },
+      {
+        segment: "relocatedpos",
+        title: "Relocated POS",
+        icon: <MoveDown />,
       },
       {
         segment: "requeststatus",

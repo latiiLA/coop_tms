@@ -660,6 +660,14 @@ function App() {
                 </Suspense>
               }
             />
+            <Route
+              path="/request/relocatedpos"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RelocatedPOS />
+                </Suspense>
+              }
+            />
           </Route>
 
           {/* Super Admin Routes */}
