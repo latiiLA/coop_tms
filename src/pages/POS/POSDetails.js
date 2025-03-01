@@ -1,16 +1,20 @@
 import { Box, Button, Card, Typography } from "@mui/material";
 import { Form, Formik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CustomTextField } from "./../../components/CustomFields";
-import { Download } from "@mui/icons-material";
+import { Download, FileOpen } from "@mui/icons-material";
 import toast from "react-hot-toast";
+import PdfBlobViewer from "../../components/PdfBlobViewer";
 
 const POSDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isRequest, isRelocated, row } = location.state;
   console.log("console", row);
+
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const [pdfPath, setPdfPath] = useState("");
 
   const handleDownload = () => {
     try {
@@ -36,6 +40,10 @@ const POSDetails = () => {
       // console.error("Error downloading the file:", error);
       toast.error("Error downloading the file");
     }
+  };
+  const handlePdfView = (filepath) => {
+    setPdfPath(filepath);
+    setPdfOpen(true);
   };
 
   return (
@@ -88,6 +96,15 @@ const POSDetails = () => {
                         <CustomTextField
                           name="terminalId"
                           label="Terminal ID"
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                      {!isRequest && (
+                        <CustomTextField
+                          name="merchantId"
+                          label="Merchant ID"
                           InputProps={{
                             readOnly: true,
                           }}
@@ -170,16 +187,6 @@ const POSDetails = () => {
                         width: { md: "50%", xs: "100%" },
                       }}
                     >
-                      {!isRequest && (
-                        <CustomTextField
-                          name="merchantId"
-                          label="Merchant ID"
-                          InputProps={{
-                            readOnly: true,
-                          }}
-                        />
-                      )}
-
                       <CustomTextField
                         name="serviceNumber"
                         label="Service Number"
@@ -234,6 +241,18 @@ const POSDetails = () => {
                           readOnly: true,
                         }}
                       />
+                      {row?.configuredBy && (
+                        <CustomTextField
+                          name="configuredBy"
+                          label="Configured By"
+                          InputProps={{ readOnly: true }}
+                          value={
+                            (row?.configuredBy?.firstName || "Unknown") +
+                            " " +
+                            (row?.configuredBy?.fatherName || "Unknown")
+                          }
+                        />
+                      )}
                       {isRequest && row?.reqAuthorizedBy && (
                         <CustomTextField
                           name="reqAuthorizedBy"
@@ -245,6 +264,20 @@ const POSDetails = () => {
                             (row?.reqAuthorizedBy?.firstName || "Unknown") +
                             " " +
                             (row?.reqAuthorizedBy?.fatherName || "Unknown")
+                          }
+                        />
+                      )}
+                      {!isRequest && row?.deleteRequestedBy && (
+                        <CustomTextField
+                          name="deleteRequestedBy"
+                          label="POS Termination Requested By"
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                          value={
+                            (row?.deleteRequestedBy?.firstName || "Unknown") +
+                            " " +
+                            (row?.deleteRequestedBy?.fatherName || "Unknown")
                           }
                         />
                       )}
@@ -322,7 +355,7 @@ const POSDetails = () => {
                           }}
                         />
                       )}
-                      {!isRequest && (
+                      {!isRequest && row?.comment && (
                         <CustomTextField
                           name="comment"
                           label="Comment"
@@ -344,14 +377,31 @@ const POSDetails = () => {
                         >
                           <Typography>Merchant Agreement</Typography>
 
-                          <Button
+                          {/* <Button
                             variant="contained"
                             color="primary"
                             onClick={handleDownload}
                             startIcon={<Download />}
                           >
                             Download {row?.file?.fileName}
+                          </Button> */}
+                          <Button
+                            variant="contained"
+                            onClick={() =>
+                              handlePdfView(
+                                `${process.env.REACT_APP_API_URL}/${row.file.filePath}`
+                              )
+                            }
+                            startIcon={<FileOpen />}
+                          >
+                            View {row?.file?.fileName}
                           </Button>
+                          {/* PdfBlobViewer will open when pdfOpen is true */}
+                          <PdfBlobViewer
+                            filePath={pdfPath}
+                            open={pdfOpen}
+                            onClose={() => setPdfOpen(false)}
+                          />
                         </Box>
                       )}
                     </Box>
