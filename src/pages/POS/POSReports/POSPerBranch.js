@@ -32,7 +32,17 @@ const POSPerBranch = () => {
       });
       console.log("terminal per district list", response.data.result);
 
-      setRows(response.data.result);
+      const updatedRows = response.data.result.map((item) => ({
+        branchName: item.branchName, // Assuming branchName is the correct key for the branch
+        newTerminals: item.statusCounts?.New ?? 0,
+        activeTerminals: item.statusCounts?.Active ?? 0,
+        stoppedTerminals: item.statusCounts?.Stopped ?? 0,
+        toBeRelocatedTerminals: item.statusCounts?.ToBeRelocated ?? 0,
+        totalCount: item.totalCount,
+      }));
+
+      setRows(updatedRows);
+      console.log(updatedRows, "coorrected format");
     } catch (error) {
       // console.error("Error fetching terminals:", error);
       toast.error(`Error: ${error.response?.data?.message || error.message}`);
@@ -60,8 +70,32 @@ const POSPerBranch = () => {
       flex: 1,
     },
     {
-      field: "count",
-      headerName: "Total No. of POS",
+      field: "newTerminals",
+      headerName: "Approved Terminals",
+      type: "string",
+      flex: 1,
+    },
+    {
+      field: "activeTerminals",
+      headerName: "Configured Terminals",
+      type: "string",
+      flex: 1,
+    },
+    {
+      field: "stoppedTerminals",
+      headerName: "Stopped Terminals",
+      type: "string",
+      flex: 1,
+    },
+    {
+      field: "toBeRelocatedTerminals",
+      headerName: "To Be Relocated Terminals",
+      type: "string",
+      flex: 1,
+    },
+    {
+      field: "totalCount",
+      headerName: "Total Terminals",
       type: "string",
       flex: 1,
     },
