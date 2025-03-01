@@ -1,10 +1,12 @@
-import { Alert, AlertTitle, Box } from "@mui/material";
+import { Alert, AlertTitle, Box, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const MerchantUpload = () => {
   const navigate = useNavigate();
@@ -24,15 +26,20 @@ const MerchantUpload = () => {
     }
 
     try {
-      const response = await axios.get(`${apiUrl}/pos/getPOSCountPerDistrict`, {
+      const response = await axios.get(`${apiUrl}/pos/getPOSMerchant`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
       });
-      console.log("terminal per district list", response.data.result);
+      console.log("terminal per merchant list", response.data.result);
 
-      setRows(response.data.result);
+      setRows(
+        response.data.result.map((row, index) => ({
+          id: index + 1,
+          ...row,
+        }))
+      );
     } catch (error) {
       // console.error("Error fetching terminals:", error);
       toast.error(`Error: ${error.response?.data?.message || error.message}`);
@@ -46,279 +53,77 @@ const MerchantUpload = () => {
     fetchRows();
   }, []);
 
-  rows =
-    rows?.map((row, index) => ({
-      id: index + 1,
-      ...row,
-    })) ?? [];
-
   const columns = [
     {
-      field: "merchantName",
+      field: "MERCHANT_NAME",
       headerName: "MERCHANT_NAME",
       type: "string",
       flex: 1,
     },
-    // {
-    //   field: "merchantSegment",
-    //   headerName: "MERCHANT_SEGMENT",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "sector",
-    //   headerName: "SECTOR",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "subGroupNumber",
-    //   headerName: "SUB_GROUP_NUMBER",
-    //   type: "string",
-    //   flex: 1,
-    // },
     {
-      field: "merchantId",
+      field: "RETAILER_NUMBER",
       headerName: "RETAILER_NUMBER",
       type: "string",
-      flex: 1,
+      flex: 0.8,
     },
-    // {
-    //   field: "city",
-    //   headerName: "CITY",
-    //   type: "string",
-    //   flex: 1,
-    // },
     {
-      field: "mcc",
+      field: "MCC",
       headerName: "MCC",
       type: "string",
-      flex: 1,
+      flex: 0.5,
     },
-    // {
-    //   field: "cis",
-    //   headerName: "CIS",
-    //   type: "string",
-    //   flex: 1,
-      // },
     {
-      field: "branchName",
+      field: "BRANCH",
       headerName: "BRANCH",
       type: "string",
       flex: 1,
     },
     {
-      field: "posCBSAccount",
+      field: "ACCOUNT_DEBIT",
       headerName: "ACCOUNT_DEBIT",
       type: "string",
-      flex: 1,
+      flex: 0.8,
     },
-    // {
-    //   field: "posCBSAccount",
-    //   headerName: "ACCOUNT_CREDIT",
-    //   type: "string",
-    //   flex: 1,
-    // },
     {
-      field: "merchantAddress",
+      field: "ADDRESS1",
       headerName: "ADDRESS1",
       type: "string",
-      flex: 1,
+      flex: 0.8,
     },
-    // {
-    //   field: "address2",
-    //   headerName: "ADDRESS2",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "address3",
-    //   headerName: "ADDRESS3",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "altMerchantName",
-    //   headerName: "ALT_MERCHANT_NAME",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "altAddress",
-    //   headerName: "ALT_ADDRESS",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "altCity",
-    //   headerName: "ALT_CITY",
-    //   type: "string",
-    //   flex: 1,
-    // },
     {
-      field: "merchantPhonenumber",
+      field: "PHONE1",
       headerName: "PHONE1",
       type: "string",
-      flex: 1,
+      flex: 0.7,
     },
-    // {
-    //   field: "phone2",
-    //   headerName: "PHONE2",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "fax",
-    //   headerName: "FAX",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "mobile",
-    //   headerName: "MOBILE",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "mobile2",
-    //   headerName: "MOBILE2",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "poBox",
-    //   headerName: "PO_BOX",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "zipCode",
-    //   headerName: "ZIP_CODE",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "riskLevel",
-    //   headerName: "RISK_LEVEL",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "transactionClassCode",
-    //   headerName: "TRANSACTION_CLASS_CODE",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "sector",
-    //   headerName: "COM1",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "com2",
-    //   headerName: "COM2",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "com3",
-    //   headerName: "COM3",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "com4",
-    //   headerName: "COM4",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "com5",
-    //   headerName: "COM5",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "com6",
-    //   headerName: "COM6",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "com7",
-    //   headerName: "COM7",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "com8",
-    //   headerName: "COM8",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "com9",
-    //   headerName: "COM9",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "com10",
-    //   headerName: "COM10",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "terminalType",
-    //   headerName: "TERMINAL_TYPE",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "terminalVendor",
-    //   headerName: "TERMINAL_VENDOR",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "terminalBrand",
-    //   headerName: "TERMINAL_BRAND",
-    //   type: "string",
-    //   flex: 1,
-    // },
-
-    // {
-    //   field: "noOfTerminals",
-    //   headerName: "NO_OF_TERMINALS",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "emailOfAddress",
-    //   headerName: "EMAIL_OF_ADDRESS",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "emailOfContact",
-    //   headerName: "EMAIL_OF_CONTACT",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "merchantProducts",
-    //   headerName: "MERCHANT_PRODUCTS",
-    //   type: "string",
-    //   flex: 1,
-    // },
-    // {
-    //   field: "fileName",
-    //   headerName: "FILENAME",
-    //   type: "string",
-    //   flex: 1,
-    // },
   ];
+
+  const exportToXLS = () => {
+    if (rows.length === 0) {
+      toast.error("No data available to export!");
+      return;
+    }
+
+    let allFields = Object.keys(rows[0]); // Get all available fields
+    allFields = allFields.slice(1);
+
+    // Convert full dataset to exportable format
+    const dataToExport = rows.map((row) =>
+      allFields.reduce((acc, field) => {
+        acc[field] = row[field] || "";
+        return acc;
+      }, {})
+    );
+
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Merchant Data");
+
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: "application/vnd.ms-excel" });
+
+    saveAs(data, "Merchant_Bulk_Upload.xlsx");
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -352,6 +157,14 @@ const MerchantUpload = () => {
           marginX: 1,
         }}
       >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={exportToXLS}
+          style={{ marginBottom: 10 }}
+        >
+          Export Merchant Config
+        </Button>
         <DataGrid
           rows={rows}
           columns={columns}
