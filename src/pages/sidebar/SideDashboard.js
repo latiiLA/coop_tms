@@ -47,6 +47,7 @@ import {
   Password,
   Cancel,
   RemoveDone,
+  SaveAlt,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import { TbStatusChange } from "react-icons/tb";
@@ -347,7 +348,7 @@ const NAVIGATION = [
       {
         segment: "masconfig",
         title: "MAS Config",
-        icon: <DeviceHub />,
+        icon: <SaveAlt />,
       },
       {
         segment: "devices",
