@@ -134,10 +134,10 @@ export default function DeletedRequests() {
           gap: 5,
         }}
       >
-        <Tabs value={value} onChange={handleChange} aria-label="Rejection Tabs">
+        <Tabs value={value} onChange={handleChange} aria-label="Deleted Tabs">
           <Tab label="All Deleted Requests" />
-          <Tab label="Deleted Merchant POS" />
-          <Tab label="Deleted Branch POS" />
+          <Tab label="Deleted Merchant Requests" />
+          <Tab label="Deleted Branch Requests" />
         </Tabs>
         <TextField
           label="Search"
