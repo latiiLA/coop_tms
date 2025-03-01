@@ -58,6 +58,7 @@ export default function ViewPOSRequests() {
       });
 
       setDataRows(response.data.newRequests);
+      console.log("request statuses", response.data.newRequests);
     } catch (error) {
       // console.error("Error fetching terminals:", error);
       setError(error.message);
@@ -89,14 +90,6 @@ export default function ViewPOSRequests() {
   let filteredRows = rows.filter((row) =>
     Object.keys(row).some((key) => {
       if (key === "branchName") {
-        console.log(
-          searchText,
-          key,
-          String(row[key]?.companyName)
-            .toLowerCase()
-            .includes(searchText.toLowerCase()),
-          row[key]?.companyName
-        );
         return String(row[key]?.companyName)
           .toLowerCase()
           .includes(searchText.toLowerCase());
