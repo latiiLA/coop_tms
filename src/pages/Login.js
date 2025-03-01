@@ -31,6 +31,7 @@ import toast from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner";
 import coop from "../assets/coop.gif";
 import customTheme from "../DarkMode/customTheme";
+import { Lock, Person } from "@mui/icons-material";
 
 const Login = () => {
   const INITIAL_FORM_STATE = {
@@ -335,6 +336,13 @@ const Login = () => {
                             fullWidth
                             error={touched.username && !!errors.username}
                             helperText={<ErrorMessage name="username" />}
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <Person />
+                                </InputAdornment>
+                              ),
+                            }}
                           />
 
                           <FormControl
@@ -350,6 +358,11 @@ const Login = () => {
                               id="outlined-adornment-password"
                               type={showPassword ? "text" : "password"}
                               name="password"
+                              startAdornment={
+                                <InputAdornment position="start">
+                                  <Lock />
+                                </InputAdornment>
+                              }
                               endAdornment={
                                 <InputAdornment position="end">
                                   <IconButton
