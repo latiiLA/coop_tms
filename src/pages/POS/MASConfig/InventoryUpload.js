@@ -14,7 +14,7 @@ const InventoryUpload = () => {
   let [rows, setRows] = useState([]);
   const apiUrl = process.env.REACT_APP_API_URL;
   const [loading, setLoading] = useState(0);
-  const [selectedRows, setSelectedRows] = useState([]); 
+  const [selectedRows, setSelectedRows] = useState([]);
 
   const fetchRows = async () => {
     const token = localStorage.getItem("token");
@@ -90,7 +90,7 @@ const InventoryUpload = () => {
       field: "brand",
       headerName: "Brand",
       type: "string",
-      flex: 0.5
+      flex: 0.5,
     },
     {
       field: "networkType",
@@ -118,8 +118,8 @@ const InventoryUpload = () => {
     },
   ];
 
-const exportToXLS = () => {
-  // const rowsToExport = rows.filter((row) => selectedRows.includes(row.id));
+  const exportToXLS = () => {
+    // const rowsToExport = rows.filter((row) => selectedRows.includes(row.id));
 
     // Map the selected rows data to match the format for exporting
     const dataToExport = rows.map((row) =>
@@ -129,24 +129,24 @@ const exportToXLS = () => {
       }, {})
     );
 
-  // Convert JSON data to a worksheet
-  const ws = XLSX.utils.json_to_sheet(dataToExport);
+    // Convert JSON data to a worksheet
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
 
-  // Create a new workbook
-  const wb = XLSX.utils.book_new();
+    // Create a new workbook
+    const wb = XLSX.utils.book_new();
 
-  // Append the worksheet to the workbook
-  XLSX.utils.book_append_sheet(wb, ws, "DataGrid");
+    // Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, "DataGrid");
 
-  // Write the workbook to a binary array (Excel 97-2003 format)
-  const excelBuffer = XLSX.write(wb, { bookType: "xls", type: "array" });
+    // Write the workbook to a binary array (Excel 97-2003 format)
+    const excelBuffer = XLSX.write(wb, { bookType: "xls", type: "array" });
 
-  // Create a Blob from the array buffer for downloading
-  const data = new Blob([excelBuffer], { type: "application/vnd.ms-excel" });
+    // Create a Blob from the array buffer for downloading
+    const data = new Blob([excelBuffer], { type: "application/vnd.ms-excel" });
 
-  // Trigger the download
-  saveAs(data, "Inventory_Bulk_Upload.xls");
-};
+    // Trigger the download
+    saveAs(data, "Inventory_Bulk_Upload.xls");
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -180,8 +180,13 @@ const exportToXLS = () => {
           marginX: 1,
         }}
       >
-        <Button variant="contained" color="primary" onClick={exportToXLS} style={{ marginBottom: 10 }}>
-          Export to Excel
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={exportToXLS}
+          style={{ marginBottom: 10 }}
+        >
+          Export Inventory Config
         </Button>
         <DataGrid
           rows={rows}
@@ -196,9 +201,9 @@ const exportToXLS = () => {
           autoHeight
           checkboxSelection
           onSelectionModelChange={(newSelectionModel) => {
-          setSelectedRows(newSelectionModel); // Update selectedRows state
-        }}
-        selectionModel={selectedRows} 
+            setSelectedRows(newSelectionModel); // Update selectedRows state
+          }}
+          selectionModel={selectedRows}
           onClipboardCopy={(copiedString) => setCopiedData(copiedString)}
         />
         <Alert severity="info" sx={{ width: "100%", mt: 1 }}>
