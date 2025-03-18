@@ -427,7 +427,6 @@ const NAVIGATION = [
         title: "POS Creation Manual",
         icon: <DescriptionIcon />,
       },
-
       {
         segment: "cbslinkmanual",
         title: "CBS Account Link Manual",
