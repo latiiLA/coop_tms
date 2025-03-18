@@ -14,6 +14,7 @@
       <TermIdent_9F1C>3132333435363738</TermIdent_9F1C>
       <TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
       <TerminalType_9F35>22</TerminalType_9F35>
+	  <TerminalCapabilities_9F33>E040C8</TerminalCapabilities_9F33> <!--606848-->
       <AdditionalTerminalCapabilities_9F40>6000F0A001</AdditionalTerminalCapabilities_9F40>
       <MagstripeCVM_aboveLimit_DF811E>20</MagstripeCVM_aboveLimit_DF811E> <!-- 60 -->
       <MagstripeCVM_belowLimit_DF812C>00</MagstripeCVM_belowLimit_DF812C> <!-- 08 -->
@@ -24,14 +25,14 @@
       <FloorLimit_DF8123>000000000000</FloorLimit_DF8123>
       <TransactionLimitNoOnDevice_DF8124>000000200000</TransactionLimitNoOnDevice_DF8124> <!-- 000000100001 --> <!-- 000000030001 = 300.01 AED -->
       <TransactionLimitOnDevice_DF8125>000000200000</TransactionLimitOnDevice_DF8125> <!-- 000000100001 --> <!-- 000000030001 = 300.01 AED -->
-      <CVMRequiredLimit_DF8126>000000050000</CVMRequiredLimit_DF8126> <!-- 000000005000 --> <!-- 000000010000 = 100.00 AED -->
+      <CVMRequiredLimit_DF8126>000000000100</CVMRequiredLimit_DF8126> <!-- 000000005000 --> <!-- 000000010000 = 100.00 AED -->
 	  <ChipVersionNumber_9F09>0002</ChipVersionNumber_9F09> <!-- original value was 0002000000000000000000000000000000000000 -->
       <MSRVersionNumber_9F6D>FFFF</MSRVersionNumber_9F6D> <!-- Original value was empty -->
       <KernelConfiguration_DF811B>30</KernelConfiguration_DF811B> <!-- it was 20 for for MCM04 T03S01, But for RRP, I changed it to 30 --> <!-- original value = 30 --> <!-- then I tried 20, for MCM04 T03S01, i changed to 60 -->
       <TransactionCategoryCode_9F53>52</TransactionCategoryCode_9F53>
       <TACDefault_DF8120>F45084800C</TACDefault_DF8120>
       <TACDenial_DF8121>0000000000</TACDenial_DF8121>
-      <TACOnline_DF8122>F45084800C</TACOnline_DF8122>
+      <TACOnline_DF8122>F45084800D</TACOnline_DF8122>
       <KernelID_DF810C>02</KernelID_DF810C>
       <TerminalRiskManagementData_9F1D>6C00800000000000</TerminalRiskManagementData_9F1D> <!-- 64E8800000000000 was the original value. FAB asked to chage to 6C70800000000000 (Signature and Pin) -->
       <MerchantCategoryCode_9F15>5999</MerchantCategoryCode_9F15>
@@ -79,9 +80,9 @@
       <SecurityCapability_DF811F>48</SecurityCapability_DF811F>
       <CardDataInputCapability_DF8117>E0</CardDataInputCapability_DF8117>
       <FloorLimit_DF8123>000000000000</FloorLimit_DF8123>
-      <TransactionLimitNoOnDevice_DF8124>000000200000</TransactionLimitNoOnDevice_DF8124> <!-- 000000100001 --> <!-- 000000030001 = 300.01 AED -->
-      <TransactionLimitOnDevice_DF8125>000000200000</TransactionLimitOnDevice_DF8125> <!-- 000000100001 --> <!-- 000000030001 = 300.01 AED -->
-      <CVMRequiredLimit_DF8126>000000030000</CVMRequiredLimit_DF8126> <!-- 000000005000 --> <!-- 000000010000 = 100.00 AED -->
+      <TransactionLimitNoOnDevice_DF8124>000000600000</TransactionLimitNoOnDevice_DF8124> <!-- 000000100001 --> <!-- 000000030001 = 300.01 AED -->
+      <TransactionLimitOnDevice_DF8125>000000600000</TransactionLimitOnDevice_DF8125> <!-- 000000100001 --> <!-- 000000030001 = 300.01 AED -->
+      <CVMRequiredLimit_DF8126>000000000100</CVMRequiredLimit_DF8126> <!-- 000000005000 --> <!-- 000000010000 = 100.00 AED -->
       <ChipVersionNumber_9F09>0002</ChipVersionNumber_9F09> <!-- original value was 0002000000000000000000000000000000000000 -->
       <MSRVersionNumber_9F6D>0001</MSRVersionNumber_9F6D> <!-- original value was 0001000000000000000000000000000000000000 -->
       <KernelConfiguration_DF811B>B0</KernelConfiguration_DF811B> <!-- It was 20 for MCM04 T03S01, for RRP, I changed it to 30 and for MSI92 I changed to B0 --> <!-- Original value was A0 --> <!-- then I changed to 20, for MCM04 T03S01 I changed to 60 -->
@@ -115,7 +116,7 @@
       <RR_TransTimeMismatchThreshold_DF8137>32</RR_TransTimeMismatchThreshold_DF8137>
       <MerchantCustomData_9F7C>0102030405060708090A0B0C0D0E0F1011121300</MerchantCustomData_9F7C></MasterCard></Application>
   <Application AID="A0000000031010" KernelID="030000">
-    <ASI_DFAB02>00</ASI_DFAB02>
+    <ASI_DFAB02>01</ASI_DFAB02>
     <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
     <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
     <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
@@ -128,7 +129,7 @@
       <TermIdent_9F1C>3132333435363738</TermIdent_9F1C>
       <TerminalCountryCode_9F1A>0784</TerminalCountryCode_9F1A>
       <TerminalType_9F35>22</TerminalType_9F35>
-      <TerminalTransactionQualifier_9F66>36004000</TerminalTransactionQualifier_9F66> <!--B6000000-->
+      <TerminalTransactionQualifier_9F66>36A0C000</TerminalTransactionQualifier_9F66> <!--B6000000-->
       <TerminalCapabilities_9F33>E0F8C8</TerminalCapabilities_9F33> <!--606848-->
       <AdditionalTerminalCapabilities_9F40>6000F0A001</AdditionalTerminalCapabilities_9F40>
       <VersionNumber_9F09>008DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</VersionNumber_9F09> <!-- original value was 008D000000000000000000000000000000000000 -->
@@ -138,7 +139,7 @@
       <TecSupport_DFAB30>01</TecSupport_DFAB30>
       <AppFlowCap_DFAB31>0A00000000</AppFlowCap_DFAB31>
       <ContactlessFloorLimit_DFAB40>000000001000</ContactlessFloorLimit_DFAB40>
-      <ContactlessTransactionLimit_DFAB41>000000200000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
+      <ContactlessTransactionLimit_DFAB41>000001500000</ContactlessTransactionLimit_DFAB41> <!--000000100001--> <!--000000030001 = 300.01 AED-->
       <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
       <VisaDRLParams_FFAB01>
         <AppProgramId_9F5A>3102682620</AppProgramId_9F5A>
@@ -165,7 +166,7 @@
         <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
         <OnOffSwitch_DFAB49>03</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01></Visa></Application>
   <Application AID="A0000000032010" KernelID="030000">
-    <ASI_DFAB02>00</ASI_DFAB02>
+    <ASI_DFAB02>01</ASI_DFAB02>
     <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
     <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
     <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
@@ -215,7 +216,7 @@
         <ContactlessCVMRequiredLimit_DFAB42>000000030000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
         <OnOffSwitch_DFAB49>03</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01></Visa></Application>
   <Application AID="A0000000033010" KernelID="030000">
-    <ASI_DFAB02>00</ASI_DFAB02>
+    <ASI_DFAB02>01</ASI_DFAB02>
     <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
     <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
     <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
@@ -265,7 +266,7 @@
         <ContactlessCVMRequiredLimit_DFAB42>000000010000</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
         <OnOffSwitch_DFAB49>03</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01></Visa></Application>
   <Application AID="A0000000038010" KernelID="030000">
-    <ASI_DFAB02>00</ASI_DFAB02>
+    <ASI_DFAB02>01</ASI_DFAB02>
     <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
     <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
     <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>
@@ -315,7 +316,7 @@
         <ContactlessCVMRequiredLimit_DFAB42>000000010001</ContactlessCVMRequiredLimit_DFAB42> <!--000000050001--> <!--000000010001 = 100.01 AED-->
         <OnOffSwitch_DFAB49>03</OnOffSwitch_DFAB49></VisaDRLParams_FFAB01></Visa></Application>
   <Application AID="A0000000032020" KernelID="030000">
-    <ASI_DFAB02>00</ASI_DFAB02>
+    <ASI_DFAB02>01</ASI_DFAB02>
     <AppFlowCap_DFAB03>0C02000000</AppFlowCap_DFAB03>
     <SpecialTRXConfig_DFAB05>2120110000000000</SpecialTRXConfig_DFAB05>
     <ChksumEntryPoint_DFAB06>86065931</ChksumEntryPoint_DFAB06>

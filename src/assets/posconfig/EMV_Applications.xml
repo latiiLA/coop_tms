@@ -10,8 +10,8 @@
         <Threshold>00000000</Threshold>
         <TargetPercentage>00</TargetPercentage>
         <MaxTargetPercentage>00</MaxTargetPercentage>
-        <TAC_Denial>0000000000</TAC_Denial>
-        <TAC_Online>DC4004F800</TAC_Online>
+        <TAC_Denial>0010000000</TAC_Denial>
+        <TAC_Online>DCC004F800</TAC_Online>
         <TAC_Default>DC4000A800</TAC_Default>
         <EMV_Application>01</EMV_Application>
         <DefaultTDOL>9F1A0295059A039C01</DefaultTDOL>
@@ -24,7 +24,7 @@
             000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         </AdditionalTags>
         <Taglist>00579F08</Taglist>
-        <AppTermCap>E040C8</AppTermCap>
+        <AppTermCap>E0d0C8</AppTermCap>
         <Capabilities_belowLimit>000000</Capabilities_belowLimit>
         <Additional_Versions_No />
         <Security_Limit>00000000</Security_Limit>
@@ -72,7 +72,7 @@
             000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         </AdditionalTags>
         <Taglist>00579F08</Taglist>
-        <AppTermCap>E040C8</AppTermCap>
+        <AppTermCap>E0d0C8</AppTermCap>
         <Capabilities_belowLimit>000000</Capabilities_belowLimit>
         <Additional_Versions_No />
         <Security_Limit>00000000</Security_Limit>
@@ -120,7 +120,7 @@
             000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         </AdditionalTags>
         <Taglist>00579F08</Taglist>
-        <AppTermCap>E040C8</AppTermCap>
+        <AppTermCap>E0d0C8</AppTermCap>
         <Capabilities_belowLimit>000000</Capabilities_belowLimit>
         <Additional_Versions_No />
         <Security_Limit>00000000</Security_Limit>
@@ -307,7 +307,7 @@
         <POS_EntryMode>05</POS_EntryMode>
         <AdditionalTagsTRM>9F530152</AdditionalTagsTRM>
         <Taglist>008E</Taglist>
-        <AppTermCap>E040C8</AppTermCap>
+        <AppTermCap>E0F0C8</AppTermCap>
         <Capabilities_belowLimit>000000</Capabilities_belowLimit>
         <Additional_Versions_No />
         <Security_Limit>00000000</Security_Limit>
@@ -315,6 +315,7 @@
         </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
         <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
         <CountryCodeTerm>0231</CountryCodeTerm>
+		<CurrencyData>0784</CurrencyData>
         <AppTermAddCap>F000F0A001</AppTermAddCap>
         <AppTerminalType>22</AppTerminalType>
         <AID_Prio />
@@ -352,7 +353,7 @@
         <POS_EntryMode>05</POS_EntryMode>
         <AdditionalTagsTRM>9F530152</AdditionalTagsTRM>
         <Taglist>008E</Taglist>
-        <AppTermCap>E040C8</AppTermCap>
+        <AppTermCap>E0d0C8</AppTermCap>
         <Capabilities_belowLimit>000000</Capabilities_belowLimit>
         <Additional_Versions_No />
         <Security_Limit>00000000</Security_Limit>
@@ -360,6 +361,7 @@
         </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
         <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
         <CountryCodeTerm>0231</CountryCodeTerm>
+		<CurrencyData>0784</CurrencyData>
         <AppTermAddCap>F000F0A001</AppTermAddCap>
         <AppTerminalType>22</AppTerminalType>
         <AID_Prio />
@@ -397,7 +399,7 @@
         <POS_EntryMode>05</POS_EntryMode>
         <AdditionalTagsTRM>9F530152</AdditionalTagsTRM>
         <Taglist>008E</Taglist>
-        <AppTermCap>E040C8</AppTermCap>
+        <AppTermCap>E0d0C8</AppTermCap>
         <Capabilities_belowLimit>000000</Capabilities_belowLimit>
         <Additional_Versions_No />
         <Security_Limit>00000000</Security_Limit>
@@ -405,6 +407,7 @@
         </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
         <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
         <CountryCodeTerm>0231</CountryCodeTerm>
+		<CurrencyData>0784</CurrencyData>
         <AppTermAddCap>F000F0A001</AppTermAddCap>
         <AppTerminalType>22</AppTerminalType>
         <AID_Prio />
@@ -442,7 +445,7 @@
         <POS_EntryMode>05</POS_EntryMode>
         <AdditionalTagsTRM>9F530152</AdditionalTagsTRM>
         <Taglist>008E</Taglist>
-        <AppTermCap>E040C8</AppTermCap>
+        <AppTermCap>E0d0C8</AppTermCap>
         <Capabilities_belowLimit>000000</Capabilities_belowLimit>
         <Additional_Versions_No />
         <Security_Limit>00000000</Security_Limit>
@@ -450,6 +453,7 @@
         </AppFlowCap> <!-- original value = 271C170400, To support Cash, changed to 271D170400 -->
         <AIP_CVM_NotSupported>00</AIP_CVM_NotSupported>
         <CountryCodeTerm>0231</CountryCodeTerm>
+		<CurrencyData>0784</CurrencyData>
         <AppTermAddCap>F000F0A001</AppTermAddCap>
         <AppTerminalType>22</AppTerminalType>
         <AID_Prio />
@@ -1428,4 +1432,5 @@
         <ChksumASCII_EMVCO>FE48EA81</ChksumASCII_EMVCO>
         <MasterAID />
     </Application>
+	
 </ApplicationData>
