@@ -307,8 +307,10 @@ const ViewPOSGridComponent = ({
     const HOSTIP = process.env.REACT_APP_HOSTIP;
     const HOSTPORT = process.env.REACT_APP_HOSTPORT;
 
+    console.log("config data", configData);
+
     let MCC = 5411;
-    if (configData === "Branch") {
+    if (configData.site === "BRANCH") {
       MCC = 6010;
     }
 
