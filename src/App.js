@@ -132,6 +132,9 @@ const POSMerchantGuide = React.lazy(
 const POSBranchGuide = React.lazy(
   () => import("./pages/Manual/POSBranchGuide")
 );
+const AccountLinkManual = React.lazy(
+  () => import("./pages/Manual/AccountLinkManual")
+);
 const ATMLocation = React.lazy(
   () => import("./pages/administration/ATMLocation")
 );
@@ -595,6 +598,14 @@ function App() {
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <TerminalCreationManual />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/manual/cbslinkmanual"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AccountLinkManual />
                 </Suspense>
               }
             />
