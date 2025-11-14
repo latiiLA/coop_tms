@@ -43,11 +43,11 @@ const AddPOS = () => {
     posCbsAccount: "",
     staticIp: "",
     serviceNumber: "",
+    businessType: "",
+    contactPhonenumber: "",
   };
 
-  const phoneRegExp = /^[0-9]{10}$/;
-
-  // Tom@J-Class.com
+  const phoneRegExp = /^[0-9]{9}$/;
 
   const FORM_VALIDATION = Yup.object().shape({
     serialNumber: Yup.string().required("Serial number is required."),
@@ -68,17 +68,24 @@ const AddPOS = () => {
     merchantAddress: Yup.string().required("Merchant Address is required"),
     merchantPhonenumber: Yup.string()
       .required("Phone Number is required")
-      .matches(phoneRegExp, "Phone number must be 10 digits")
-      .min(10, "Phone number is short. it must be 10 digits")
-      .max(10, "Phone number is long. it must be 10 digits"),
+      .matches(phoneRegExp, "Phone number must be 9 digits")
+      .min(9, "Phone number is short. it must be 9 digits")
+      .max(9, "Phone number is long. it must be 9 digits"),
+    contactPhonenumber: Yup.string()
+      .required("Phone Number is required")
+      .matches(phoneRegExp, "Phone number must be 9 digits")
+      .min(9, "Phone number is short. it must be 9 digits")
+      .max(9, "Phone number is long. it must be 9 digits"),
     posCbsAccount: Yup.string()
       .required("CBS Account is required")
       .min(13, "CBS Account must be at least 13 characters"),
     serviceNumber: Yup.string()
       .required("Service number is required")
-      .matches(phoneRegExp, "Phone number must be 10 digits")
-      .min(10, "Service number is short. it must be 10 digits")
-      .max(10, "Service number is long. it must be 10 digits"),
+      .matches(phoneRegExp, "Phone number must be 9 digits")
+      .min(9, "Service number is short. it must be 9 digits")
+      .max(9, "Service number is long. it must be 9 digits"),
+    businessType: Yup.string()
+      .required("Business type is required"),
     staticIp: Yup.string()
       .required("IP Address is required")
       .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -397,6 +404,24 @@ const AddPOS = () => {
                         <CustomTextField
                           name="contactName"
                           label="Contact Name"
+                          required
+                        />
+                      </Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: { xs: "column", md: "row" },
+                          gap: 2,
+                        }}
+                      >
+                        <CustomTextField
+                          name="businessType"
+                          label="Business Type"
+                          required
+                        />
+                        <CustomTextField
+                          name="contactPhonenumber"
+                          label="Contact Phone Number"
                           required
                         />
                       </Box>

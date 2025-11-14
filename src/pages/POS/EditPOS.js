@@ -24,7 +24,7 @@ const EditPOS = () => {
     row?.district?._id || ""
   );
 
-  const phoneRegExp = /^[0-9]{10}$/;
+  const phoneRegExp = /^[0-9]{9}$/;
 
   const FORM_VALIDATION = Yup.object().shape({
     serialNumber: Yup.string().required("Serial number is required"),
@@ -40,13 +40,18 @@ const EditPOS = () => {
     merchantAddress: Yup.string().required("Merchant Address is required"),
     merchantPhonenumber: Yup.string()
       .required("Phone Number is required")
-      .matches(phoneRegExp, "Phone number must be 10 digits"),
+      .matches(phoneRegExp, "Phone number must be 9 digits"),
     posCbsAccount: Yup.string()
       .required("CBS Account is required")
       .min(12, "CBS Account must be at least 12 characters"),
     serviceNumber: Yup.string()
       .required("Service Number is required")
-      .matches(phoneRegExp, "Phone number must be 10 digits"),
+      .matches(phoneRegExp, "Phone number must be 9 digits"),
+    contactPhonenumber: Yup.string()
+      .required("Service Number is required")
+      .matches(phoneRegExp, "Contact phone number must be 9 digits"),
+    businessType: Yup.string()
+      .required("Service Number is required"),
     staticIp: Yup.string()
       .required("IP Address is required")
       .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -254,7 +259,11 @@ const EditPOS = () => {
                         label="Contact Name"
                         required
                       />
-
+                      <CustomTextField
+                        name="contactPhonenumber"
+                        label="Contact Phone Number"
+                        required
+                      />
                       <CustomTextField
                         name="merchantId"
                         label="Merchant ID"
@@ -307,7 +316,11 @@ const EditPOS = () => {
                           validateForm();
                         }}
                       />
-
+                      <CustomTextField
+                        name="businessType"
+                        label="Business Type"
+                        required
+                      />
                       <CustomTextField
                         name="serviceNumber"
                         label="service Number"

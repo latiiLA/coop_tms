@@ -44,6 +44,8 @@ const RequestPOS = () => {
     posCbsAccount: row?.posCbsAccount || "",
     staticIp: row?.staticIp || "",
     serviceNumber: row?.serviceNumber || "",
+    contactPhonenumber: row?.contactPhonenumber || "",
+    businessType: row?.businessType || "",
   };
 
   useEffect(() => {
@@ -133,7 +135,7 @@ const RequestPOS = () => {
     }
   }, [row?.file]);
 
-  const phoneRegExp = /^[0-9]{10}$/;
+  const phoneRegExp = /^[0-9]{9}$/;
 
   const FORM_VALIDATION = Yup.object().shape({
     serialNumber: Yup.string().required("Serial number is required"),
@@ -144,18 +146,24 @@ const RequestPOS = () => {
     merchantAddress: Yup.string().required("Merchant address is required"),
     merchantPhonenumber: Yup.string()
       .required("Phone number is required")
-      .matches(phoneRegExp, "Phone number must be 10 digits")
-      .min(10, "Phone number is short. it must be 10 digits")
-      .max(10, "Phone number is long. it must be 10 digits"),
+      .matches(phoneRegExp, "Phone number must be 9 digits")
+      .min(9, "Phone number is short. it must be 9 digits")
+      .max(9, "Phone number is long. it must be 9 digits"),
+    contactPhonenumber: Yup.string()
+      .required("Phone number is required")
+      .matches(phoneRegExp, "Phone number must be 9 digits")
+      .min(9, "Phone number is short. it must be 9 digits")
+      .max(9, "Phone number is long. it must be 9 digits"),
     posCbsAccount: Yup.string()
       .required("CBS Account is required")
       .min(13, "CBS Account is short. it must be at least 13 characters")
       .max(13, "CBS Account is long. it must be at least 13 characters"),
     serviceNumber: Yup.string()
       .required("Service number should is required")
-      .matches(phoneRegExp, "Phone number must be 10 digits")
-      .min(10, "Service number is short. it must be 10 digits")
-      .max(10, "Service number is long. it must be 10 digits"),
+      .matches(phoneRegExp, "Phone number must be 9 digits")
+      .min(9, "Service number is short. it must be 9 digits")
+      .max(9, "Service number is long. it must be 9 digits"),
+    businessType: Yup.string().required("Business type is required"),
     staticIp: Yup.string()
       .required("IP Address is required")
       .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -366,8 +374,8 @@ const RequestPOS = () => {
                           required
                         />
                         <CustomTextField
-                          name="contactName"
-                          label="Contact Name"
+                          name="merchantPhonenumber"
+                          label="Merchant Phone Number"
                           required
                         />
                       </Box>
@@ -384,12 +392,38 @@ const RequestPOS = () => {
                           required
                         />
                         <CustomTextField
-                          name="merchantPhonenumber"
-                          label="Merchant Phone Number"
+                          name="businessType"
+                          label="Business Type"
                           required
                         />
-                      </Box>
-
+                      </Box>   
+                    </Box>
+                    
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", md: "row" },
+                        gap: 2,
+                      }}
+                    >
+                      <CustomTextField
+                          name="contactName"
+                          label="Contact Name"
+                          required
+                        />
+                      <CustomTextField
+                        name="contactPhonenumber"
+                        label="Contact Phone Number"
+                        required
+                      />
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", md: "row" },
+                        gap: 2,
+                      }}
+                    >
                       <CustomTextField
                         name="posCbsAccount"
                         label="CBS Account"

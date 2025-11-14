@@ -3,7 +3,7 @@ import { Form, Formik } from "formik";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CustomTextField } from "./../../components/CustomFields";
-import { Download, FileOpen } from "@mui/icons-material";
+import { FileOpen } from "@mui/icons-material";
 import toast from "react-hot-toast";
 import PdfBlobViewer from "../../components/PdfBlobViewer";
 
@@ -165,6 +165,14 @@ const POSDetails = () => {
                         }}
                       />
                       <CustomTextField
+                        name="contactPhonenumber"
+                        label="Contact Phone Number"
+                        value={row?.contactPhonenumber || "Unknown"}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                      <CustomTextField
                         name="merchantPhonenumber"
                         label="Merchant Phone Number"
                         InputProps={{
@@ -188,6 +196,14 @@ const POSDetails = () => {
                       }}
                     >
                       <CustomTextField
+                        name="businessType"
+                        label="Business Type"
+                        value={row?.businessType || "Unknown"}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                      <CustomTextField
                         name="serviceNumber"
                         label="Service Number"
                         InputProps={{
@@ -201,6 +217,7 @@ const POSDetails = () => {
                           readOnly: true,
                         }}
                       />
+                      
                       {!isRequest && (
                         <>
                           <CustomTextField
