@@ -45,6 +45,8 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     { field: "type", headerName: "Type", flex: 0.1 },
     { field: "site", headerName: "Site", flex: 0.4 },
     { field: "status", headerName: "Status", flex: 0.5 },
+    { field: "createdAt", headerName: "CreatedAt", flex: 0.5},
+    { field: "updatedAt", headerName: "UpdatedAt", flex: 0.5},
     // // ip_terminal_id
     // {!isRelocated && (
     //   {
@@ -300,9 +302,12 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
           rows={rows}
           columns={columns}
           slots={
-            role !== "user"
-              ? { toolbar: GridToolbar }
-              : { toolbar: CustomToolbar }
+            // role !== "user"
+              // ? 
+              { 
+                toolbar: GridToolbar
+              }
+              // : { toolbar: CustomToolbar }
           }
           initialState={{
             pagination: {

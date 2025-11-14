@@ -83,7 +83,16 @@ const ViewPOSGridComponent = ({
       flex: 1,
       valueGetter: (params) => params?.companyName || "N/A",
     },
-
+    {
+      field: "createdAt",
+      headerName: "Created At",
+      flex: 0.5,
+    },
+    {
+      field: "updatedAt",
+      headerName: "Updated At",
+      flex: 0.5,
+    },
     // Actions Column (Still using renderCell because it involves buttons)
     ...(!isRelocated
       ? [
@@ -314,7 +323,7 @@ const ViewPOSGridComponent = ({
       MCC = 6010;
     }
 
-    let configVersion = configData.configVersion || "0001";
+    let configVersion = configData.configVersion || "0002";
     configVersion = configVersion.toString().padStart(4, "0");
 
     try {
@@ -333,7 +342,12 @@ const ViewPOSGridComponent = ({
 
       // Initialize JSZip
       const zip = new JSZip();
-      zip.file("00055556.PRM", updatedPrmFile);
+
+      // Create a folder with the same name as the zip file
+      const folderName = `ConfigurationFile_V${configVersion}`;
+      const folder = zip.folder(folderName);
+
+      folder.file("00055556.PRM", updatedPrmFile);
 
       // Add other files to the ZIP
       const fileContents = {
@@ -348,7 +362,7 @@ const ViewPOSGridComponent = ({
 
       for (const [fileName, filePath] of Object.entries(fileContents)) {
         const content = await (await fetch(filePath)).text();
-        zip.file(fileName, content);
+        folder.file(fileName, content);
       }
 
       // Generate ZIP file
@@ -357,7 +371,7 @@ const ViewPOSGridComponent = ({
       // Create a download link and trigger the download
       const link = document.createElement("a");
       link.href = URL.createObjectURL(zipContent);
-      link.download = `ConfigurationFile_V${configVersion}.zip`;
+      link.download = `${folderName}.zip`;
       link.click();
       toast.success("successfully generated config file");
     } catch (error) {
