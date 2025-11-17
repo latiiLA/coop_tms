@@ -59,6 +59,7 @@ const CreateUser = () => {
     { value: "tempo_admin", label: "Admin" },
     { value: "tempo_posuser", label: "POS User" },
     { value: "tempo_posauthorizer", label: "POS Request Authorizer" },
+    { value: "tempo_posadmin", label: "POS Admin" },
     // Add more options as needed
   ];
 
@@ -68,6 +69,10 @@ const CreateUser = () => {
     {
       value: "Merchant/Agent Growth and Support",
       label: "Merchant/Agent Growth and Support",
+    },
+    {
+      value: "Accounts and Finance Team",
+      label: "Accounts and Finance Team",
     },
     // Add more options as needed
   ];
