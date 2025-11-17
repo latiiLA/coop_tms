@@ -93,7 +93,7 @@ const ApprovePOSRequest = () => {
 
   // const requestedrows = { ...row, terminalId };
 
-  const phoneRegExp = /^[0-9]{10}$/;
+  const phoneRegExp = /^[0-9]{9}$/;
 
   const FORM_VALIDATION = (isRejecting) =>
     Yup.object().shape({
@@ -106,9 +106,9 @@ const ApprovePOSRequest = () => {
       contactName: Yup.string().required("Contact Name is required"),
       merchantPhonenumber: Yup.string()
         .required("Phone Number is required")
-        .matches(phoneRegExp, "Phone number must be 10 digits")
-        .min(10, "Phone number is short. it must be 10 digits")
-        .max(10, "Phone number is long. it must be 10 digits"),
+        .matches(phoneRegExp, "Phone number must be 9 digits")
+        .min(9, "Phone number is short. it must be 9 digits")
+        .max(9, "Phone number is long. it must be 9 digits"),
       posCbsAccount: Yup.string()
         .required("CBS Account is required")
         .min(
@@ -117,10 +117,16 @@ const ApprovePOSRequest = () => {
         ),
       serviceNumber: Yup.string()
         .required("Service Number is required")
-        .matches(phoneRegExp, "Phone number must be 10 digits")
-        .min(10, "Service number is short. it must be 10 digits")
-        .max(10, "Service number is long. it must be 10 digits"),
-
+        .matches(phoneRegExp, "Phone number must be 9 digits")
+        .min(9, "Service number is short. it must be 9 digits")
+        .max(9, "Service number is long. it must be 9 digits"),
+      contactPhonenumber: Yup.string()
+        .required("Phone Number is required")
+        .matches(phoneRegExp, "Phone number must be 9 digits")
+        .min(9, "Phone number is short. it must be 9 digits")
+        .max(9, "Phone number is long. it must be 9 digits"),
+      businessType: Yup.string()
+        .required("Business type is required"),
       staticIp: Yup.string()
         .required("IP Address is required")
         .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -388,6 +394,11 @@ const ApprovePOSRequest = () => {
                           readOnly: true,
                         }}
                       />
+                      <CustomTextField
+                        name="businessType"
+                        label="Business Type"
+                        disabled
+                      />
                     </Box>
                     <Box
                       sx={{
@@ -416,6 +427,11 @@ const ApprovePOSRequest = () => {
                           readOnly: true,
                         }}
                       />
+                      <CustomTextField
+                        name="contactPhonenumber"
+                        label="Contact Phone Number"
+                        disabled
+                      />                 
                       <CustomTextField
                         name="createdBy"
                         label="Created By"
