@@ -175,7 +175,7 @@ const ViewPOSGridComponent = ({
                     </IconButton>
                   </Tooltip>
                 )}
-                <Tooltip title="Copy POS Information">
+                {/* <Tooltip title="Copy POS Information">
                   <IconButton
                     color="primary"
                     size="small"
@@ -183,7 +183,7 @@ const ViewPOSGridComponent = ({
                   >
                     <ContentCopy />
                   </IconButton>
-                </Tooltip>
+                </Tooltip> */}
                 {role === "posuser" && (
                   <Tooltip title="Stop POS">
                     <IconButton

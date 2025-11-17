@@ -119,7 +119,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
               <Preview />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Copy Terminal Information">
+          {/* <Tooltip title="Copy Terminal Information">
             <IconButton
               color="primary"
               size="small"
@@ -127,7 +127,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
             >
               <ContentCopy />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
           {!isRelocated && (
             <Tooltip title="Generate Config">
               <IconButton
