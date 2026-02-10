@@ -36,7 +36,6 @@ import emvCtlsTerminal from "../../../assets/posconfig/EMV_CTLS_Terminal.xml";
 import emvKeys from "../../../assets/posconfig/EMV_Keys.xml";
 import emvTerminal from "../../../assets/posconfig/EMV_Terminal.xml";
 import axios from "axios";
-import * as XLSX from "xlsx";
 
 const ViewPOSGridComponent = ({
   rows,
@@ -184,7 +183,7 @@ const ViewPOSGridComponent = ({
                     <ContentCopy />
                   </IconButton>
                 </Tooltip> */}
-                {role === "posuser" && (
+                {role === "posuser" && (params.row.status === "New" || params.row.status === "Active") && (
                   <Tooltip title="Stop POS">
                     <IconButton
                       sx={{ color: "#ff0000" }}
