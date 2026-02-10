@@ -1,7 +1,4 @@
 import {
-  ContentCopy,
-  Delete,
-  Download,
   Edit,
   Preview,
   Stop,
@@ -221,41 +218,6 @@ const ViewPOSGridComponent = ({
       : []),
   ];
 
-  const handleCopy = (rowData) => {
-    // Format the row data into a string
-    const rowText = `
-    ${rowData.serialNumber.serialNumber}
-    ${rowData.terminalId}
-    ${rowData.merchantName}
-    ${rowData.branchName.companyName}
-    ${rowData.district.districtName}
-    ${rowData.site}
-    ${rowData.merchantId}
-    ${rowData.merchantAddress}
-    ${rowData.merchantPhonenumber}
-    ${rowData.posCbsAccount}
-    ${rowData.serviceNumber}
-    ${rowData.staticIp}
-    ${rowData.status}
-  `;
-
-    // Check if the Clipboard API is available
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard
-        .writeText(rowText)
-        .then(() => {
-          toast.success("POS details copied to clipboard!");
-        })
-        .catch((err) => {
-          // console.error("Failed to copy:", err);
-          toast.error("Failed to copy POS details.");
-        });
-    } else {
-      // Fallback for HTTP or unsupported browsers
-      fallbackCopyText(rowText);
-    }
-  };
-
   const handleDelete = async (row) => {
     setLoading(true);
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -288,27 +250,6 @@ const ViewPOSGridComponent = ({
       // setSubmitting(false);
       setLoading(false);
     }
-  };
-
-  // Fallback method using a temporary textarea for older browsers or HTTP
-  const fallbackCopyText = (text) => {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position = "fixed"; // Prevent scrolling to the bottom
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-
-    try {
-      document.execCommand("copy"); // Fallback to execCommand for unsupported environments
-      toast.success("POS Terminal details copied to clipboard!");
-    } catch (err) {
-      // console.error("Fallback: Failed to copy:", err);
-      toast.error("Failed to copy POS terminal details.");
-    }
-
-    // Remove the textarea element after copying
-    document.body.removeChild(textArea);
   };
 
   const handleConfig = async (configData) => {
