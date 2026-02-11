@@ -22,7 +22,6 @@ import {
   IntegrationInstructions,
   Link,
   PointOfSale,
-  List,
   SummarizeOutlined,
   ManageSearch,
   SettingsInputComponent,
@@ -50,9 +49,9 @@ import {
   SaveAlt,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
-import { TbStatusChange } from "react-icons/tb";
-import customTheme from "../../DarkMode/customTheme";
-import DarkMode from "../../DarkMode/DarkMode";
+// import { TbStatusChange } from "react-icons/tb";
+// import customTheme from "../../DarkMode/customTheme";
+// import DarkMode from "../../DarkMode/DarkMode";
 
 const NAVIGATION = [
   {
