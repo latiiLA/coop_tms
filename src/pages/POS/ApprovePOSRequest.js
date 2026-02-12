@@ -268,6 +268,7 @@ const ApprovePOSRequest = () => {
               serialNumber: row?.serialNumber?._id,
               terminalId: "",
               merchantId: "",
+              remark: "",
             }}
             validationSchema={FORM_VALIDATION(isRejecting)}
             onSubmit={(values, { resetForm }) => {
@@ -519,14 +520,12 @@ const ApprovePOSRequest = () => {
                     variant="contained"
                     style={{ backgroundColor: "red", color: "white" }}
                     onClick={async () => {
-                      setIsRejecting(true);
-                      const errors = await validateForm();
-                      if (Object.keys(errors).length === 0) {
-                        // Submit rejection form
-                        handleReject(values);
-                      } else {
-                        toast.error("Please add remark before rejecting.");
+                      setIsRejecting(true)
+                      if (!values.remark || values.remark.trim() === "") {
+                        toast.error("Remark is required for rejection.");
+                        return;
                       }
+                      handleReject(values);
                     }}
                   >
                     Reject
