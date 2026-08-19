@@ -21,7 +21,7 @@ const EditPOS = () => {
   const [districts, setDistricts] = useState([]);
   const [branches, setBranches] = useState([]);
   const [selectedDistrict, setSelectedDistrict] = useState(
-    row?.district?._id || ""
+    row?.branchName?.district?._id || ""
   );
 
   const phoneRegExp = /^[0-9]{9}$/;
@@ -48,10 +48,10 @@ const EditPOS = () => {
       .required("Service Number is required")
       .matches(phoneRegExp, "Phone number must be 9 digits"),
     contactPhonenumber: Yup.string()
-      .required("Service Number is required")
+      .required("Contact Phonenumber is required")
       .matches(phoneRegExp, "Contact phone number must be 9 digits"),
     businessType: Yup.string()
-      .required("Service Number is required"),
+      .required("Business Type is required"),
     staticIp: Yup.string()
       .required("IP Address is required")
       .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -95,7 +95,12 @@ const EditPOS = () => {
         state: {
           isRequest: false,
           relocated: false,
-          row: response.data.posTerminal,
+          row: {
+            ...response.data.posTerminal,
+            districtName: row.district,
+            branchName: row.branchName,
+            serialNumber: row.serialNumber,
+          },
         },
       });
     } catch (error) {
@@ -208,7 +213,7 @@ const EditPOS = () => {
             initialValues={{
               ...row,
               branchName: row?.branchName?._id,
-              district: row?.district?._id,
+              district: row?.branchName?.district?._id,
               serialNumber: row?.serialNumber?._id,
             }}
             validationSchema={FORM_VALIDATION}
@@ -294,7 +299,6 @@ const EditPOS = () => {
                           validateForm();
                         }}
                       />
-
                       <CustomSelect
                         name="branchName"
                         label="Branch Name"
