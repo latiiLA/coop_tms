@@ -55,12 +55,11 @@ const CreateUser = () => {
     password: Yup.string().required("Password is required"),
   });
   const role = [
-    { value: "tempo_user", label: "User" },
-    { value: "tempo_admin", label: "Admin" },
-    { value: "tempo_posuser", label: "POS User" },
-    { value: "tempo_posauthorizer", label: "POS Request Authorizer" },
-    { value: "tempo_posadmin", label: "POS Admin" },
-    // Add more options as needed
+    { value: "user", label: "User" },
+    { value: "admin", label: "Admin" },
+    { value: "posuser", label: "POS User" },
+    { value: "posauthorizer", label: "POS Request Authorizer" },
+    { value: "posadmin", label: "POS Admin" },
   ];
 
   const department = [
@@ -74,7 +73,6 @@ const CreateUser = () => {
       value: "Accounts and Finance Team",
       label: "Accounts and Finance Team",
     },
-    // Add more options as needed
   ];
 
   const handleSubmit = async (data, { resetForm }) => {
