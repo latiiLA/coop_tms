@@ -14,6 +14,8 @@ import { Toaster } from "react-hot-toast";
 import SideDashboard from "./pages/sidebar/SideDashboard";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import CreatePasswordEntry from "./pages/administration/CreatePasswordEntry";
+const PasswordVault = React.lazy(() => import("./pages/administration/PasswordVault"));
 
 const POSReports = React.lazy(
   () => import("./pages/POS/POSReports/POSReports")
@@ -153,63 +155,98 @@ const BulkRequest = React.lazy(
 
 const MASConfig = React.lazy(() => import("./pages/POS/MASConfig/MASConfig"));
 
-// Protect routes based on role
-const ProtectedRoutes = ({ requiredRole }) => {
-  const { role } = useAuthContext();
+const hasPermission = (permissions, permission) => {
+  return permissions?.includes(permission);
+};
 
-  if (role === null) {
-    // Not logged in
+// Protect routes based on role
+const ProtectedRoute = ({ permission, children }) => {
+  const { permissions, loading } = useAuthContext();
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!permissions) {
+    console.log("❌ No permission:", permission);
     return <Navigate to="/login" replace />;
   }
 
-  if (
-    role === "tempo_user" ||
-    role === "tempo_posuser" ||
-    role === "tempo_posauthorizer" ||
-    role === "tempo_admin" ||
-    role === "tempo_superadmin"
-  ) {
-    return <Navigate to="/changepassword" />;
+  if (!hasPermission(permissions, permission)) {
+    console.log("❌ Permission denied:", permission);
+    return <Navigate to="/home" replace />;
   }
 
-  if (requiredRole && !requiredRole.includes(role)) {
-    // User doesn't have the required role
-    return <Navigate to="/home" replace />;
+  return children;
+};
+
+// Protected Login Route
+const ProtectedLogin = () => {
+  const { user, loading } = useAuthContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) return;
+
+    // Not logged in
+    if (!user) return;
+
+    // New user must change password
+    if (user.status === "New") {
+      navigate("/changepassword", { replace: true });
+      return;
+    }
+
+    // Existing user
+    navigate("/home", { replace: true });
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  // If already logged in, don't render Login while redirecting
+  if (user) {
+    return <LoadingSpinner />;
+  }
+
+  return <Login />;
+};
+
+const AuthenticatedRoute = () => {
+  const { user, loading } = useAuthContext();
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.status === "New") {
+    return <Navigate to="/changepassword" replace />;
   }
 
   return <Outlet />;
 };
 
-// Protected Login Route
-const ProtectedLogin = () => {
-  const { role } = useAuthContext();
-  const navigate = useNavigate();
+const PasswordChangeRoute = () => {
+  const { user, loading } = useAuthContext();
 
-  useEffect(() => {
-    if (
-      role === "user" ||
-      role === "posuser" ||
-      role === "posauthorizer" ||
-      role === "admin" ||
-      role === "superadmin"
-    ) {
-      navigate("/home", { replace: true });
-    } else if (
-      role === "tempo_user" ||
-      role === "tempo_posuser" ||
-      role === "tempo_posauthorizer" ||
-      role === "tempo_admin" ||
-      role === "tempo_superadmin"
-    ) {
-      navigate("/changepassword");
-    }
-  }, [role, navigate]);
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
-  return <Login />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <ForgotPassword/>;
 };
 
 function App() {
-  const { role, loading } = useAuthContext();
+  const { role, permissions, loading } = useAuthContext();
 
   if (loading) {
     return <LoadingSpinner />;
@@ -222,84 +259,17 @@ function App() {
         {/* Public Routes */}
 
         <Route path="/login" element={<ProtectedLogin />} />
-        <Route path="/changepassword" element={<ForgotPassword />} />
+        <Route path="/changepassword" element={<PasswordChangeRoute />} />
 
         {/* Protected Routes */}
-        <Route element={<SideDashboard router={Router} />}>
-          <Route element={<ProtectedRoutes requiredRole={[]} />}></Route>
-          <Route
-            element={
-              <ProtectedRoutes
-                requiredRole={[
-                  "user",
-                  "posuser",
-                  "posauthorizer",
-                  "admin",
-                  "superadmin",
-                ]}
-              />
-            }
-          >
+        <Route element={<AuthenticatedRoute />}>
+          <Route element={<SideDashboard />}>
             <Route
-              path="/account"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Account />
-                </Suspense>
-              }
+              path="/home"
+              element={<Home />}
             />
-            <Route
-              path="posreports"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <POSReports />
-                </Suspense>
-              }
-            />
-            <Route
-              path="settings"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Settings />
-                </Suspense>
-              }
-            />
-            <Route
-              path="settings/profile"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <UserProfile />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/settings/changepassword"
-              element={<ForgotPassword />}
-            />
-            <Route
-              path="/logout"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Logout />
-                </Suspense>
-              }
-            />
-            <Route path="/home" element={<Home />} />
-            <Route
-              path="/posdashboard"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Posdashboard />
-                </Suspense>
-              }
-            />
-          </Route>
 
-          <Route
-            element={
-              <ProtectedRoutes requiredRole={["user", "admin", "superadmin"]} />
-            }
-          >
+            {/* Terminal related */}
             <Route
               path="/dashboard"
               element={
@@ -307,36 +277,297 @@ function App() {
                   <Dashboard />
                 </Suspense>
               }
-            />
+            />        
             <Route
-              path="/view"
+              path="/atm"
               element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewTerminal />
-                </Suspense>
+                <ProtectedRoute permission="atm">  
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ATMAdministration />
+                  </Suspense>
+                </ProtectedRoute>  
               }
             />
             <Route
-              path="relocatedterminal"
+              path="/atm/manageterminal"
               element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewRelocated />
-                </Suspense>
+                <ProtectedRoute permission="view_terminal">  
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ManageTerminal />
+                  </Suspense>
+              </ProtectedRoute>
               }
             />
             <Route
-              path="/explorepos"
+              path="/atm/add"
               element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ManagePOS />
-                </Suspense>
+                <ProtectedRoute permission="create_terminal">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <AddTerminal />
+                  </Suspense>
+                </ProtectedRoute>
               }
             />
+            <Route
+              path="/atm/relocatedterminal"
+              element={
+                <ProtectedRoute permission="view_relocated_terminal">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewRelocated />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit"
+              element={
+                <ProtectedRoute permission="edit_terminal">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <EditTerminal />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/viewdetail"
+              element={
+                <ProtectedRoute permission="view_terminal_detail">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewATMDetail />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Port relocated */}
+            <Route
+              path="/atm/ports"
+              element={
+                <ProtectedRoute permission="create_port">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <Port />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/atm/viewports"
+              element={
+                <ProtectedRoute permission="view_port">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewPort />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Branch related */}
+            <Route
+              path="/atm/addbranch"
+              element={
+                <ProtectedRoute permission="create_branch">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <CreateBranch />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/atm/viewbranch"
+              element={
+                <ProtectedRoute permission="view_branch">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewBranch />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* District related */}
+            <Route
+              path="/atm/adddistrict"
+              element={
+                <ProtectedRoute permission="create_district">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <CreateDistrict />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/atm/viewdistrict"
+              element={
+                <ProtectedRoute permission="view_district">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewDistrict />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Command related */}
+            <Route
+              path="/atm/command"
+              element={
+                <ProtectedRoute permission="create_command">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <CreateCommands />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/atm/viewcommands"
+              element={
+                <ProtectedRoute permission="view_command">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewCommands />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* User related */}
+             <Route
+              path="/administration"
+              element={
+                <ProtectedRoute permission="administration">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <Administration />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/administration/createuser"
+              element={
+                <ProtectedRoute permission="create_user">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <CreateUser />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/administration/manageuser"
+              element={
+                <ProtectedRoute permission="manage_user">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewUsers />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/administration/analytics"
+              element={
+                <ProtectedRoute permission="analytics">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <Analytics />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/administration/activitylog"
+              element={
+                <ProtectedRoute permission="activity_log">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <UserActivityLog />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/administration/viewfeedback"
+              element={
+                <ProtectedRoute permission="view_feedback">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewFeedback />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/administration/viewbug"
+              element={
+                <ProtectedRoute permission="view_bug">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewBugs />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+
+
+
+
+            {/* Setting*/}
+            {/* account -- depriciated feature  */}
+            <Route
+              path="/account"
+              element={
+                <ProtectedRoute permission="account">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <Account />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+                path="settings"
+                element={
+                  <ProtectedRoute permission="settings">
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <Settings />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="settings/profile"
+                element={
+                  <ProtectedRoute permission="user_profile">
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <UserProfile />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings/changepassword"
+                element={
+                  <ProtectedRoute permission="forgot_password">
+                    <ForgotPassword />
+                  </ProtectedRoute>
+              }
+              />
+              <Route
+                path="/logout"
+                element={
+                  <ProtectedRoute permission="logout">
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <Logout />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+
+            {/* Report related */}
             <Route
               path="/reports"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <Report />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/reports/posreports"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <POSReports />
                 </Suspense>
               }
             />
@@ -357,24 +588,242 @@ function App() {
               }
             />
 
+            {/* POS related */}
             <Route
-              path="/viewdetail"
+              path="/posdashboard"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
-                  <ViewATMDetail />
+                  <Posdashboard />
                 </Suspense>
+              }
+            />
+            <Route
+            path="/pos/managepos"
+            element={
+              <ProtectedRoute permission="view_pos">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ManagePOS />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pos"
+            element={
+              <ProtectedRoute permission="pos">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <POSAdministration />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pos/addpos"
+            element={
+              <ProtectedRoute permission="create_pos">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AddPOS />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pos/relocatedpos"
+            element={
+              <ProtectedRoute permission="view_relocated_pos">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RelocatedPOS />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pos/masconfig"
+            element={
+              <ProtectedRoute permission="mas_config">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <MASConfig />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pos/devices"
+            element={
+              <ProtectedRoute permission="view_device">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ViewDevices />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editpos"
+            element={
+              <ProtectedRoute permission="edit_pos">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <EditPOS />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+           <Route
+              path="/posdetail"
+              element={
+                <ProtectedRoute permission="view_pos_detail">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <POSDetails />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pos/relocationrequests"
+              element={
+                <ProtectedRoute permission="view_relocation_request">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <RelocationRequests />
+                  </Suspense>
+                </ProtectedRoute>
               }
             />
 
+            {/* POS request related */}
             <Route
-              path="/administration/feedback"
-              element={
+            path="/approverequest"
+            element={
+              <ProtectedRoute permission="approve_pos">
                 <Suspense fallback={<LoadingSpinner />}>
-                  <Feedback />
+                  <ApprovePOSRequest />
                 </Suspense>
-              }
-            />
-            <Route
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/request/requests"
+            element={
+              <ProtectedRoute permission="view_new_pos_request">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ViewPOSRequests />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/request/authorizedrequests"
+            element={
+              <ProtectedRoute permission="view_authorized_request">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AuthorizedRequests />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          /> 
+          <Route
+            path="/request/requeststatus"
+            element={
+              <ProtectedRoute permission="view_request_status">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RequestStatus />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/request/relocationrequests"
+            element={
+              <ProtectedRoute permission="view_relocation_request">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RelocationRequests />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/request"
+            element={
+              <ProtectedRoute permission="request">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <POSRequestAdministration />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editrequest"
+            element={
+              <ProtectedRoute permission="edit_request">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <EditRequests />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/request/request"
+            element={
+              <ProtectedRoute permission="request_pos">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RequestPOS />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/request/sendrequests"
+            element={
+              <ProtectedRoute permission="send_request">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <SendRequests />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/request/rejectedrequests"
+            element={
+              <ProtectedRoute permission="view_rejected_request">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RejectedRequests />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/request/deletedrequests"
+            element={
+              <ProtectedRoute permission="view_deleted_request">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <DeletedRequests />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/request/bulkrequest"
+            element={
+              <ProtectedRoute permission="bulk_request">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <BulkRequest />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/request/relocate"
+            element={
+              <ProtectedRoute permission="view_relocation_request">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <RelocatedRequest />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+            
+          {/* No permission needed */}
+          <Route
               path="/links"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
@@ -398,119 +847,6 @@ function App() {
                 </Suspense>
               }
             />
-
-            {/* <Route path="/side" element={<Side />} /> */}
-          </Route>
-
-          {/* Admin Routes */}
-          <Route
-            element={<ProtectedRoutes requiredRole={["admin", "superadmin"]} />}
-          >
-            <Route
-              path="/edit"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <EditTerminal />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ATMAdministration />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm/add"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <AddTerminal />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm/ports"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Port />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm/viewports"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewPort />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm/command"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <CreateCommands />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm/viewcommands"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewCommands />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm/manageterminal"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ManageTerminal />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm/adddistrict"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <CreateDistrict />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm/viewdistrict"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewDistrict />
-                </Suspense>
-              }
-            />
-
-            <Route
-              path="/atm/addbranch"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <CreateBranch />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm/relocatedterminal"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewRelocated />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/atm/viewbranch"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewBranch />
-                </Suspense>
-              }
-            />
             <Route
               path="/atm/atmlocation"
               element={
@@ -519,80 +855,9 @@ function App() {
                 </Suspense>
               }
             />
-            {/* POS ROUTES */}
-            <Route
-              path="/pos"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <POSAdministration />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/pos/addpos"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <AddPOS />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/pos/managepos"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ManagePOS />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/pos/relocatedpos"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <RelocatedPOS />
-                </Suspense>
-              }
-            />
 
-            <Route
-              path="/pos/requests"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewPOSRequests />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/approverequest"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ApprovePOSRequest />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/pos/masconfig"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <MASConfig />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/pos/devices"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewDevices />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/editpos"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <EditPOS />
-                </Suspense>
-              }
-            />
+
+            {/* Manual related */}
             <Route
               path="/manual/atmcreationmanual"
               element={
@@ -606,209 +871,6 @@ function App() {
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <AccountLinkManual />
-                </Suspense>
-              }
-            />
-          </Route>
-
-          <Route
-            element={
-              <ProtectedRoutes
-                requiredRole={[
-                  "posuser",
-                  "admin",
-                  "superadmin",
-                  "posauthorizer",
-                ]}
-              />
-            }
-          >
-            <Route
-              path="/posdetail"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <POSDetails />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/request/requeststatus"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <RequestStatus />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/pos/authorizedrequests"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <AuthorizedRequests />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/request/relocationrequests"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <RelocationRequests />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/pos/relocationrequests"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <RelocationRequests />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/request/viewpos"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ManagePOS />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/request/relocatedpos"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <RelocatedPOS />
-                </Suspense>
-              }
-            />
-          </Route>
-
-          {/* Super Admin Routes */}
-          <Route element={<ProtectedRoutes requiredRole={["superadmin"]} />}>
-            <Route
-              path="/administration"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Administration />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/administration/manageuser"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewUsers />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/administration/analytics"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Analytics />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/administration/createuser"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <CreateUser />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/administration/activitylog"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <UserActivityLog />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/administration/viewfeedback"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewFeedback />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/administration/viewbug"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <ViewBugs />
-                </Suspense>
-              }
-            />
-          </Route>
-
-          {/* POS user Routes */}
-          <Route
-            element={
-              <ProtectedRoutes requiredRole={["posuser", "posauthorizer"]} />
-            }
-          >
-            <Route
-              path="/request"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <POSRequestAdministration />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/editrequest"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <EditRequests />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/request/request"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <RequestPOS />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/request/sendrequests"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <SendRequests />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/request/rejectedrequests"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <RejectedRequests />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/request/deletedrequests"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <DeletedRequests />
-                </Suspense>
-              }
-            />
-
-            <Route
-              path="/request/bulkrequest"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <BulkRequest />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/request/relocate"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <RelocatedRequest />
                 </Suspense>
               }
             />
@@ -836,21 +898,57 @@ function App() {
                 </Suspense>
               }
             />
+
+
+            {/* Password vault */}
+            <Route
+              path="/password/entry"
+              element={
+                <ProtectedRoute permission="create_password_entry">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <CreatePasswordEntry />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/password/vault"
+              element={
+                <ProtectedRoute permission="view_password_entry">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <PasswordVault />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+            
+
+            
           </Route>
+
+      
+
+            
+            
+            
+        
+
+          
+
+
+
+         
+
+
+            {/* Manual */}
+            
 
           {/* Catch-All Route */}
           <Route
             path="*"
             element={
-              role === "tempo_user" ||
-              role === "tempo_posuser" ||
-              role === "tempo_posauthorizer" ||
-              role === "tempo_admin" ||
-              role === "tempo_superadmin" ? (
-                <Navigate to="/changepassword" replace />
-              ) : (
                 <Navigate to={role ? "/home" : "/login"} replace />
-              )
             }
           />
         </Route>
@@ -858,6 +956,7 @@ function App() {
 
       <Toaster />
       {/* </Layout> */}
+      
     </Box>
     // </Suspense>
   );
