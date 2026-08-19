@@ -8,64 +8,67 @@ import ViewPort from "./ViewPort";
 import ViewBranch from "../../components/ViewBranch";
 import Commands from "./ViewCommands";
 import CreateCommands from "./CreateCommands";
+import { AppProvider } from "@toolpad/core/AppProvider";
 
 const ATMAdminitration = () => {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 5,
-        padding: 2,
-      }}
-    >
-      <Box>
-        <Typography variant="h4">Create ATM</Typography>
-        <AddTerminal />
-      </Box>
-      <Divider />
+    <AppProvider>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 5,
+          padding: 2,
+        }}
+      >
+        <Box>
+          <Typography variant="h4">Create ATM</Typography>
+          <AddTerminal />
+        </Box>
+        <Divider />
 
-      <Box>
-        <Typography variant="h4">Manage ATM</Typography>
-        <ManageTerminal />
-      </Box>
-      <Divider />
-      <Box>
-        <Typography variant="h4">Relocated ATM</Typography>
-        <ViewRelocated />
-      </Box>
-      <Divider />
-      <Box>
-        <Typography variant="h4">Manage Port</Typography>
-        <ViewPort />
-      </Box>
-      <Divider />
-      <Box>
-        <Typography variant="h4">Branch Code</Typography>
-        <ViewBranch />
-      </Box>
-      <Divider />
-      <Box>
-        <Typography variant="h4">Explore Commands</Typography>
-        <Commands />
-      </Box>
-      <Divider />
+        <Box>
+          <Typography variant="h4">Manage ATM</Typography>
+          <ManageTerminal />
+        </Box>
+        <Divider />
+        <Box>
+          <Typography variant="h4">Relocated ATM</Typography>
+          <ViewRelocated />
+        </Box>
+        <Divider />
+        <Box>
+          <Typography variant="h4">Manage Port</Typography>
+          <ViewPort />
+        </Box>
+        <Divider />
+        <Box>
+          <Typography variant="h4">Branch Code</Typography>
+          <ViewBranch />
+        </Box>
+        <Divider />
+        <Box>
+          <Typography variant="h4">Explore Commands</Typography>
+          <Commands />
+        </Box>
+        <Divider />
 
-      <Box>
-        <Typography variant="h4">Create Port</Typography>
-        <Port />
+        <Box>
+          <Typography variant="h4">Create Port</Typography>
+          <Port />
+        </Box>
+        <Divider />
+        <Box>
+          <Typography variant="h4">Create Commands</Typography>
+          <CreateCommands />
+        </Box>
+        <Divider />
+        <Box>
+          <Typography variant="h4">Create Branch</Typography>
+          {/* <CreateBranch /> */}
+        </Box>
       </Box>
-      <Divider />
-      <Box>
-        <Typography variant="h4">Create Commands</Typography>
-        <CreateCommands />
-      </Box>
-      <Divider />
-      <Box>
-        <Typography variant="h4">Create Branch</Typography>
-        {/* <CreateBranch /> */}
-      </Box>
-    </Box>
+    </AppProvider>
   );
 };
 

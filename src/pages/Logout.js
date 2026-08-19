@@ -7,7 +7,7 @@ import axios from "axios";
 const Logout = () => {
   const navigate = useNavigate();
   const hasShownToast = useRef(false); // Track if the toast has been shown
-  const { setRole } = useAuthContext();
+  const { setRole, setPermission, setCurrentUser } = useAuthContext();
   const isMounted = useRef(true); // Track if the component is mounted
 
   // Cleanup function to set isMounted to false when the component is unmounted
@@ -30,6 +30,9 @@ const Logout = () => {
           hasShownToast.current = true;
         }
         setRole(null);
+        setPermission(null)
+        setCurrentUser(null)
+        
         if (isMounted.current) {
           navigate("/login");
         }
@@ -67,7 +70,7 @@ const Logout = () => {
     };
 
     handleLogout();
-  }, [navigate, setRole]);
+  }, [navigate, setRole, setPermission, setCurrentUser]);
 
   return null;
 };
