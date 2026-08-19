@@ -11,6 +11,8 @@ import {
   DialogContentText,
   DialogTitle,
   Tooltip,
+  InputAdornment,
+  TextField,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LockResetIcon from "@mui/icons-material/LockReset";
@@ -18,17 +20,18 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
-import { LockOpen } from "@mui/icons-material";
+import { LockOpen, Search } from "@mui/icons-material";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function ViewUsers() {
   const navigate = useNavigate();
-  const { role } = useAuthContext();
+  const { role, permissions } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataRows, setDataRows] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
+  const [searchText, setSearchText] = useState("");
   const apiUrl = process.env.REACT_APP_API_URL;
 
   // State to store the name of the user who created the terminal
@@ -192,8 +195,22 @@ export default function ViewUsers() {
     },
     { field: "department", headerName: "Department", flex: 0.4 },
     { field: "role", headerName: "Role", flex: 0.4 },
-    { field: "createdBy", headerName: "createdBy", flex: 0.6 },
-    { field: "createdAt", headerName: "Date Created", flex: 0.3 },
+    { field: "createdBy", headerName: "createdBy", flex: 0.3 },
+    { field: "createdAt", headerName: "Date Created", flex: 0.5,
+      valueFormatter: (value) => {
+        if (!value) return "";
+        const date = new Date(value);
+        return date.toLocaleString("en-US", 
+          { 
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit", 
+          });
+      },
+    },
     { field: "status", headerName: "Status", flex: 0.3 },
     { field: "wrongPasswordCount", headerName: "WrongPwd", flex: 0.3 },
     {
@@ -211,19 +228,20 @@ export default function ViewUsers() {
             margin: "auto",
           }}
         >
-          <Tooltip title="Reset Password Count">
-            <IconButton
-              color="primary"
-              size="small"
-              onClick={() => handleReset(params.row._id)}
-              margin="auto"
-            >
-              <LockOpen />
-            </IconButton>
-          </Tooltip>
+          {permissions?.includes("unlock_account") && (
+            <Tooltip title="Reset Password Count">
+              <IconButton
+                color="primary"
+                size="small"
+                onClick={() => handleReset(params.row._id)}
+                margin="auto"
+              >
+                <LockOpen />
+              </IconButton>
+            </Tooltip>
+          )}
 
-          {role === "superadmin" && (
-            <>
+          {permissions?.includes("reset_password") && (
               <Tooltip title="Reset Password">
                 <IconButton
                   color="primary"
@@ -233,6 +251,8 @@ export default function ViewUsers() {
                   <LockResetIcon />
                 </IconButton>
               </Tooltip>
+          )}
+          {permissions?.includes("delete_user") && (
               <Tooltip title="Delete User">
                 <IconButton
                   color="secondary"
@@ -242,7 +262,6 @@ export default function ViewUsers() {
                   <DeleteIcon />
                 </IconButton>
               </Tooltip>
-            </>
           )}
         </Box>
       ),
@@ -293,6 +312,24 @@ export default function ViewUsers() {
     ...row,
   }));
 
+  const filteredRows = rows.filter((row) => {
+    const searchLower = searchText.toLowerCase();
+
+    return (
+      String(row.username || "").toLowerCase().includes(searchLower) ||
+      String(row.firstName || "").toLowerCase().includes(searchLower) ||
+      String(row.fatherName || "").toLowerCase().includes(searchLower) ||
+      String(row.gfatherName || "").toLowerCase().includes(searchLower) ||
+      String(row.department || "").toLowerCase().includes(searchLower) ||
+      String(row.role || "").toLowerCase().includes(searchLower) ||
+      String(row.status || "").toLowerCase().includes(searchLower)
+    );
+  });
+
+  const handleSearchChange = (event) => {
+    setSearchText(event.target.value);
+  };
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -303,6 +340,36 @@ export default function ViewUsers() {
 
   return (
     <Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 2,
+          margin: 1,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ height: "100%", marginTop: "auto" }}
+          gutterBottom
+        >
+          Users
+        </Typography>
+        <TextField
+          label="Search"
+          value={searchText}
+          onChange={handleSearchChange}
+          variant="outlined"
+          size="small"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
       <Box
         sx={{
           "& .super-app-theme--header": {
@@ -316,7 +383,7 @@ export default function ViewUsers() {
         }}
       >
         <DataGrid
-          rows={rows}
+          rows={filteredRows}
           columns={columns}
           slots={{ toolbar: GridToolbar }}
           initialState={{

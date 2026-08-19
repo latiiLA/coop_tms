@@ -100,23 +100,28 @@ export default function ViewRelocated() {
       .reverse() ?? [];
 
   // Filtered rows
-  let filteredRows = rows.filter((row) =>
-    Object.keys(row).some((key) => {
-      if (key === "branchName") {
-        return String(row[key]?.companyName)
+  let filteredRows = rows
+    .filter((row) => {
+      const search = searchText.toLowerCase();
+
+      return (
+        String(row.branchName?.companyName || "")
           .toLowerCase()
-          .includes(searchText.toLowerCase());
-      } else if (key === "district") {
-        return String(row[key]?.districtName)
+          .includes(search) ||
+        String(row.branchName?.district?.districtName || "")
           .toLowerCase()
-          .includes(searchText.toLowerCase());
-      } else {
-        return String(row[key])
-          .toLowerCase()
-          .includes(searchText.toLowerCase());
-      }
+          .includes(search) ||
+        Object.keys(row).some((key) => {
+          if (key === "branchName") {
+            return false;
+          }
+
+          return String(row[key] || "")
+            .toLowerCase()
+            .includes(search);
+        })
+      );
     })
-  );
 
   // Split sorted rows into CRM and NCR
   const crmRows = filteredRows.filter((row) => row.type === "CRM");

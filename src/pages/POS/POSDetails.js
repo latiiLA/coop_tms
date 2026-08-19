@@ -136,7 +136,7 @@ const POSDetails = () => {
                       <CustomTextField
                         name="district"
                         label="District"
-                        value={row?.district?.districtName || "Unknown"}
+                        value={row?.branchName?.district?.districtName || "Unknown"}
                         InputProps={{
                           readOnly: true,
                         }}
@@ -285,6 +285,7 @@ const POSDetails = () => {
                         />
                       )}
                       {!isRequest && row?.deleteRequestedBy && (
+                        <Box sx={{display: "flex", flexDirection: "row", gap: 2}}>
                         <CustomTextField
                           name="deleteRequestedBy"
                           label="POS Termination Requested By"
@@ -297,35 +298,39 @@ const POSDetails = () => {
                             (row?.deleteRequestedBy?.fatherName || "Unknown")
                           }
                         />
-                      )}
-                      <CustomTextField
-                        name="createdAt"
-                        label="Created At"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-                      {isRelocated && (
+                        {row?.deletedBy &&
                         <CustomTextField
                           name="deletedBy"
-                          label="Relocated By"
+                          label="POS Terminated By"
+                          InputProps={{
+                            readOnly: true,
+                          }}
                           value={
                             (row?.deletedBy?.firstName || "Unknown") +
                             " " +
                             (row?.deletedBy?.fatherName || "Unknown")
                           }
+                        />
+                        }
+                        </Box>
+                      )}
+                      {/* <Box sx={{display: "flex", flexDirection: "row", gap: 2}}> */}
+                        <CustomTextField
+                          name="createdAt"
+                          label="Created At"
                           InputProps={{
                             readOnly: true,
                           }}
                         />
-                      )}
-                      <CustomTextField
-                        name="updatedAt"
-                        label="Updated At"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
+                        <CustomTextField
+                          name="updatedAt"
+                          label="Updated At"
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />                        
+                      {/* </Box> */}
+
                       <CustomTextField
                         name="status"
                         label="Status"

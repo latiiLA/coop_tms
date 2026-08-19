@@ -7,6 +7,8 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  InputAdornment,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -17,6 +19,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { Search } from "@mui/icons-material";
 
 const ViewPort = () => {
   const navigate = useNavigate();
@@ -25,6 +28,7 @@ const ViewPort = () => {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
+  const [searchText, setSearchText] = useState("");
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const hasShownToast = useRef(false);
@@ -199,6 +203,23 @@ const ViewPort = () => {
     },
   ];
 
+  const filteredRows = rows.filter((row) => {
+    // Perform case-insensitive search in all text fields
+    const searchLower = searchText.toLowerCase();
+    return (
+      
+      String(row.portName || "").includes(searchLower) ||
+      String(row.portNumber || "").toLowerCase().includes(searchLower) ||
+      String(row.portAssignment || "").toLowerCase().includes(searchLower) ||
+      String(row.portSiteAssignment || "").toLowerCase().includes(searchLower) ||
+      String(row.portCapacity || "").toLowerCase().includes(searchLower)
+    );
+  });
+
+  const handleSearchChange = (event) => {
+    setSearchText(event.target.value);
+  };
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -209,6 +230,36 @@ const ViewPort = () => {
 
   return (
     <Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 2,
+          margin: 1,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ height: "100%", marginTop: "auto" }}
+          gutterBottom
+        >
+          Ports
+        </Typography>
+        <TextField
+          label="Search"
+          value={searchText}
+          onChange={handleSearchChange}
+          variant="outlined"
+          size="small"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
       <Box
         sx={{
           "& .super-app-theme--header": {
@@ -222,7 +273,7 @@ const ViewPort = () => {
         }}
       >
         <DataGrid
-          rows={rows}
+          rows={filteredRows}
           columns={columns}
           slots={{ toolbar: GridToolbar }}
           // getRowId={(row) => row.id} // Ensure unique row ID
