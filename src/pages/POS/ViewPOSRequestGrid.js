@@ -33,7 +33,7 @@ const ViewPOSRequestGrid = ({
   const [rowsState, setRowsState] = useState(initialRows);
   const [selectedRow, setSelectedRow] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const { role } = useAuthContext();
+  const { role, permissions } = useAuthContext();
 
   useEffect(() => {
     setRowsState(initialRows);
@@ -59,7 +59,7 @@ const ViewPOSRequestGrid = ({
       field: "district",
       headerName: "District",
       flex: 0.5,
-      valueGetter: (params) => params?.districtName || "N/A",
+      valueGetter: (value, row) => row?.branchName?.district?.districtName || "N/A",
     },
     { field: "site", headerName: "Site", flex: 0.5 },
     { field: "contactName", headerName: "Contact Name", flex: 0.8 },
@@ -84,29 +84,18 @@ const ViewPOSRequestGrid = ({
             alignItems: "center",
           }}
         >
-          {!isRelocated && params.row.isDeleted === false && (
+          {!isRelocated && params.row.isDeleted === false && (permissions?.includes("edit_request") || permissions?.includes("approve_pos")) && (
             <Tooltip title="Edit Request">
               <Box>
                 <IconButton
                   color="primary"
                   size="small"
                   disabled={
-                    role === "posauthorizer" ||
-                    (role === "posuser" &&
-                      params.row.status === "Authorized") ||
-                    params.row.status === "Approved" ||
-                    ((params.row.status === "New" ||
-                      params.row.status === "Rejected") &&
-                      (role === "admin" || role === "superadmin"))
+                    ((permissions?.includes("edit_request") && params.row.status === "Authorized") || params.row.status === "Approved" || 
+                    ((params.row.status === "New" || params.row.status === "Rejected") && permissions?.includes("approve_pos")))
                   }
-                  // style={{
-                  //   display:
-                  //     role === "user" || role === "posuser"
-                  //       ? "none"
-                  //       : "inline-flex",
-                  // }}
                   onClick={() => {
-                    if (role === "admin" || role === "superadmin") {
+                    if (permissions?.includes("approve_pos")) {
                       navigate("/approverequest", {
                         state: { row: params.row },
                       });
@@ -122,19 +111,21 @@ const ViewPOSRequestGrid = ({
               </Box>
             </Tooltip>
           )}
-          <Tooltip title="View Request">
-            <IconButton
-              color="primary"
-              size="small"
-              onClick={() =>
-                navigate("/posdetail", {
-                  state: { isRequest: true, row: params.row },
-                })
-              }
-            >
-              <Preview />
-            </IconButton>
-          </Tooltip>
+          {permissions?.includes("view_request_detail") &&
+            <Tooltip title="View Request">
+              <IconButton
+                color="primary"
+                size="small"
+                onClick={() =>
+                  navigate("/posdetail", {
+                    state: { isRequest: true, row: params.row },
+                  })
+                }
+              >
+                <Preview />
+              </IconButton>
+            </Tooltip>
+          }
           <Tooltip title="Copy Request Information">
             <IconButton
               color="primary"
@@ -144,7 +135,7 @@ const ViewPOSRequestGrid = ({
               <ContentCopy />
             </IconButton>
           </Tooltip>
-          {role === "posuser" &&
+          {permissions?.includes("delete_request") &&
             params.row.isDeleted === false &&
             (params.row.status === "New" ||
               params.row.status === "Rejected") && (

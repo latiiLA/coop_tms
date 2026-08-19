@@ -15,7 +15,8 @@ import {
   TextField,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import LockResetIcon from "@mui/icons-material/LockReset";
+import EditIcon from "@mui/icons-material/Edit";
+import PreviewIcon from "@mui/icons-material/Preview";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +24,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import { LockOpen, Search } from "@mui/icons-material";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
-export default function ViewUsers() {
+export default function PasswordVault() {
   const navigate = useNavigate();
   const { role, permissions } = useAuthContext();
   const [loading, setLoading] = useState(true);
@@ -33,51 +34,6 @@ export default function ViewUsers() {
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [searchText, setSearchText] = useState("");
   const apiUrl = process.env.REACT_APP_API_URL;
-
-  // State to store the name of the user who created the terminal
-  // const [createdByName, setCreatedByName] = useState("default");
-  // const handleUsersName = async (userId) => {
-  //   const token = localStorage.getItem("token");
-
-  //   if (!token) {
-  //     toast.error("User is not authenticated");
-  //     navigate("/home");
-  //     return null; // Exit the function if no token is found
-  //   }
-
-  //   try {
-  //     const apiUrl = process.env.REACT_APP_API_URL;
-  //     const response = await axios.get(
-  //       `${apiUrl}/auth/getUsersName`, // Use the correct endpoint
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         params: { userId }, // Pass userId as a query parameter
-  //         withCredentials: true,
-  //       }
-  //     );
-  //     return response.data.usersName; // Return the fetched user's name
-  //   } catch (error) {
-  //     if (error.response?.data?.message) {
-  //       toast.error(error.response.data.message);
-  //     } else {
-  //       toast.error(error.message);
-  //     }
-
-  //     return null; // Signal failure with a return value
-  //   }
-  // };
-  // useEffect(() => {
-  //   const fetchCreatedByName = async () => {
-  //     console.log("from row", dataRows);
-  //     const userName = await handleUsersName(dataRows.createdBy);
-  //     console.log("username after fetch", userName);
-  //     setCreatedByName(userName);
-  //   };
-
-  //   fetchCreatedByName();
-  // }, [handleUsersName]);
 
   const handleClickOpen = (rowId) => {
     setSelectedRowId(rowId);
@@ -101,7 +57,7 @@ export default function ViewUsers() {
     }
     try {
       await axios.patch(
-        `${apiUrl}/auth/deleteUser/${selectedRowId}`,
+        `${apiUrl}/auth/deletePasswordEntry/${selectedRowId}`,
         {},
         {
           headers: {
@@ -114,7 +70,7 @@ export default function ViewUsers() {
       setDataRows(updatedData);
 
       handleClose();
-      toast.success("User successfully deleted.");
+      toast.success("Password entry successfully deleted.");
     } catch (error) {
       // console.error("Error deleting user:", error);
       toast.error(error.response.data.message);
@@ -150,54 +106,23 @@ export default function ViewUsers() {
     }
   };
 
-  const handleResetPassword = async (rowId) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      // console.error("No authentication token found");
-      toast.error("User is not an authenticated user.");
-      navigate("/home");
-      return;
-    }
-    try {
-      await axios.patch(
-        `${apiUrl}/auth/resetPassword/${rowId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      const updatedData = await fetchRows();
-      setDataRows(updatedData);
-      toast.success("Password reset is successfull.");
-    } catch (error) {
-      // console.error("Error resetting user password:", error);
-      toast.error("Error: while resetting user password.");
-    }
-  };
-
-  // console.log("created by", createdByName);
-
   const columns = [
     { field: "id", headerName: "No", flex: 0.1 },
-    { field: "username", headerName: "Username", flex: 0.4 },
+    { field: "serverName", headerName: "Server Name", flex: 0.4 },
     {
-      field: "fullName",
-      headerName: "Full name",
-      sortable: false,
-      valueGetter: (value, row) =>
-        `${row.firstName || ""} ${row.fatherName || ""} ${
-          row.gfatherName || ""
-        }`,
+      field: "serverIP",
+      headerName: "Server IP",
       flex: 0.6,
     },
-    { field: "department", headerName: "Department", flex: 0.4 },
-    { field: "role", headerName: "Role", flex: 0.4 },
-    { field: "createdBy", headerName: "createdBy", flex: 0.3 },
-    { field: "createdAt", headerName: "Date Created", flex: 0.5,
-      valueFormatter: (value) => {
+    { field: "serverOS", headerName: "Operating System", flex: 0.4 },
+    { field: "serverUsername", headerName: "Username", flex: 0.4 },
+    { field: "serverPassword", headerName: "Password", flex: 0.4},
+    { field: "createdBy", headerName: "Created By",
+        valueGetter: (value, row) => row.createdBy?.firstName + " " + row.createdBy?.fatherName || "N/A", 
+        flex: 0.6 
+    },
+    { field: "createdAt", headerName: "Created At",
+        valueFormatter: (value) => {
         if (!value) return "";
         const date = new Date(value);
         return date.toLocaleString("en-US", 
@@ -210,9 +135,9 @@ export default function ViewUsers() {
             second: "2-digit", 
           });
       },
+      flex: 0.3 
     },
     { field: "status", headerName: "Status", flex: 0.3 },
-    { field: "wrongPasswordCount", headerName: "WrongPwd", flex: 0.3 },
     {
       field: "actions",
       headerName: "Actions",
@@ -228,32 +153,31 @@ export default function ViewUsers() {
             margin: "auto",
           }}
         >
-          {permissions?.includes("unlock_account") && (
-            <Tooltip title="Reset Password Count">
+          {permissions?.includes("edit_password_entry") && (
+            <Tooltip title="Edit Password Entry">
               <IconButton
                 color="primary"
                 size="small"
                 onClick={() => handleReset(params.row._id)}
                 margin="auto"
               >
-                <LockOpen />
+                <EditIcon />
               </IconButton>
             </Tooltip>
           )}
-
-          {permissions?.includes("reset_password") && (
-              <Tooltip title="Reset Password">
+          {permissions?.includes("view_password_entry_detail") && (
+              <Tooltip title="View Password Entry">
                 <IconButton
                   color="primary"
                   size="small"
-                  onClick={() => handleResetPassword(params.row._id)}
+                  onClick={() => handleReset(params.row._id)}
                 >
-                  <LockResetIcon />
+                  <PreviewIcon />
                 </IconButton>
               </Tooltip>
           )}
-          {permissions?.includes("delete_user") && (
-              <Tooltip title="Delete User">
+          {permissions?.includes("delete_password_entry") && (
+              <Tooltip title="Delete Password Entry">
                 <IconButton
                   color="secondary"
                   size="small"
@@ -277,13 +201,14 @@ export default function ViewUsers() {
       return [];
     }
     try {
-      const response = await axios.get(`${apiUrl}/auth/getUser`, {
+      const response = await axios.get(`${apiUrl}/password/getPasswordEntry`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
       });
-      return response.data.users;
+      console.log("password entries", response.data.passwordEntries)
+      return response.data.passwordEntries;
     } catch (error) {
       // console.error("Error fetching data:", error);
       toast.error(`Error: ${error.response?.data?.message || error.message}`);
@@ -316,13 +241,13 @@ export default function ViewUsers() {
     const searchLower = searchText.toLowerCase();
 
     return (
-      String(row.username || "").toLowerCase().includes(searchLower) ||
-      String(row.firstName || "").toLowerCase().includes(searchLower) ||
-      String(row.fatherName || "").toLowerCase().includes(searchLower) ||
-      String(row.gfatherName || "").toLowerCase().includes(searchLower) ||
-      String(row.department || "").toLowerCase().includes(searchLower) ||
-      String(row.role || "").toLowerCase().includes(searchLower) ||
-      String(row.status || "").toLowerCase().includes(searchLower)
+      String(row.serverName || "").toLowerCase().includes(searchLower) ||
+      String(row.serverIP || "").toLowerCase().includes(searchLower) ||
+      String(row.serverOS || "").toLowerCase().includes(searchLower) ||
+      String(row.serverUsername || "").toLowerCase().includes(searchLower) ||
+      String(row.serverPassword || "").toLowerCase().includes(searchLower) ||
+      String(row.createdBy.firstName || "").toLowerCase().includes(searchLower) ||
+      String(row.createdBy.fatherName || "").toLowerCase().includes(searchLower)
     );
   });
 
@@ -353,7 +278,7 @@ export default function ViewUsers() {
           sx={{ height: "100%", marginTop: "auto" }}
           gutterBottom
         >
-          Users
+          Password Vault
         </Typography>
         <TextField
           label="Search"

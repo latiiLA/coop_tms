@@ -11,7 +11,7 @@ import axios from "axios";
 
 const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
   const navigate = useNavigate();
-  const { role } = useAuthContext();
+  const { role, permissions } = useAuthContext();
   const [copiedData, setCopiedData] = React.useState("");
   // console.log(pings);
 
@@ -35,8 +35,8 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
       field: "district",
       headerName: "District",
       flex: 0.7,
-      valueGetter: (params) => {
-        return params?.districtName || "N/A";
+      valueGetter: (value, row) => {
+        return row?.branchName?.district?.districtName || "N/A";
       },
     },
     { field: "cbsAccount", headerName: "CBS Account", flex: 0.8 },
@@ -48,14 +48,31 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
     { field: "createdAt", headerName: "CreatedAt", flex: 0.5, 
       valueFormatter: (value) => {
         if (!value) return "";
-        return new Date(value).toLocaleString("en-US", { month: "short" });
+        const date = new Date(value);
+        return date.toLocaleString("en-US", 
+          { 
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit", 
+          });
       },
     },
     { field: "updatedAt", headerName: "UpdatedAt", flex: 0.5,
        valueFormatter: (value) => {
         if (!value) return "";
         const date = new Date(value);
-        return date.toLocaleString("en-US", { month: "short" });
+        return date.toLocaleString("en-US", 
+          { 
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit", 
+          });
       },
     },
     // // ip_terminal_id
@@ -104,7 +121,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
             alignItems: "center",
           }}
         >
-          {!isRelocated && (
+          {!isRelocated && permissions?.includes("edit_terminal") && (
             <Tooltip title="Edit Terminal">
               <IconButton
                 color="primary"
@@ -119,17 +136,19 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
               </IconButton>
             </Tooltip>
           )}
-          <Tooltip title="View Terminal">
-            <IconButton
-              color="primary"
-              size="small"
-              onClick={() =>
-                navigate("/viewdetail", { state: { row: params.row } })
-              }
-            >
-              <Preview />
-            </IconButton>
-          </Tooltip>
+          {permissions?.includes("view_terminal_detail") &&
+            <Tooltip title="View Terminal">
+              <IconButton
+                color="primary"
+                size="small"
+                onClick={() =>
+                  navigate("/viewdetail", { state: { row: params.row } })
+                }
+              >
+                <Preview />
+              </IconButton>
+            </Tooltip>
+          }
           {/* <Tooltip title="Copy Terminal Information">
             <IconButton
               color="primary"
@@ -139,7 +158,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
               <ContentCopy />
             </IconButton>
           </Tooltip> */}
-          {!isRelocated && (
+          {!isRelocated && permissions?.includes("generate_terminal_config") && (
             <Tooltip title="Generate Config">
               <IconButton
                 color="primary"

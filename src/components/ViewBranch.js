@@ -19,7 +19,7 @@ export default function ViewBranch() {
   const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchText, setSearchText] = useState(""); // State for search input
+  const [searchText, setSearchText] = useState("");
 
   const fetchRows = async () => {
     const token = localStorage.getItem("token");

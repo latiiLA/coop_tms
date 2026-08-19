@@ -160,9 +160,8 @@ const RequestPOS = () => {
       .max(13, "CBS Account is long. it must be at least 13 characters"),
     serviceNumber: Yup.string()
       .required("Service number should is required")
-      .matches(phoneRegExp, "Phone number must be 9 digits")
-      .min(9, "Service number is short. it must be 9 digits")
-      .max(9, "Service number is long. it must be 9 digits"),
+      .min(9, "Service number is short. it must be minimum of 9 digits")
+      .max(13, "Service number is long. it must be maximum of 13 digits"),
     businessType: Yup.string().required("Business type is required"),
     staticIp: Yup.string()
       .required("IP Address is required")

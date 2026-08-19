@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, InputAdornment, TextField, Typography } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -102,6 +102,22 @@ const ViewBugs = () => {
   }
   return (
     <Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 2,
+          margin: 1,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ height: "100%", marginTop: "auto" }}
+          gutterBottom
+        >
+          Bug Reports
+        </Typography>
+      </Box>
       <Box
         sx={{
           "& .super-app-theme--header": {

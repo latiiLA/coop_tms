@@ -5,9 +5,6 @@ import { BrowserRouter as Router } from "react-router-dom";
 import "./index.css";
 import { ThemeProvider } from "./context/ThemeProvider";
 import { AuthContextProvider } from "./context/AuthContext";
-import demoTheme from "./DarkMode/customTheme";
-import customTheme from "./DarkMode/customTheme";
-import { darkTheme } from "./context/Themes";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -18,7 +15,7 @@ if (process.env.REACT_APP_NODE_ENV === "production") {
 root.render(
   <Router>
     <AuthContextProvider>
-      <ThemeProvider theme={customTheme}>
+      <ThemeProvider>
         <App />
       </ThemeProvider>
     </AuthContextProvider>

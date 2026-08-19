@@ -47,6 +47,10 @@ import {
   Cancel,
   RemoveDone,
   SaveAlt,
+  PasswordOutlined,
+  Key,
+  Security,
+  FolderTwoTone,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 // import { TbStatusChange } from "react-icons/tb";
@@ -57,251 +61,117 @@ const NAVIGATION = [
   {
     kind: "header",
     title: "Main items",
-    roles: ["superadmin", "admin", "user", "posuser", "posauthorizer"],
   },
   {
     segment: "dashboard",
     title: "ATM Dashboard",
     icon: <DashboardIcon />,
-    roles: ["superadmin", "admin", "user"],
   },
   {
     segment: "posdashboard",
     title: "POS Dashboard",
     icon: <DashboardIcon />,
-    roles: ["superadmin", "admin", "posuser", "user", "posauthorizer"],
   },
   {
     segment: "links",
     title: "Links",
     icon: <Link />,
-    roles: ["superadmin", "admin", "user"],
   },
   {
     segment: "reports",
     title: "Reports",
     icon: <BarChartIcon />,
-    roles: ["superadmin", "admin", "user"],
     children: [
       {
         segment: "generalreport",
         title: "Terminal Report",
         icon: <SummarizeOutlined />,
-        roles: ["admin", "user"],
+      },
+      {
+        segment: "posreports",
+        title: "POS Reports",
+        icon: <BarChartIcon />,
       },
     ],
   },
   {
-    segment: "posreports",
-    title: "POS Reports",
-    icon: <BarChartIcon />,
-    roles: ["superadmin", "admin", "user", "posuser", "posauthorizer"],
-  },
-
-  {
     kind: "divider",
-    roles: ["superadmin", "admin"],
-  },
-  {
-    kind: "divider",
-    roles: ["user"],
-  },
-  {
-    kind: "header",
-    title: "Terminal Items",
-    roles: ["user"],
-  },
-  {
-    segment: "view",
-    title: "Explore Terminals",
-    icon: <Explore />,
-    roles: ["user"],
-  },
-  {
-    segment: "relocatedterminal",
-    title: "Relocated Terminals",
-    icon: <MoveDown />,
-    roles: ["user"],
-  },
-  {
-    kind: "divider",
-    roles: ["user"],
-  },
-  {
-    kind: "header",
-    title: "POS items",
-    roles: ["user"],
-  },
-  {
-    segment: "explorepos",
-    title: "Explore POS",
-    icon: <Folder />,
-    roles: ["user"],
-  },
-  {
-    kind: "divider",
-    roles: ["user"],
-  },
-
-  {
-    kind: "header",
-    title: "Requests",
-    roles: ["posuser", "posauthorizer"],
-  },
-  {
-    segment: "request",
-    title: "POS Requests",
-    icon: <PointOfSale />,
-    roles: ["posuser"],
-    children: [
-      {
-        segment: "request",
-        title: "Request POS",
-        icon: <Add />,
-      },
-      // {
-      //   segment: "bulkrequest",
-      //   title: "Bulk POS Request",
-      //   icon: <List />,
-      // },
-      {
-        segment: "viewpos",
-        title: "Explore POS",
-        icon: <Explore />,
-      },
-      // {
-      //   segment: "relocate",
-      //   title: "Relocate POS",
-      //   icon: <TbStatusChange />,
-      // },
-      {
-        segment: "requeststatus",
-        title: "Request Status",
-        icon: <ChangeCircle />,
-      },
-      {
-        segment: "rejectedrequests",
-        title: "Rejected Requests",
-        icon: <RemoveDone />,
-      },
-      {
-        segment: "relocationrequests",
-        title: "Relocation Requests",
-        icon: <AirlineStops />,
-      },
-      {
-        segment: "deletedrequests",
-        title: "Deleted Requests",
-        icon: <Cancel />,
-      },
-      {
-        segment: "relocatedpos",
-        title: "Relocated POS",
-        icon: <MoveDown />,
-      },
-    ],
-  },
-  {
-    segment: "request",
-    title: "POS Requests",
-    icon: <PointOfSale />,
-    roles: ["posauthorizer"],
-    children: [
-      {
-        segment: "sendrequests",
-        title: "Approve Requests",
-        icon: <ApprovalRounded />,
-      },
-      {
-        segment: "viewpos",
-        title: "Explore POS",
-        icon: <Explore />,
-      },
-      {
-        segment: "relocatedpos",
-        title: "Relocated POS",
-        icon: <MoveDown />,
-      },
-      {
-        segment: "requeststatus",
-        title: "Request Status",
-        icon: <ChangeCircle />,
-      },
-      {
-        segment: "relocationrequests",
-        title: "Relocation Requests",
-        icon: <AirlineStops />,
-      },
-    ],
   },
   {
     kind: "header",
     title: "Administrations",
-    roles: ["superadmin", "admin"],
+    permission: "view_terminal",
   },
   {
     segment: "atm",
     title: "ATM Administration",
     icon: <Atm />,
-    roles: ["superadmin", "admin"],
+    permission: "atm",
     children: [
       {
         segment: "add",
         title: "Create ATM",
+        permission: "create_terminal",
         icon: <Add />,
       },
-
       {
         segment: "manageterminal",
         title: "Manage ATM",
+        permission: "view_terminal",
         icon: <ManageSearch />,
       },
       {
         segment: "relocatedterminal",
         title: "Relocated ATM",
+        permission: "view_relocated_terminal",
         icon: <MoveDown />,
       },
       {
         segment: "viewports",
         title: "Manage Port",
+        permission: "view_port",
         icon: <SettingsInputComponent />,
       },
       {
         segment: "viewbranch",
         title: "Branch Code",
+        permission: "view_branch",
         icon: <DescriptionIcon />,
       },
-
       {
         segment: "viewcommands",
         title: "Explore Commands",
+        permission: "view_command",
         icon: <Bookmark />,
       },
-
       {
         segment: "command",
         title: "Create Commands",
+        permission: "create_command",
         icon: <BookmarkAdd />,
       },
       {
         segment: "adddistrict",
         title: "Add District",
+        permission: "create_district",
         icon: <DescriptionIcon />,
       },
-
       {
         segment: "addbranch",
         title: "Add Branch",
+        permission: "create_branch",
         icon: <DescriptionIcon />,
       },
       {
         segment: "ports",
         title: "Create Port",
+        permission: "create_port",
         icon: <GroupWork />,
       },
       {
         segment: "viewdistrict",
         title: "Explore District",
+        permission: "view_district",
         icon: <DescriptionIcon />,
       },
     ],
@@ -309,176 +179,266 @@ const NAVIGATION = [
   {
     segment: "pos",
     title: "POS Administration",
+    permission: "pos",
     icon: <PointOfSale />,
-    roles: ["superadmin", "admin"],
     children: [
       {
         segment: "addpos",
         title: "Create POS",
+        permission: "create_pos",
         icon: <ControlPointDuplicate />,
       },
       {
         segment: "managepos",
         title: "Manage POS",
+        permission: "view_pos",
         icon: <Folder />,
       },
       {
         segment: "relocatedpos",
         title: "Relocated POS",
+        permission: "view_relocated_pos",
         icon: <MoveDown />,
-      },
-
-      {
-        segment: "requests",
-        title: "New POS Requests",
-        icon: <TrackChanges />,
-      },
-
-      {
-        segment: "authorizedrequests",
-        title: "All POS Requests",
-        icon: <ChangeCircle />,
-      },
-      {
-        segment: "relocationrequests",
-        title: "Relocation Requests",
-        icon: <AirlineStops />,
       },
       {
         segment: "masconfig",
         title: "MAS Config",
+        permission: "mas_config",
         icon: <SaveAlt />,
       },
       {
         segment: "devices",
         title: "POS Devices",
+        permission: "view_device",
         icon: <DeviceHub />,
       },
     ],
   },
-
   {
     segment: "administration",
     title: "System Administration",
+    permission: "administration",
     icon: <AdminPanelSettings />,
-    roles: ["superadmin"],
     children: [
       {
         segment: "createuser",
         title: "Create User",
+        permission: "create_user",
         icon: <PersonAdd />,
       },
       {
         segment: "manageuser",
         title: "Manage User",
+        permission: "manage_user",
         icon: <ManageAccounts />,
       },
       {
         segment: "viewfeedback",
         title: "Explore Feedback",
+        permission: "view_feedback",
         icon: <Feedback />,
       },
       {
         segment: "viewbug",
         title: "Explore Bug",
+        permission: "view_bug",
         icon: <BugReport />,
       },
       {
         segment: "analytics",
         title: "Analytics",
+        permission: "analytics",
         icon: <Analytics />,
       },
       {
         segment: "activitylog",
         title: "Activity Log",
+        permission: "activity_log",
         icon: <LocalActivity />,
       },
     ],
   },
   {
     kind: "divider",
-    roles: ["superadmin"],
+    permission: "view_request",
+  },
+  {
+    kind: "header",
+    title: "POS Requests",
+    permission: "view_request",
+  },
+  {
+    segment: "request",
+    title: "POS Requests",
+    permission: "request",
+    icon: <PointOfSale />,
+    children: [
+      {
+        segment: "request",
+        title: "Request POS",
+        permission: "request_pos",
+        icon: <Add />,
+      },
+      // {
+      //   segment: "bulkrequest",
+      //   title: "Bulk POS Request",
+      //   icon: <List />,
+      // },
+      // {
+      //   segment: "relocate",
+      //   title: "Relocate POS",
+      //   icon: <TbStatusChange />,
+      // },
+      {
+        segment: "requests",
+        title: "New POS Requests",
+        permission: "view_new_pos_request",
+        icon: <TrackChanges />,
+      },
+      {
+        segment: "sendrequests",
+        title: "Authorize Requests",
+        permission: "send_request",
+        icon: <ApprovalRounded />,
+      },
+      {
+        segment: "authorizedrequests",
+        title: "All Requests",
+        permission: "view_authorized_request",
+        icon: <FolderTwoTone />,
+      },
+      {
+        segment: "relocationrequests",
+        title: "Relocation Requests",
+        permission: "view_relocation_request",
+        icon: <AirlineStops />,
+      },
+      {
+        segment: "requeststatus",
+        title: "Request Status",
+        permission: "view_request_status",
+        icon: <ChangeCircle />,
+      },
+      {
+        segment: "rejectedrequests",
+        title: "Rejected Requests",
+        permission: "view_rejected_request",
+        icon: <RemoveDone />,
+      },
+      {
+        segment: "deletedrequests",
+        title: "Deleted Requests",
+        permission: "view_deleted_request",
+        icon: <Cancel />,
+      },
+    ],
+  },
+  {
+    kind: "divider",
+    permission: "view_password_entry"
+  },
+  {
+    kind: "header",
+    title: "Password Manager",
+    permission: "view_password_entry"
+  },
+  {
+    segment: "password",
+    title: "Password Manager",
+    permission: "password",
+    icon: <Security />,
+    children: [
+      {
+        segment: "entry",
+        title: "Password Entry",
+        permission: "create_password_entry",
+        icon: <Key />,
+      },
+      {
+        segment: "vault",
+        title: "Password Vault",
+        permission: "view_password_entry",
+        icon: <PasswordOutlined />,
+      },
+    ]
+  },
+  {
+    kind: "divider",
+    permission: "view_system_manual",
   },
   {
     kind: "header",
     title: "Manual",
-    roles: ["superadmin", "admin", "posuser"],
+    permission: "view_system_manual",
   },
   {
     segment: "manual",
     title: "Manual",
+    permission: "manual",
     icon: <IntegrationInstructions />,
-    roles: ["superadmin", "admin"],
     children: [
       {
         segment: "systemmanual",
         title: "System Manual",
+        permission: "view_system_manual",
         icon: <DescriptionIcon />,
       },
       {
         segment: "atmcreationmanual",
         title: "ATM Creation Manual",
+        permission: "view_atm_creation_manual",
         icon: <DescriptionIcon />,
       },
-
       {
         segment: "poscreationmanual",
         title: "POS Creation Manual",
+        permission: "view_pos_creation_manual",
         icon: <DescriptionIcon />,
       },
       {
         segment: "cbslinkmanual",
         title: "CBS Account Link Manual",
+        permission: "view_cbs_account_link_manual",
         icon: <DescriptionIcon />,
       },
-    ],
-  },
-  {
-    segment: "usermanual",
-    title: "User Manual",
-    icon: <IntegrationInstructions />,
-    roles: ["posuser", "posauthorizer"],
-    children: [
-      {
+       {
         segment: "merchantguide",
         title: "POS Merchant Guide",
+        permission: "view_merchant_guide",
         icon: <DescriptionIcon />,
       },
       {
         segment: "branchguide",
         title: "POS Branch Manual",
+        permission: "view_branch_guide",
         icon: <DescriptionIcon />,
       },
     ],
   },
-  //   {
-  //     segment: "integrations",
-  //     title: "Integrations",
-  //     icon: <LayersIcon />,
-  //   },
-
   {
     kind: "divider",
-    roles: ["superadmin", "admin", "posuser", "posauthorizer"],
+    permission: "user_profile"
   },
   {
     kind: "header",
     title: "Settings",
-    roles: ["superadmin", "admin", "posuser", "posauthorizer", "user"],
+    permission: "user_profile"
   },
   {
     segment: "settings",
     title: "Settings",
+    permission: "setting",
     icon: <SettingsApplications />,
-    roles: ["superadmin", "admin", "posuser", "posauthorizer", "user"],
     children: [
       {
         segment: "profile",
         title: "Profile",
+        permission: "user_profile",
         icon: <Person2 />,
       },
       {
         segment: "changepassword",
+        permission: "change_password",
         title: "Change Password",
         icon: <Password />,
       },
@@ -503,16 +463,74 @@ const defaultTheme = createTheme();
 function SideDashboard(props) {
   // const { theme, toggleTheme } = use;
   const navigate = useNavigate();
-  const { role, currentUser } = useAuthContext();
+  const { role, permissions, currentUser } = useAuthContext();
 
-  // Filter navigation items based on roles
-  const filteredNavigation = NAVIGATION.filter((item) => {
-    if (item.roles) {
-      return item.roles.includes(role);
-    }
-    // If no `roles` property, include the item by default
-    return item.roles.includes("user");
-  });
+  // Filter navigation items based on permissions
+  const hasPermission = (permissions, permission) => {
+    return permissions?.includes(permission);
+  };
+
+  const filterNavigation = (items, permissions) => {
+    return items
+      .map((item) => {
+        // Divider/header doesn't require permission
+        if (!item.permission && !item.children) {
+          return item;
+        }
+
+        // Filter children
+        if (item.children) {
+          const filteredChildren = filterNavigation(
+            item.children,
+            permissions
+          );
+
+          // If the parent itself has permission,
+          // or at least one child is accessible,
+          // keep the parent.
+          if (
+            (!item.permission ||
+              hasPermission(permissions, item.permission)) &&
+            filteredChildren.length > 0
+          ) {
+            return {
+              ...item,
+              children: filteredChildren,
+            };
+          }
+
+          if (filteredChildren.length > 0) {
+            return {
+              ...item,
+              children: filteredChildren,
+            };
+          }
+
+          // Parent has no accessible children
+          // and no own permission
+          if (!item.permission) {
+            return null;
+          }
+        }
+
+        // Normal item
+        if (
+          !item.permission ||
+          hasPermission(permissions, item.permission)
+        ) {
+          return item;
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+  };
+
+  const filteredNavigation = filterNavigation(
+    NAVIGATION,
+    permissions
+  );
+
   const initialRoute = window.location.pathname || "/home";
   const router = useDemoRouter(initialRoute);
   // console.log("router", router.pathname);

@@ -1,21 +1,38 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { CopyAll } from "@mui/icons-material";
+import { CopyAll, Search } from "@mui/icons-material";
 import toast from "react-hot-toast";
-
-// Mock function for demonstration
-async function fetchRows() {
-  const apiUrl = process.env.REACT_APP_API_URL;
-  const response = await axios.get(`${apiUrl}/command/getCommand`); // Replace with your actual API endpoint
-  return response.data.commands; // Adjust this line based on your JSON structure
-}
+import { useNavigate } from "react-router-dom";
 
 export default function Commands({ role = "admin" }) {
   const [data_rows, setDataRows] = useState([]);
   const [edited, setEdited] = useState({});
+  const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate()
+
+  const fetchRows = async () => {
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      // console.error("No authentication token found");
+      toast.error("User is not authenticated");
+      navigate("/home");
+      return;
+    }
+
+    const response = await axios.get(`${apiUrl}/command/getCommand`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+    return response.data.commands;
+  }
 
   const handleCopy = (rowData) => {
     // Format the row data into a string
@@ -126,8 +143,52 @@ export default function Commands({ role = "admin" }) {
         ? allColumns
         : allColumns.filter((col) => col.field !== "actions");
 
+  const filteredRows = rows.filter((row) => {
+    // Perform case-insensitive search in all text fields
+    const searchLower = searchText.toLowerCase();
+    return (
+      row.command.toLowerCase().includes(searchLower) ||
+      row.description.toLowerCase().includes(searchLower) ||
+      row.example.toLowerCase().includes(searchLower)
+    );
+  });
+
+  const handleSearchChange = (event) => {
+    setSearchText(event.target.value);
+  };
+
   return (
     <Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 2,
+          margin: 1,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ height: "100%", marginTop: "auto" }}
+          gutterBottom
+        >
+          Commands
+        </Typography>
+        <TextField
+          label="Search"
+          value={searchText}
+          onChange={handleSearchChange}
+          variant="outlined"
+          size="small"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
       <Box
         sx={{
           width: "auto",
@@ -141,7 +202,7 @@ export default function Commands({ role = "admin" }) {
         }}
       >
         <DataGrid
-          rows={rows}
+          rows={filteredRows}
           columns={columns}
           getRowId={(row) => row._id}
           initialState={{

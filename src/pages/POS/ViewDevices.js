@@ -124,7 +124,7 @@ export default function ViewDevices() {
             alignItems: "center",
           }}
         >
-          <Tooltip title="Copy Branch Code">
+          <Tooltip title="Copy Serial Number">
             <IconButton
               color="primary"
               size="small"

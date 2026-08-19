@@ -89,33 +89,40 @@ export default function ViewTerminal() {
 
   // Filtered rows
   let filteredRows = rows
-    .filter((row) =>
-      Object.keys(row).some((key) => {
-        if (key === "branchName") {
-          return String(row[key]?.companyName)
+    .filter((row) => {
+      const search = searchText.toLowerCase();
+
+      return (
+        String(row.branchName?.companyName || "")
+          .toLowerCase()
+          .includes(search) ||
+        String(row.branchName?.district?.districtName || "")
+          .toLowerCase()
+          .includes(search) ||
+        Object.keys(row).some((key) => {
+          if (key === "branchName") {
+            return false;
+          }
+
+          return String(row[key] || "")
             .toLowerCase()
-            .includes(searchText.toLowerCase());
-        } else if (key === "district") {
-          return String(row[key]?.districtName)
-            .toLowerCase()
-            .includes(searchText.toLowerCase());
-        } else {
-          return String(row[key])
-            .toLowerCase()
-            .includes(searchText.toLowerCase());
-        }
-      })
-    )
+            .includes(search);
+        })
+      );
+    })
     .sort((a, b) => {
-      // First sort by type (CRM should come first)
       if (a.type !== b.type) {
         return a.type.localeCompare(b.type);
       }
-      // Sort by unitId numerically or by localeCompare for strings
-      if (typeof a.unitId === "string" && typeof b.unitId === "string") {
+
+      if (
+        typeof a.unitId === "string" &&
+        typeof b.unitId === "string"
+      ) {
         return a.unitId.localeCompare(b.unitId);
       }
-      return (a.unitId || 0) - (b.unitId || 0); // Handle cases where unitId might be missing or non-numeric
+
+      return (a.unitId || 0) - (b.unitId || 0);
     });
 
   // console.log(filteredRows);

@@ -32,6 +32,8 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import coop from "../assets/coop.gif";
 import customTheme from "../DarkMode/customTheme";
 import { Lock, Person } from "@mui/icons-material";
+import { jwtDecode } from "jwt-decode";
+import { AppProvider } from "@toolpad/core/AppProvider";
 
 const Login = () => {
   const INITIAL_FORM_STATE = {
@@ -47,7 +49,7 @@ const Login = () => {
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
-  const { setRole } = useAuthContext();
+  const { setRole, setPermissions, setCurrentUser } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -59,9 +61,9 @@ const Login = () => {
 
   const handleSubmit = async (user_data) => {
     const apiUrl = process.env.REACT_APP_API_URL;
-    // console.log(apiUrl);
 
     setLoading(true);
+
     try {
       const response = await axios.post(`${apiUrl}/auth/loginUser`, {
         username: user_data.username,
@@ -70,28 +72,56 @@ const Login = () => {
 
       const data = response.data;
 
-      if (data.error) {
-        throw new Error(data.error);
+      if (!data.token) {
+        throw new Error("Authentication token was not returned.");
       }
 
-      const token = response.data.token;
-      localStorage.setItem("token", token);
-      setRole(data.data.role);
-      // console.log("role in login", data.data.role);
+      const token = data.token;
 
-      if (data.data.status === "New") {
-        // window.history.back();
+      // Store only the JWT
+      localStorage.setItem("token", token);
+
+      // Decode JWT for frontend state
+      const decoded = jwtDecode(token);
+
+      const user = {
+        id: decoded.user.id,
+        role: decoded.role,
+        status: decoded.user.status,
+        firstName: decoded.user.firstName,
+        fatherName: decoded.user.fatherName,
+        username: decoded.user.username,
+        permissions: decoded.permissions || [],
+      };
+
+      // Update AuthContext
+      setCurrentUser(user);
+      setRole(user.role);
+      setPermissions(user.permissions);
+
+      console.log("Logged in user:", user);
+      console.log("Role:", user.role);
+      console.log("Permissions:", user.permissions);
+
+      if (user.status === "New") {
         navigate("/changepassword");
       } else {
-        // window.history.back();
         navigate("/home");
       }
     } catch (error) {
-      // console.error("Error logging in:", error);
+      console.error("Login error:", error);
+
       toast.error(
-        `Login Error: ${error.response?.data?.message || error.message}`
+        `Login Error: ${
+          error.response?.data?.message || error.message
+        }`
       );
+
+      setCurrentUser(null);
       setRole(null);
+      setPermissions([]);
+
+      localStorage.removeItem("token");
     } finally {
       setLoading(false);
     }
@@ -102,8 +132,8 @@ const Login = () => {
   }
 
   return (
-    <ThemeProvider theme={customTheme}>
-      <Grid container spacing={2}>
+     <AppProvider>
+        <Grid container spacing={2}>
         <Grid item xs={12}>
           <Box
             sx={{
@@ -401,8 +431,8 @@ const Login = () => {
             )}
           </Box>
         </Grid>
-      </Grid>
-    </ThemeProvider>
+        </Grid>
+      </AppProvider>
   );
 };
 

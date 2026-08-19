@@ -103,6 +103,22 @@ const ViewFeedback = () => {
     <Box>
       <Box
         sx={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 2,
+          margin: 1,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ height: "100%", marginTop: "auto" }}
+          gutterBottom
+        >
+          Feedbacks
+        </Typography>
+      </Box>
+      <Box
+        sx={{
           width: "auto",
           "& .super-app-theme--header": {
             backgroundColor: "#0693e3",
