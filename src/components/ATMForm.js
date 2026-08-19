@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { atm_types, atm_status, sites } from "./DropDownFormData";
 import { CustomSelect, CustomTextField } from "./CustomFields";
+import { useAuthContext } from "../context/AuthContext";
 
 const fetchAvailablePorts = async (
   portSiteAssignment,
@@ -46,6 +47,8 @@ const ATMForm = ({
     cbsAccount: "",
     port: "",
     ipAddress: "",
+    relocatedTo: "",
+    remark: ""
   },
   onSubmit,
   isEdit,
@@ -55,8 +58,9 @@ const ATMForm = ({
   const [districts, setDistricts] = useState([]);
   const [branches, setBranches] = useState([]);
   const [selectedDistrict, setSelectedDistrict] = useState(
-    initialValues?.district?._id || ""
+    initialValues?.branchName?.district?._id || ""
   );
+  const { role, permissions } = useAuthContext();
   const navigate = useNavigate();
 
   const [availablePorts, setAvailablePorts] = useState([]);
@@ -79,6 +83,8 @@ const ATMForm = ({
       "Port must be a valid selection",
       (value) => availablePorts.includes(value)
     ),
+    relocatedTo: Yup.string(),
+    remark: Yup.string(),
     ipAddress: Yup.string()
       .required("IP Address is required")
       .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -222,7 +228,7 @@ const ATMForm = ({
           initialValues={{
             ...initialValues,
             branchName: initialValues?.branchName?._id,
-            district: initialValues?.district?._id,
+            district: initialValues?.branchName?.district?._id,
           }}
           validationSchema={FORM_VALIDATION}
           onSubmit={onSubmit}
@@ -282,6 +288,11 @@ const ATMForm = ({
                       }}
                       disabled={branches.length === 0}
                     />
+                    {isEdit && permissions?.includes("edit_terminal") &&(
+                      <>
+                        <CustomTextField name="remark" label="Remark" />
+                      </>
+                    )}
                   </Box>
                   <Box
                     sx={{
@@ -297,20 +308,20 @@ const ATMForm = ({
                       options={sites}
                       onChange={(e) => {
                         setSelectedSite(e.target.value);
-                        setAvailablePorts([]); // Clear ports on site change
+                        setAvailablePorts([]);
                         handleChange(e);
                         validateForm();
                       }}
                     />
-                    <CustomTextField
+                    {/* <CustomTextField
                       name="prevport"
                       label="Previous Port"
                       value={initialValues.port || "No previous port"}
                       disabled
-                    />
+                    /> */}
                     <CustomSelect
                       name="port"
-                      label="UpdatePort"
+                      label="Port"
                       options={availablePorts.map((port) => ({
                         value: port,
                         label: port.toString(),
@@ -337,6 +348,12 @@ const ATMForm = ({
                         options={atm_status}
                       />
                     )}
+                    {isEdit && permissions?.includes("edit_terminal") &&(
+                      <>
+                        <CustomTextField name="relocatedTo" label="Relocated To" />
+                      </>
+                    )}
+                    
                   </Box>
                 </Box>
               </Box>
@@ -357,7 +374,7 @@ const ATMForm = ({
                   {isEdit ? "Update" : "Submit"}
                 </Button>
                 {isEdit && (
-                  <Button onClick={() => navigate("/view")}>
+                  <Button onClick={() => navigate("/atm/manageterminal")}>
                     View Terminals
                   </Button>
                 )}

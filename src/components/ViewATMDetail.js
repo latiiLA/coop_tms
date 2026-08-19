@@ -1,7 +1,8 @@
 import { Box, Button, Card, TextField, Typography } from "@mui/material";
 
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { CustomSelect } from "./CustomFields";
 
 const ViewATMDetail = () => {
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.district.districtName}
+            defaultValue={row?.branchName?.district?.districtName}
           />
           <TextField
             name="branchName"
@@ -103,7 +104,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.branchName.companyName}
+            defaultValue={row?.branchName?.companyName}
           />
 
           <TextField
@@ -115,6 +116,16 @@ const ViewATMDetail = () => {
               readOnly: true,
             }}
             defaultValue={row.site}
+          />
+          <TextField
+            name="remark"
+            label="Remark"
+            variant="outlined"
+            fullWidth
+            InputProps={{
+              readOnly: true,
+            }}
+            defaultValue={row.remark}
           />
         </Box>
         <Box
@@ -228,6 +239,16 @@ const ViewATMDetail = () => {
               readOnly: true,
             }}
             defaultValue={row.status}
+          />
+          <TextField
+            name="relocatedTo"
+            label="Relocated To"
+            variant="outlined"
+            fullWidth
+            InputProps={{
+              readOnly: true,
+            }}
+            defaultValue={row.relocatedTo}
           />
         </Box>
       </Card>
