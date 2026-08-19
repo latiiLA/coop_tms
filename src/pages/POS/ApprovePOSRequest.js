@@ -19,7 +19,7 @@ const ApprovePOSRequest = () => {
   const [districts, setDistricts] = useState([]);
   const [branches, setBranches] = useState([]);
   const [selectedDistrict, setSelectedDistrict] = useState(
-    row?.district?._id || ""
+    row?.branchName?.district?._id || ""
   );
   const [isRejecting, setIsRejecting] = useState(false);
 
@@ -264,7 +264,7 @@ const ApprovePOSRequest = () => {
             initialValues={{
               ...row,
               branchName: row?.branchName?._id,
-              district: row?.district?._id,
+              district: row?.branchName?.district?._id,
               serialNumber: row?.serialNumber?._id,
               terminalId: "",
               merchantId: "",

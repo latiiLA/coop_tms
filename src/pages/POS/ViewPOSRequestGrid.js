@@ -37,7 +37,8 @@ const ViewPOSRequestGrid = ({
 
   useEffect(() => {
     setRowsState(initialRows);
-  }, [initialRows]);
+  }, []);
+  
   // console.log(pings);
   const columns = [
     // { field: "id", headerName: "No", type: "number", width: 10 },
@@ -259,6 +260,7 @@ const ViewPOSRequestGrid = ({
   };
 
   const handleSend = async (rows) => {
+    setLoading(true)
     if (rows.length === 0) {
       toast.error("There is no request to be authorized!");
       return;
@@ -291,6 +293,7 @@ const ViewPOSRequestGrid = ({
       toast.success(response.data.message);
       setRowsState([]);
     } catch (error) {
+      setLoading(false)
       toast.error(
         error.response?.data?.message || error.message || "Something went wrong"
       );
@@ -368,10 +371,11 @@ const ViewPOSRequestGrid = ({
             justifyContent: "center",
             alignItems: "center",
           }}
+          loading={loading}
           onClick={() => handleSend(rowsState)}
         >
           <LoadingButton variant="contained">
-            Approve and Send All Requests
+            {loading ? "Processing..." : "Approve and Send All Requests"}
           </LoadingButton>
         </Box>
       )}
