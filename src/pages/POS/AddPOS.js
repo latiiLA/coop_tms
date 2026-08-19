@@ -21,6 +21,7 @@ import ComboBox from "../../components/ComboBox";
 const AddPOS = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [districts, setDistricts] = useState([]);
   const [branches, setBranches] = useState([]);
@@ -81,9 +82,8 @@ const AddPOS = () => {
       .min(13, "CBS Account must be at least 13 characters"),
     serviceNumber: Yup.string()
       .required("Service number is required")
-      .matches(phoneRegExp, "Phone number must be 9 digits")
-      .min(9, "Service number is short. it must be 9 digits")
-      .max(9, "Service number is long. it must be 9 digits"),
+      .min(9, "Service number is short. it must be minimum of 9 digits")
+      .max(13, "Service number is long. it must be maximim of 13 digits"),
     businessType: Yup.string()
       .required("Business type is required"),
     staticIp: Yup.string()
@@ -100,7 +100,7 @@ const AddPOS = () => {
   });
 
   const handleSubmit = async (values, { resetForm }) => {
-    setLoading(true);
+    setSubmitLoading(true);
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem("token");
 
@@ -144,7 +144,7 @@ const AddPOS = () => {
       );
     } finally {
       // setSubmitting(false);
-      setLoading(false);
+      setSubmitLoading(false);
     }
   };
 
@@ -249,14 +249,7 @@ const AddPOS = () => {
             onSubmit={handleSubmit}
             validateOnMount
           >
-            {({
-              isValid,
-              errors,
-              touched,
-              resetForm,
-              validateForm,
-              handleChange,
-            }) => (
+            {({ isValid, errors, resetForm, validateForm, handleChange, setFieldValue }) => (
               <Form>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   <Typography variant="h5" sx={{ textAlign: "center" }}>
@@ -517,7 +510,7 @@ const AddPOS = () => {
                   }}
                 >
                   <LoadingButton
-                    loading={loading}
+                    loading={submitLoading}
                     type="submit"
                     variant="contained"
                     color="primary"
