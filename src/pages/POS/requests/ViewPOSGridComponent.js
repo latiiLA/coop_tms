@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  TextField,
   Tooltip,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -46,7 +47,12 @@ const ViewPOSGridComponent = ({
   const [loading, setLoading] = useState(false);
   const [copiedData, setCopiedData] = React.useState("");
 
-  const { role } = useAuthContext();
+  // dialog box for config version
+  const [configDialogOpen, setConfigDialogOpen] = useState(false);
+  const [configVersion, setConfigVersion] = useState("0002");
+  const [selectedConfigData, setSelectedConfigData] = useState(null);
+
+  const { role, permissions } = useAuthContext();
   // console.log(pings);
   const columns = [
     {
@@ -63,7 +69,7 @@ const ViewPOSGridComponent = ({
     { field: "merchantName", headerName: "Merchant Name", flex: 1 },
     { field: "site", headerName: "Site", flex: 0.5 },
     { field: "merchantAddress", headerName: "Address", flex: 0.5 },
-    { field: "posCbsAccount", headerName: "CBS Account", flex: 0.8 },
+    { field: "posCbsAccount", headerName: "CBS Account", flex: 0.5 },
     { field: "serviceNumber", headerName: "Service Number", flex: 0.6 },
     { field: "staticIp", headerName: "IP Address", flex: 0.8 },
     { field: "status", headerName: "Status", flex: 0.5 },
@@ -71,12 +77,12 @@ const ViewPOSGridComponent = ({
       field: "district",
       headerName: "District",
       flex: 0.5,
-      valueGetter: (params) => params?.districtName || "N/A",
+      valueGetter: (value, row) => row?.branchName?.district?.districtName || "N/A",
     },
     {
       field: "branchName",
       headerName: "Branch Name",
-      flex: 1,
+      flex: 0.5,
       valueGetter: (params) => params?.companyName || "N/A",
     },
     {
@@ -84,139 +90,116 @@ const ViewPOSGridComponent = ({
       headerName: "Created At",
       flex: 0.5,
     },
-    {
-      field: "updatedAt",
-      headerName: "Updated At",
-      flex: 0.5,
-    },
-    // Actions Column (Still using renderCell because it involves buttons)
-    ...(!isRelocated
-      ? [
-          {
-            field: "actions",
-            headerName: "Actions",
-            flex: 1,
-            renderCell: (params) => (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-around",
-                  width: "100%",
-                  height: "100%",
-                  margin: "auto",
-                  alignItems: "center",
-                }}
-              >
-                {!isRelocated && (
-                  <Tooltip title="Edit POS">
-                    <Box>
-                      <IconButton
-                        color="primary"
-                        size="small"
-                        disabled={
-                          role === "user" ||
-                          role === "posuser" ||
-                          role === "user" ||
-                          role === "posauthorizer"
-                        }
-                        style={{
-                          display:
-                            role === "user" ||
-                            role === "posuser" ||
-                            role === "posauthorizer"
-                              ? "none"
-                              : "inline-flex",
-                        }}
-                        onClick={() =>
-                          navigate("/editpos", { state: { row: params.row } })
-                        }
-                      >
-                        <Edit />
-                      </IconButton>
-                    </Box>
-                  </Tooltip>
-                )}
-                {detailType && (
-                  <Tooltip Tooltip title="View POS">
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      onClick={() =>
-                        navigate("/requestdetail", {
-                          state: { row: params.row },
-                        })
-                      }
-                    >
-                      <Preview />
-                    </IconButton>
-                  </Tooltip>
-                )}
-                {!detailType && (
-                  <Tooltip title="View POS">
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      onClick={() =>
-                        navigate("/posdetail", {
-                          state: {
-                            isRequest: false,
-                            relocated: false,
-                            row: params.row,
-                          },
-                        })
-                      }
-                    >
-                      <Preview />
-                    </IconButton>
-                  </Tooltip>
-                )}
-                {/* <Tooltip title="Copy POS Information">
+    // {
+    //   field: "updatedAt",
+    //   headerName: "Updated At",
+    //   flex: 0.5,
+    // },
+    // Actions Column    
+      {
+        field: "actions",
+        headerName: "Actions",
+        flex: 1,
+        renderCell: (params) => (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-around",
+              width: "100%",
+              height: "100%",
+              margin: "auto",
+              alignItems: "center",
+            }}
+          >
+            {!isRelocated && permissions?.includes("edit_pos") &&(
+              <Tooltip title="Edit POS">
+                <Box>
                   <IconButton
                     color="primary"
                     size="small"
-                    onClick={() => handleCopy(params.row)}
+                    onClick={() =>
+                      navigate("/editpos", { state: { row: params.row } })
+                    }
                   >
-                    <ContentCopy />
+                    <Edit />
                   </IconButton>
-                </Tooltip> */}
-                {role === "posuser" && (params.row.status === "New" || params.row.status === "Active") && (
-                  <Tooltip title="Stop POS">
-                    <IconButton
-                      sx={{ color: "#ff0000" }}
-                      size="small"
-                      onClick={() => handleRelocate(params.row._id)}
-                    >
-                      <Stop />
-                    </IconButton>
-                  </Tooltip>
-                )}
-                {!isRelocated && (
-                  <Tooltip title="Generate Config">
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      disabled={role === "user"}
-                      style={{
-                        display:
-                          role === "user" ||
-                          role === "posuser" ||
-                          role === "posauthorizer"
-                            ? "none"
-                            : "inline-flex",
-                      }}
-                      onClick={() => handleConfig(params.row)}
-                    >
-                      <GrConfigure />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </Box>
-            ),
-          },
-        ]
-      : []),
-  ];
+                </Box>
+              </Tooltip>
+            )}
+            {!isRelocated && detailType && permissions?.includes("view_request_detail") && (
+              <Tooltip Tooltip title="View Request">
+                <IconButton
+                  color="primary"
+                  size="small"
+                  onClick={() =>
+                    navigate("/requestdetail", {
+                      state: { row: params.row },
+                    })
+                  }
+                >
+                  <Preview />
+                </IconButton>
+              </Tooltip>
+            )}
+            {!detailType && permissions?.includes("view_pos_detail") && (
+              <Tooltip title="View POS">
+                <IconButton
+                  color="primary"
+                  size="small"
+                  onClick={() =>
+                    navigate("/posdetail", {
+                      state: {
+                        isRequest: false,
+                        relocated: false,
+                        row: params.row,
+                      },
+                    })
+                  }
+                >
+                  <Preview />
+                </IconButton>
+              </Tooltip>
+            )}
+            {/* <Tooltip title="Copy POS Information">
+              <IconButton
+                color="primary"
+                size="small"
+                onClick={() => handleCopy(params.row)}
+              >
+                <ContentCopy />
+              </IconButton>
+            </Tooltip> */}
+            {permissions?.includes("request_pos_termination") && (params.row.status === "New" || params.row.status === "Active") && (
+              <Tooltip title="Stop POS">
+                <IconButton
+                  sx={{ color: "#ff0000" }}
+                  size="small"
+                  onClick={() => handleRelocate(params.row._id)}
+                >
+                  <Stop />
+                </IconButton>
+              </Tooltip>
+            )}
+            {!isRelocated && permissions?.includes("generate_pos_config") && (
+              <Tooltip title="Generate Config">
+                <IconButton
+                  color="primary"
+                  size="small"
+                  onClick={() => {
+                    setSelectedConfigData(params.row);
+                    setConfigVersion("0002");
+                    setConfigDialogOpen(true);
+                  }}
+                >
+                  <GrConfigure />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Box>
+        ),
+      },
+    ]
 
   const handleDelete = async (row) => {
     setLoading(true);
@@ -252,7 +235,7 @@ const ViewPOSGridComponent = ({
     }
   };
 
-  const handleConfig = async (configData) => {
+  const handleConfig = async (configData, selectedVersion) => {
     const HOSTIP = process.env.REACT_APP_HOSTIP;
     const HOSTPORT = process.env.REACT_APP_HOSTPORT;
 
@@ -263,7 +246,7 @@ const ViewPOSGridComponent = ({
       MCC = 6010;
     }
 
-    let configVersion = configData.configVersion || "0002";
+    let configVersion = selectedVersion || "0002";
     configVersion = configVersion.toString().padStart(4, "0");
 
     try {
@@ -284,7 +267,7 @@ const ViewPOSGridComponent = ({
       const zip = new JSZip();
 
       // Create a folder with the same name as the zip file
-      const folderName = `ConfigurationFile_V${configVersion}`;
+      const folderName = `ConfigurationUpdatedFile_V${configVersion}`;
       const folder = zip.folder(folderName);
 
       folder.file("00055556.PRM", updatedPrmFile);
@@ -398,6 +381,71 @@ const ViewPOSGridComponent = ({
             disabled={loading}
           >
             {loading ? "Processing..." : "Confirm"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={configDialogOpen}
+        onClose={() => setConfigDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Generate Configuration</DialogTitle>
+
+        <DialogContent>
+          <TextField
+            autoFocus
+            fullWidth
+            margin="dense"
+            label="Configuration Version"
+            value={configVersion}
+            onChange={(e) => {
+              // Only allow numbers
+              const value = e.target.value.replace(/\D/g, "");
+              setConfigVersion(value);
+            }}
+            placeholder="0002"
+            helperText="Enter the configuration version, e.g. 0002"
+            inputProps={{
+              maxLength: 4,
+            }}
+          />
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setConfigDialogOpen(false);
+              setSelectedConfigData(null);
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            variant="contained"
+            onClick={async () => {
+              if (!selectedConfigData) {
+                toast.error("No terminal selected.");
+                return;
+              }
+
+              if (!configVersion) {
+                toast.error("Please enter a configuration version.");
+                return;
+              }
+
+              setConfigDialogOpen(false);
+
+              await handleConfig(
+                selectedConfigData,
+                configVersion
+              );
+
+              setSelectedConfigData(null);
+            }}
+          >
+            Generate
           </Button>
         </DialogActions>
       </Dialog>
