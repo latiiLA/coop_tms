@@ -19,10 +19,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import LoadingButton from "@mui/lab/LoadingButton";
 import customTheme from "../DarkMode/customTheme";
+import { AppProvider } from "@toolpad/core/AppProvider";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const { role, setRole } = useAuthContext();
+  const { role, currentUser, setRole } = useAuthContext();
   const [loading, setLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -63,13 +64,7 @@ const ForgotPassword = () => {
         }
       );
 
-      if (
-        role === "tempo_posuser" ||
-        role === "tempo_user" ||
-        role === "tempo_posauthorizer" ||
-        role === "tempo_admin" ||
-        role === "tempo_superadmin"
-      ) {
+      if (currentUser.status === "New"){
         localStorage.removeItem("token", token);
         setRole(null);
       }
@@ -113,7 +108,7 @@ const ForgotPassword = () => {
   });
 
   return (
-    <ThemeProvider theme={customTheme}>
+    <AppProvider>
       {/* <Box
         sx={{
           display: "flex",
@@ -264,7 +259,7 @@ const ForgotPassword = () => {
         </Formik>
       </Card>
       {/* </Box> */}
-    </ThemeProvider>
+    </AppProvider>
   );
 };
 

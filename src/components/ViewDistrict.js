@@ -111,7 +111,7 @@ export default function ViewDistrict() {
           sx={{ height: "100%", marginTop: "auto" }}
           gutterBottom
         >
-          District
+          Districts
         </Typography>
         <TextField
           label="Search"
