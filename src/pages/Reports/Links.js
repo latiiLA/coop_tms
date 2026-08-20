@@ -90,7 +90,7 @@ const Links = () => {
           </Typography>
           <Button
             variant="contained"
-            href="http://10.185.11.11:8001/IST-CBOSwitch/login.jsp"
+            href="https://10.12.11.11:8002/IST-CBOSwitch"
             target="_blank"
             rel="noopener noreferrer"
             sx={{
@@ -126,7 +126,7 @@ const Links = () => {
 
           <Button
             variant="contained"
-            href="https://10.1.50.56:8080/"
+            href="https://itservicemanagement.coopbank.local:8080/"
             target="_blank"
             rel="noopener noreferrer"
             sx={{
@@ -162,7 +162,7 @@ const Links = () => {
 
           <Button
             variant="contained"
-            href="http://10.1.177.90:7777/cortex-web/app/app"
+            href="https://10.12.11.90:4443/cortex-web"
             target="_blank"
             rel="noopener noreferrer"
             sx={{

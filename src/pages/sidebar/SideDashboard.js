@@ -100,7 +100,7 @@ const NAVIGATION = [
   {
     kind: "header",
     title: "Administrations",
-    permission: "view_terminal",
+    permission: "view_pos",
   },
   {
     segment: "atm",
