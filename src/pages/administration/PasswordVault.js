@@ -21,7 +21,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
-import { LockOpen, Search, Visibility, VisibilityOff } from "@mui/icons-material";
+import { LockOpen, Search, Visibility, VisibilityOff} from "@mui/icons-material";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function PasswordVault() {
@@ -33,7 +33,7 @@ export default function PasswordVault() {
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [visiblePasswords, setVisiblePasswords] = useState({});
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleClickOpen = (rowId) => {
@@ -58,7 +58,7 @@ export default function PasswordVault() {
     }
     try {
       await axios.patch(
-        `${apiUrl}/auth/deletePasswordEntry/${selectedRowId}`,
+        `${apiUrl}/password/deletePasswordEntry/${selectedRowId}`,
         {},
         {
           headers: {
@@ -74,12 +74,12 @@ export default function PasswordVault() {
       toast.success("Password entry successfully deleted.");
     } catch (error) {
       // console.error("Error deleting user:", error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || error?.message);
       handleClose();
     }
   };
 
-  const handleReset = async (rowId) => {
+  const handleEdit = async (rowId) => {
     const token = localStorage.getItem("token");
     if (!token) {
       // console.error("No authentication token found");
@@ -89,7 +89,7 @@ export default function PasswordVault() {
     }
     try {
       await axios.patch(
-        `${apiUrl}/auth/resetCount/${rowId}`,
+        `${apiUrl}/password/editPasswordEntry/${rowId}`,
         {},
         {
           headers: {
@@ -100,10 +100,10 @@ export default function PasswordVault() {
       );
       const updatedData = await fetchRows();
       setDataRows(updatedData);
-      toast.success("Password count is successfully reset.");
+      toast.success("password edited.");
     } catch (error) {
       // console.error("Error resetting wrong password count", error);
-      toast.error("Error: while resetting wrong password count.");
+      toast.error("Error: while resetting editing password count.");
     }
   };
 
@@ -117,8 +117,21 @@ export default function PasswordVault() {
     },
     { field: "serverOS", headerName: "Operating System", flex: 1 },
     { field: "serverUsername", headerName: "Username", flex: 1 },
-    { field: "serverPassword", headerName: "Password", flex: 1.2,
+    {
+        field: "serverPassword",
+        headerName: "Password",
+        flex: 1.2,
         renderCell: (params) => {
+            const rowId = params.row._id;
+            const showPassword = visiblePasswords[rowId] || false;
+
+            const handleTogglePassword = () => {
+            setVisiblePasswords((prev) => ({
+                ...prev,
+                [rowId]: !prev[rowId],
+            }));
+            };
+
             return (
             <Box
                 sx={{
@@ -130,12 +143,14 @@ export default function PasswordVault() {
                 }}
             >
                 <span>
-                {showPassword ? params.value : "••••••••••••••"}
+                {showPassword
+                    ? params.value
+                    : "••••••••••••••"}
                 </span>
 
                 <IconButton
                 size="small"
-                onClick={() => setShowPassword((prev) => !prev)}
+                onClick={handleTogglePassword}
                 >
                 {showPassword ? (
                     <VisibilityOff fontSize="small" />
@@ -188,7 +203,9 @@ export default function PasswordVault() {
               <IconButton
                 color="primary"
                 size="small"
-                onClick={() => handleReset(params.row._id)}
+                 onClick={() =>
+                  navigate("/password/edit", { state: { row: params.row } })
+                }
                 margin="auto"
               >
                 <EditIcon />
@@ -200,7 +217,7 @@ export default function PasswordVault() {
                 <IconButton
                   color="primary"
                   size="small"
-                  onClick={() => handleReset(params.row._id)}
+                  onClick={() => navigate("/password/details", { state: { row: params.row } })}
                 >
                   <PreviewIcon />
                 </IconButton>
@@ -355,7 +372,7 @@ export default function PasswordVault() {
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this user?
+            Are you sure you want to delete this password entry?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
