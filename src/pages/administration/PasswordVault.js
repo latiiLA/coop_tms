@@ -21,7 +21,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
-import { LockOpen, Search } from "@mui/icons-material";
+import { LockOpen, Search, Visibility, VisibilityOff } from "@mui/icons-material";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function PasswordVault() {
@@ -33,6 +33,7 @@ export default function PasswordVault() {
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleClickOpen = (rowId) => {
@@ -108,18 +109,47 @@ export default function PasswordVault() {
 
   const columns = [
     { field: "id", headerName: "No", flex: 0.1 },
-    { field: "serverName", headerName: "Server Name", flex: 0.4 },
+    { field: "serverName", headerName: "Server Name", flex: 1 },
     {
       field: "serverIP",
       headerName: "Server IP",
-      flex: 0.6,
+      flex: 1,
     },
-    { field: "serverOS", headerName: "Operating System", flex: 0.4 },
-    { field: "serverUsername", headerName: "Username", flex: 0.4 },
-    { field: "serverPassword", headerName: "Password", flex: 0.4},
+    { field: "serverOS", headerName: "Operating System", flex: 1 },
+    { field: "serverUsername", headerName: "Username", flex: 1 },
+    { field: "serverPassword", headerName: "Password", flex: 1.2,
+        renderCell: (params) => {
+            return (
+            <Box
+                sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                gap: 1,
+                }}
+            >
+                <span>
+                {showPassword ? params.value : "••••••••••••••"}
+                </span>
+
+                <IconButton
+                size="small"
+                onClick={() => setShowPassword((prev) => !prev)}
+                >
+                {showPassword ? (
+                    <VisibilityOff fontSize="small" />
+                ) : (
+                    <Visibility fontSize="small" />
+                )}
+                </IconButton>
+            </Box>
+            );
+        },
+    },
     { field: "createdBy", headerName: "Created By",
         valueGetter: (value, row) => row.createdBy?.firstName + " " + row.createdBy?.fatherName || "N/A", 
-        flex: 0.6 
+        flex: 1 
     },
     { field: "createdAt", headerName: "Created At",
         valueFormatter: (value) => {
@@ -135,13 +165,13 @@ export default function PasswordVault() {
             second: "2-digit", 
           });
       },
-      flex: 0.3 
+      flex: 1
     },
-    { field: "status", headerName: "Status", flex: 0.3 },
+    // { field: "status", headerName: "Status", flex: 0.3 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 0.4,
+      flex: 1,
       renderCell: (params) => (
         <Box
           sx={{
