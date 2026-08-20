@@ -13,6 +13,7 @@ import ComboBox from "../../components/ComboBox";
 const ApprovePOSRequest = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [rejectionLoading, setRejectionLoading] = useState(false);
   const location = useLocation();
   const { row } = location.state;
   console.log(row, "row");
@@ -58,7 +59,7 @@ const ApprovePOSRequest = () => {
 
   const handleReject = async (row) => {
     console.log("inside handle reject request");
-    setLoading(true);
+    setRejectionLoading(true);
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem("token");
 
@@ -87,7 +88,7 @@ const ApprovePOSRequest = () => {
       );
     } finally {
       // setSubmitting(false);
-      setLoading(false);
+      setRejectionLoading(false);
     }
   };
 
@@ -516,7 +517,7 @@ const ApprovePOSRequest = () => {
                     Approve
                   </LoadingButton>
                   <LoadingButton
-                    loading={loading}
+                    loading={rejectionLoading}
                     variant="contained"
                     style={{ backgroundColor: "red", color: "white" }}
                     onClick={async () => {
