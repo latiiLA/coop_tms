@@ -37,7 +37,7 @@ const ViewPOSRequestGrid = ({
 
   useEffect(() => {
     setRowsState(initialRows);
-  }, []);
+  }, [initialRows]);
   
   // console.log(pings);
   const columns = [
