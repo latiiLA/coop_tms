@@ -14,9 +14,11 @@ import { Toaster } from "react-hot-toast";
 import SideDashboard from "./pages/sidebar/SideDashboard";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import CreatePasswordEntry from "./pages/administration/CreatePasswordEntry";
-const PasswordVault = React.lazy(() => import("./pages/administration/PasswordVault"));
 
+const CreatePasswordEntry = React.lazy(() => import("./pages/administration/CreatePasswordEntry"))
+const EditPasswordEntry =  React.lazy(() => import("./pages/administration/EditPasswordEntry"))
+const PasswordVault = React.lazy(() => import("./pages/administration/PasswordVault"));
+const PasswordEntryDetails = React.lazy(() => import("./pages/administration/PasswordEntryDetails"))
 const POSReports = React.lazy(
   () => import("./pages/POS/POSReports/POSReports")
 );
@@ -912,6 +914,26 @@ function App() {
               }
             />
             <Route
+              path="/password/edit"
+              element={
+                <ProtectedRoute permission="edit_password_entry">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <EditPasswordEntry />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/password/details"
+              element={
+                <ProtectedRoute permission="edit_password_entry">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <PasswordEntryDetails />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/password/vault"
               element={
                 <ProtectedRoute permission="view_password_entry">
@@ -921,28 +943,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-            
-
-            
-          </Route>
-
-      
-
-            
-            
-            
-        
-
-          
-
-
-
-         
-
-
-            {/* Manual */}
-            
+          </Route>            
 
           {/* Catch-All Route */}
           <Route
