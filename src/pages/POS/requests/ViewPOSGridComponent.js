@@ -267,7 +267,7 @@ const ViewPOSGridComponent = ({
       const zip = new JSZip();
 
       // Create a folder with the same name as the zip file
-      const folderName = `ConfigurationUpdatedFile_V${configVersion}`;
+      const folderName = `ConfigurationFile_V${configVersion}`;
       const folder = zip.folder(folderName);
 
       folder.file("00055556.PRM", updatedPrmFile);
