@@ -118,9 +118,8 @@ const ApprovePOSRequest = () => {
         ),
       serviceNumber: Yup.string()
         .required("Service Number is required")
-        .matches(phoneRegExp, "Phone number must be 9 digits")
-        .min(9, "Service number is short. it must be 9 digits")
-        .max(9, "Service number is long. it must be 9 digits"),
+        .min(9, "Service number is short. it must be at least 9 digits")
+        .max(13, "Service number is long. it must be at most 13 digits"),
       contactPhonenumber: Yup.string()
         .required("Phone Number is required")
         .matches(phoneRegExp, "Phone number must be 9 digits")
