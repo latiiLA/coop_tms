@@ -330,6 +330,13 @@ const POSDetails = () => {
                           }}
                         />                        
                       {/* </Box> */}
+                      <CustomTextField
+                        name="configVersion"
+                        label="Config Version"
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
 
                       <CustomTextField
                         name="status"
@@ -386,6 +393,7 @@ const POSDetails = () => {
                           }}
                         />
                       )}
+                      
                       {/* Download Button */}
                       {row?.file && (
                         <Box

@@ -72,6 +72,7 @@ const ViewPOSGridComponent = ({
     { field: "posCbsAccount", headerName: "CBS Account", flex: 0.5 },
     { field: "serviceNumber", headerName: "Service Number", flex: 0.6 },
     { field: "staticIp", headerName: "IP Address", flex: 0.8 },
+    { field: "configVersion", headerName: "Config Version", flex: 0.3 },
     { field: "status", headerName: "Status", flex: 0.5 },
     {
       field: "district",
