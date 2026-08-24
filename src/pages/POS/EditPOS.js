@@ -1,4 +1,4 @@
-import { Box, Button, Card, Typography } from "@mui/material";
+import { Box, Button, Card, TextField, Typography } from "@mui/material";
 import { Form, Field, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -65,6 +65,7 @@ const EditPOS = () => {
         });
       }),
     configVersion: Yup.number(),
+    configuredDate: Yup.date(),
     comment: Yup.string(),
   });
 
@@ -78,6 +79,9 @@ const EditPOS = () => {
       navigate("/home");
       return;
     }
+
+
+    console.log("row in edit", row)
 
     try {
       const response = await axios.put(
@@ -217,6 +221,9 @@ const EditPOS = () => {
               branchName: row?.branchName?._id,
               district: row?.branchName?.district?._id,
               serialNumber: row?.serialNumber?._id,
+              configuredDate: row?.configuredDate
+                ? new Date(row.configuredDate).toISOString().split("T")[0]
+                : "",
             }}
             validationSchema={FORM_VALIDATION}
             onSubmit={handleSubmit}
@@ -337,11 +344,28 @@ const EditPOS = () => {
                         label="Static IP Address"
                         required
                       />
-                       <CustomTextField
-                        name="configVersion"
-                        label="Config Version"
-                        required
-                      />
+                      <Box sx={{display: "flex", flexDirection: "row", gap: 2}}>
+                        <CustomTextField
+                          name="configVersion"
+                          label="Config Version"
+                          required
+                        />
+                        <Field name="configuredDate">
+                          {({ field, meta }) => (
+                            <TextField
+                              {...field}
+                              label="Configured Date"
+                              type="date"
+                              fullWidth
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              error={meta.touched && Boolean(meta.error)}
+                              helperText={meta.touched && meta.error}
+                            />
+                          )}
+                        </Field>
+                      </Box>
                       <CustomSelect
                         name="status"
                         label="Status"

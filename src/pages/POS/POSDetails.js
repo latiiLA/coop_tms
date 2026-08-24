@@ -330,14 +330,31 @@ const POSDetails = () => {
                           }}
                         />                        
                       {/* </Box> */}
-                      <CustomTextField
-                        name="configVersion"
-                        label="Config Version"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-
+                      <Box sx={{display: "flex", flexDirection: "row", gap: 2}}>
+                        <CustomTextField
+                          name="configVersion"
+                          label="Config Version"
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                        <CustomTextField
+                          name="configuredDate"
+                          label="Config Date"
+                          value={
+                            row.configuredDate
+                              ? new Date(row.configuredDate).toLocaleDateString("en-GB", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                })
+                              : ""
+                          }
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      </Box>
                       <CustomTextField
                         name="status"
                         label="Status"
