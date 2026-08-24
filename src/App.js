@@ -926,7 +926,7 @@ function App() {
             <Route
               path="/password/details"
               element={
-                <ProtectedRoute permission="edit_password_entry">
+                <ProtectedRoute permission="view_password_entry_detail">
                   <Suspense fallback={<LoadingSpinner />}>
                     <PasswordEntryDetails />
                   </Suspense>

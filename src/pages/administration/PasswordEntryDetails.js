@@ -21,12 +21,14 @@ import {
 } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuthContext } from "../../context/AuthContext";
 
 const PasswordEntryDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [showPassword, setShowPassword] = React.useState(false);
+  const { permissions } = useAuthContext();
 
   // Row passed from PasswordVault
   const row = location.state?.row;
@@ -220,6 +222,8 @@ const PasswordEntryDetails = () => {
               ASSIGNED USERS
           ====================================== */}
 
+        {permissions?.includes("edit_password_entry") && (
+
           <FormControl
             component="fieldset"
             fullWidth
@@ -275,6 +279,8 @@ const PasswordEntryDetails = () => {
               )}
             </FormGroup>
           </FormControl>
+
+        )}
 
           {/* =====================================
               CREATED INFORMATION
