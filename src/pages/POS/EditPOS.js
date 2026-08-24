@@ -45,8 +45,9 @@ const EditPOS = () => {
       .required("CBS Account is required")
       .min(12, "CBS Account must be at least 12 characters"),
     serviceNumber: Yup.string()
-      .required("Service Number is required")
-      .matches(phoneRegExp, "Phone number must be 9 digits"),
+          .required("Service number is required")
+          .min(9, "Service number is short. it must be minimum of 9 digits")
+          .max(13, "Service number is long. it must be maximim of 13 digits"),
     contactPhonenumber: Yup.string()
       .required("Contact Phonenumber is required")
       .matches(phoneRegExp, "Contact phone number must be 9 digits"),
@@ -63,6 +64,7 @@ const EditPOS = () => {
           return !isNaN(num) && num >= 0 && num <= 255;
         });
       }),
+    configVersion: Yup.number(),
     comment: Yup.string(),
   });
 
@@ -333,6 +335,11 @@ const EditPOS = () => {
                       <CustomTextField
                         name="staticIp"
                         label="Static IP Address"
+                        required
+                      />
+                       <CustomTextField
+                        name="configVersion"
+                        label="Config Version"
                         required
                       />
                       <CustomSelect
