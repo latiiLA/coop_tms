@@ -57,6 +57,7 @@ const CreateUser = () => {
   const role = [
     { value: "user", label: "User" },
     { value: "admin", label: "Admin" },
+    { value: "superadmin", label: "Superadmin" },
     { value: "posuser", label: "POS User" },
     { value: "posauthorizer", label: "POS Request Authorizer" },
     { value: "posadmin", label: "POS Admin" },
