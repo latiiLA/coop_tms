@@ -1,4 +1,4 @@
-import { Box, Button, Card, Divider, Typography } from "@mui/material";
+import { Box, Button, Card, Divider, MenuItem, Typography } from "@mui/material";
 import { Form, Formik, Field, useFormikContext } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
@@ -15,6 +15,7 @@ import { CloudUpload } from "@mui/icons-material";
 import ComboBox from "../../../components/ComboBox";
 
 const RequestPOS = () => {
+  const apiUrl = process.env.REACT_APP_API_URL;
   const location = useLocation();
   const { row, isEdit } = location.state || {};
   const navigate = useNavigate();
@@ -29,13 +30,50 @@ const RequestPOS = () => {
     row?.serialNumber?.serialNumber || null
   );
 
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // console.error("No authentication token found");
+        toast.error("User is not authenticated");
+        navigate("/home");
+        return;
+      }
+
+      try {
+        try {
+          const response = await axios.get(`${apiUrl}/auth/getAuthorizingUser`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+          setUsers(response.data.users);
+          return response.data.users;
+        } catch (error) {
+          // console.error("Error fetching data:", error);
+          toast.error(`Error: ${error.response?.data?.message || error.message}`);
+          navigate("/home");
+          return [];
+        }
+        
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   console.log("row", row);
   console.log("selected", selectedFile);
 
   const initialValues = {
-    serialNumber: row?.serialNumber._id || "",
-    branchName: row?.branchName._id || "",
-    district: row?.district._id || "",
+    serialNumber: row?.serialNumber?._id || "",
+    branchName: row?.branchName?._id || "",
+    district: row?.district?._id || "",
     site: row?.site || "",
     merchantName: row?.merchantName || "",
     merchantAddress: row?.merchantAddress || "",
@@ -46,6 +84,7 @@ const RequestPOS = () => {
     serviceNumber: row?.serviceNumber || "",
     contactPhonenumber: row?.contactPhonenumber || "",
     businessType: row?.businessType || "",
+    assignAuthorizationUser: row?.assignAuthorizationUser?._id || "",
   };
 
   useEffect(() => {
@@ -163,6 +202,7 @@ const RequestPOS = () => {
       .min(9, "Service number is short. it must be minimum of 9 digits")
       .max(13, "Service number is long. it must be maximum of 13 digits"),
     businessType: Yup.string().required("Business type is required"),
+    assignAuthorizationUser: Yup.string().required("Authorizing user is required"),
     staticIp: Yup.string()
       .required("IP Address is required")
       .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
@@ -510,6 +550,41 @@ const RequestPOS = () => {
                             </Typography>
                           )}
                         </Box>
+                      </Box>
+                    </Box>
+
+                    <Divider />
+
+                    <Box 
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
+                      }}
+                    >
+                      <Typography sx={{ fontWeight: "bold" }}>
+                        Authorizer Information
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: { md: "row", xs: "column" },
+                          gap: 2,
+                        }}
+                      >
+                        <CustomTextField
+                          select
+                          name="assignAuthorizationUser"
+                          label="Assign Authorization User"
+                          // value={row?.assignAuthorizationUser || ""}
+                          onChange={handleChange}
+                        >
+                          {users.map((user) => (
+                            <MenuItem key={user._id} value={user._id}>
+                              {user.firstName} {user.fatherName} {user.gfatherName}
+                            </MenuItem>
+                          ))}
+                        </CustomTextField>
                       </Box>
                     </Box>
                   </Box>
