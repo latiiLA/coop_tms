@@ -81,7 +81,8 @@ const ATMForm = ({
     port: Yup.number().test(
       "is-valid-port",
       "Port must be a valid selection",
-      (value) => availablePorts.includes(value)
+      (value) =>
+      availablePorts.some((port) => port.portNumber === value)
     ),
     relocatedTo: Yup.string(),
     remark: Yup.string(),
@@ -323,8 +324,8 @@ const ATMForm = ({
                       name="port"
                       label="Port"
                       options={availablePorts.map((port) => ({
-                        value: port,
-                        label: `${port.portNumber}`,
+                        value: `${port.portNumber}`,
+                        label: `${port.portNumber} - ${port.portSiteAssignment} - ${port.portAssignment}`,
                       }))}
                       onChange={(e) => {
                         handleChange(e);
