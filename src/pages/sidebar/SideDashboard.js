@@ -51,8 +51,13 @@ import {
   Key,
   Security,
   FolderTwoTone,
+  ViewAgenda,
+  StopCircleTwoTone,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
+import { GrGlobe } from "react-icons/gr";
+import { TbActivityHeartbeat, TbWorld, TbWorldDollar } from "react-icons/tb";
+import { MdOutlinePersonPinCircle } from "react-icons/md";
 // import { TbStatusChange } from "react-icons/tb";
 // import customTheme from "../../DarkMode/customTheme";
 // import DarkMode from "../../DarkMode/DarkMode";
@@ -211,6 +216,32 @@ const NAVIGATION = [
         title: "POS Devices",
         permission: "view_device",
         icon: <DeviceHub />,
+      },
+    ],
+  },
+  {
+    segment: "cybersource",
+    title: "Cybersource Administration",
+    icon: <GrGlobe/>,
+    permission: "create_cybersource_terminal",
+    children: [
+      {
+        segment: "create",
+        title: "Create Cybersource",
+        permission: "create_cybersource_terminal",
+        icon: <TbWorldDollar />,
+      },
+      {
+        segment: "view",
+        title: "Manage Cybersource",
+        permission: "view_cybersource_terminal",
+        icon: <ViewAgenda />,
+      },
+      {
+        segment: "deactivated",
+        title: "Deactivated Cybersource",
+        permission: "view_deactivated_cybersource_terminal",
+        icon: <StopCircleTwoTone />,
       },
     ],
   },

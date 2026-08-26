@@ -15,6 +15,12 @@ import SideDashboard from "./pages/sidebar/SideDashboard";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 
+const ViewDeactivatedCybersourceTerminal = React.lazy(() => import("./pages/cybersource/ViewDeactivatedCybersourceTerminal"));
+const EditCybersourceTerminal = React.lazy(() => import("./pages/cybersource/EditCybersourceTerminal"));
+const CybersourceTerminalDetail = React.lazy(() => import("./pages/cybersource/CybersourceTerminalDetail"));
+const ViewCybersourceTerminal = React.lazy(() => import("./pages/cybersource/ViewCybersourceTerminal"));
+const CreateCybersourceTerminal = React.lazy(() => import("./pages/cybersource/CreateCybersourceTerminal"));
+
 const CreatePasswordEntry = React.lazy(() => import("./pages/administration/CreatePasswordEntry"))
 const EditPasswordEntry =  React.lazy(() => import("./pages/administration/EditPasswordEntry"))
 const PasswordVault = React.lazy(() => import("./pages/administration/PasswordVault"));
@@ -855,6 +861,60 @@ function App() {
                 <Suspense fallback={<LoadingSpinner />}>
                   <ATMLocation />
                 </Suspense>
+              }
+            />
+
+
+            {/* Cybersource related */}
+            <Route
+              path="/cybersource/create"
+              element={
+                <ProtectedRoute permission="create_cybersource_terminal">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <CreateCybersourceTerminal />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cybersource/view"
+              element={
+                <ProtectedRoute permission="view_cybersource_terminal">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewCybersourceTerminal />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cybersource/detail"
+              element={
+                <ProtectedRoute permission="view_cybersource_terminal">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <CybersourceTerminalDetail />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cybersource/edit"
+              element={
+                <ProtectedRoute permission="edit_cybersource_terminal">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <EditCybersourceTerminal />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/cybersource/deactivated"
+              element={
+                <ProtectedRoute permission="view_deactivated_cybersource_terminal">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ViewDeactivatedCybersourceTerminal />
+                  </Suspense>
+                </ProtectedRoute>
               }
             />
 
