@@ -1,5 +1,6 @@
 const atm_types = [
   { value: "CRM", label: "CRM" },
+  { value: "CRM2", label: "CRM2"},
   { value: "NCR", label: "NCR" },
 ];
 

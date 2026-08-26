@@ -20,6 +20,7 @@ const Port = () => {
   const navigate = useNavigate();
   const atm_type = [
     { value: "CRM", label: "CRM" },
+    { value: "CRM2", label: "CRM2" },
     { value: "NCR", label: "NCR" },
     { value: "BothType", label: "Both Type" },
   ];

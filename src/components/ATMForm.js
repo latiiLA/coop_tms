@@ -324,7 +324,7 @@ const ATMForm = ({
                       label="Port"
                       options={availablePorts.map((port) => ({
                         value: port,
-                        label: port.toString(),
+                        label: `${port.portNumber}`,
                       }))}
                       onChange={(e) => {
                         handleChange(e);
