@@ -162,7 +162,7 @@ const CybersourceTerminalDetail = () => {
             {row?.lastUpdatedBy &&
                 <TextField
                     label="Last Updated By"
-                    value={`row?.lastUpdatedBy?.firstName + " " + row?.lastUpdatedBy?.fatherName + " " + row?.lastUpdatedBy?.gfatherName` || ""}
+                    value={row?.lastUpdatedBy?.firstName + " " + row?.lastUpdatedBy?.fatherName + " " + row?.lastUpdatedBy?.gfatherName || ""}
                     fullWidth
                     InputProps={{
                     readOnly: true,
@@ -209,6 +209,39 @@ const CybersourceTerminalDetail = () => {
               readOnly: true,
             }}
           />
+
+          {row?.status === "Deactivated" &&
+            <>
+                <TextField
+                    label="Deactivated By"
+                    value={row?.deactivatedBy?.firstName + " " + row?.deactivatedBy?.fatherName + " " + row?.deactivatedBy?.gfatherName || ""}
+                    fullWidth
+                    InputProps={{
+                    readOnly: true,
+                    }}
+                />
+
+                <TextField
+                    label="Deactivated At"
+                    value={
+                        row.deactivatedAt
+                            ? new Date(row.deactivatedAt).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit",
+                                hour12: true,
+                            })
+                            : ""
+                        }
+                    fullWidth
+                    InputProps={{
+                    readOnly: true,
+                    }}
+                />
+              </>
+            }
         </Box>
 
         <Box
@@ -220,9 +253,9 @@ const CybersourceTerminalDetail = () => {
         >
           <Button
             variant="contained"
-            onClick={() => navigate("/cybersource/view")}
+            onClick={() => navigate("/cybersource/deactivated")}
           >
-            Back to Cybersource Terminals
+            Back to Deactivated Cybersource Terminals
           </Button>
         </Box>
       </Card>
