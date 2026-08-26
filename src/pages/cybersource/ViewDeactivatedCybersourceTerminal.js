@@ -89,7 +89,7 @@ export default function ViewDeactivatedCybersourceTerminal() {
                 alignItems: "center",
               }}
             >
-              {permissions?.includes("edit_cybersource_terminal") && (
+              {!params.status == "Deactivated" && permissions?.includes("edit_cybersource_terminal") && (
                 <Tooltip title="Edit Terminal">
                   <IconButton
                     color="primary"
