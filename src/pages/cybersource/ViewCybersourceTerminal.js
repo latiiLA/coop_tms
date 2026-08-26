@@ -138,7 +138,8 @@ export default function ViewCybersourceTerminal() {
         },
         withCredentials: true,
       });
-      // console.log(response);
+
+      console.log(response.data.cybersourceTerminals);
       setDataRows(response.data.cybersourceTerminals || []);
     } catch (error) {
       // console.error("Error fetching branches:", error);

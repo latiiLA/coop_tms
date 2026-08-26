@@ -138,7 +138,8 @@ export default function ViewDeactivatedCybersourceTerminal() {
         },
         withCredentials: true,
       });
-      // console.log(response);
+
+      console.log(response.data.cybersourceTerminals);
       setDataRows(response.data.cybersourceTerminals || []);
     } catch (error) {
       // console.error("Error fetching branches:", error);
@@ -220,9 +221,9 @@ export default function ViewDeactivatedCybersourceTerminal() {
         }}
       >
         <Tabs value={value} onChange={handleChange} aria-label="Cybersource Tabs">
-          <Tab label="All Deactivated Cybersources" />
-          <Tab label="Ecommerce Deactivated Cybersources" />
-          <Tab label="AFT Deactivated Cybersources" />
+          <Tab label="All Deactivated cbsc" />
+          <Tab label="Ecommerce Deactivated cbsc" />
+          <Tab label="AFT Deactivated cbsc" />
         </Tabs>
         <TextField
           label="Search"
