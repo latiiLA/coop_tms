@@ -253,9 +253,9 @@ const CybersourceTerminalDetail = () => {
         >
           <Button
             variant="contained"
-            onClick={() => navigate("/cybersource/deactivated")}
+            onClick={() => navigate(-1)}
           >
-            Back to Deactivated Cybersource Terminals
+            Back
           </Button>
         </Box>
       </Card>
