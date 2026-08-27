@@ -43,7 +43,7 @@ export default function ViewCybersourceTerminal() {
     },
     {
       field: "cbscMerchantID",
-      headerName: "CYBC Merchant ID",
+      headerName: "CYBS Merchant ID",
       type: "string",
       flex: 1,
     },
@@ -55,13 +55,19 @@ export default function ViewCybersourceTerminal() {
     },
     {
       field: "terminalID",
-      headerName: "terminal ID",
+      headerName: "Terminal ID",
+      type: "string",
+      flex: 1,
+    },
+    {
+      field: "cbsAccount",
+      headerName: "CBS Account",
       type: "string",
       flex: 1,
     },
     {
       field: "cbscType",
-      headerName: "CYBC Type",
+      headerName: "CYBS Type",
       type: "string",
       flex: 1,
       renderCell: (params) =>

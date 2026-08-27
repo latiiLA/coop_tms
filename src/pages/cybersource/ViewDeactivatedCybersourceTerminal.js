@@ -43,7 +43,7 @@ export default function ViewDeactivatedCybersourceTerminal() {
     },
     {
       field: "cbscMerchantID",
-      headerName: "CYBC Merchant ID",
+      headerName: "CYBS Merchant ID",
       type: "string",
       flex: 1,
     },
@@ -55,13 +55,19 @@ export default function ViewDeactivatedCybersourceTerminal() {
     },
     {
       field: "terminalID",
-      headerName: "terminal ID",
+      headerName: "Terminal ID",
+      type: "string",
+      flex: 1,
+    },
+    {
+      field: "cbsAccount",
+      headerName: "CBS Account",
       type: "string",
       flex: 1,
     },
     {
       field: "cbscType",
-      headerName: "CYBC Type",
+      headerName: "CYBS Type",
       type: "string",
       flex: 1,
       renderCell: (params) =>
@@ -221,9 +227,9 @@ export default function ViewDeactivatedCybersourceTerminal() {
         }}
       >
         <Tabs value={value} onChange={handleChange} aria-label="Cybersource Tabs">
-          <Tab label="All Deactivated cybc" />
-          <Tab label="Ecommerce Deactivated cybc" />
-          <Tab label="AFT Deactivated cybc" />
+          <Tab label="All Deactivated cybs" />
+          <Tab label="Ecommerce Deactivated cybs" />
+          <Tab label="AFT Deactivated cybs" />
         </Tabs>
         <TextField
           label="Search"
