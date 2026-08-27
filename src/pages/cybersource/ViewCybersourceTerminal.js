@@ -1,5 +1,5 @@
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { Box, IconButton, InputAdornment, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, IconButton, InputAdornment, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
 import { Edit, Preview, Search } from "@mui/icons-material";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ export default function ViewCybersourceTerminal() {
   const [error, setError] = useState(null);
   const [value, setValue] = useState(0);
   const [searchText, setSearchText] = useState(""); // State for search input
+  const [copiedData, setCopiedData] = useState("");
 
   const columns = [
     { field: "id", headerName: "No", type: "String", flex: 0.3 },
@@ -285,8 +286,22 @@ export default function ViewCybersourceTerminal() {
           }}
           pageSizeOptions={[20, 50, 100]}
           autoHeight
-          disableSelectionOnClick
+          checkboxSelection
+          onClipboardCopy={(copiedString) => setCopiedData(copiedString)}
         />
+        <Alert severity="info" sx={{ width: "100%", mt: 1 }}>
+            <AlertTitle>Copied data:</AlertTitle>
+            <code
+                style={{
+                    display: "block",
+                    maxHeight: 200,
+                    overflow: "auto",
+                    whiteSpace: "pre-line",
+                }}
+            >
+            {copiedData}
+            </code>
+        </Alert>
       </Box>
     </Box>
   );
