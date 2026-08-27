@@ -240,16 +240,19 @@ const ViewATMDetail = () => {
             }}
             defaultValue={row.status}
           />
-          <TextField
-            name="relocatedTo"
-            label="Relocated To"
-            variant="outlined"
-            fullWidth
-            InputProps={{
-              readOnly: true,
-            }}
-            defaultValue={row.relocatedTo}
-          />
+          {row.isDeleted === true && row.relocatedTo && (
+            <TextField
+              name="relocatedTo"
+              label="Relocated To"
+              variant="outlined"
+              fullWidth
+              InputProps={{
+                readOnly: true,
+              }}
+              defaultValue={row.relocatedTo}
+            />
+          )
+          }
         </Box>
       </Card>
       <Box
