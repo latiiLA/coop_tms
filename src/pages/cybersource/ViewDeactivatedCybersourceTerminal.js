@@ -43,7 +43,7 @@ export default function ViewDeactivatedCybersourceTerminal() {
     },
     {
       field: "cbscMerchantID",
-      headerName: "CBSC Merchant ID",
+      headerName: "CYBC Merchant ID",
       type: "string",
       flex: 1,
     },
@@ -61,7 +61,7 @@ export default function ViewDeactivatedCybersourceTerminal() {
     },
     {
       field: "cbscType",
-      headerName: "CBSC Type",
+      headerName: "CYBC Type",
       type: "string",
       flex: 1,
       renderCell: (params) =>
@@ -221,9 +221,9 @@ export default function ViewDeactivatedCybersourceTerminal() {
         }}
       >
         <Tabs value={value} onChange={handleChange} aria-label="Cybersource Tabs">
-          <Tab label="All Deactivated cbsc" />
-          <Tab label="Ecommerce Deactivated cbsc" />
-          <Tab label="AFT Deactivated cbsc" />
+          <Tab label="All Deactivated cybc" />
+          <Tab label="Ecommerce Deactivated cybc" />
+          <Tab label="AFT Deactivated cybc" />
         </Tabs>
         <TextField
           label="Search"

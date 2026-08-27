@@ -65,7 +65,7 @@ const EditCybersourceTerminal = () => {
       .min(3, "Merchant name must be at least 3 characters"),
 
     cbscMerchantID: Yup.string().required(
-      "CBSC merchant ID is required"
+      "Cybersource merchant ID is required"
     ),
 
     cboMerchantID: Yup.string().required(
@@ -81,7 +81,7 @@ const EditCybersourceTerminal = () => {
     ),
 
     cbscType: Yup.string().required(
-      "CBSC type is required"
+      "Cybersource type is required"
     ),
 
     branchID: Yup.string().required(

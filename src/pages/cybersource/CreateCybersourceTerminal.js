@@ -66,11 +66,11 @@ const CreateCybersourceTerminal = () => {
     merchantName: Yup.string()
       .required("Merchant name is required")
       .min(3, "Merchant name must be at least 3 characters"),
-    cbscMerchantID: Yup.string().required("CBSC merchant ID is required"),
+    cbscMerchantID: Yup.string().required("Cybersource merchant ID is required"),
     cboMerchantID: Yup.string().required("CBO merchant ID is required"),
     terminalID: Yup.string().required("Terminal ID is required"),
     cbsAccount: Yup.string().required("CBS account  is required"),
-    cbscType: Yup.string().required("CBSC type is required"),
+    cbscType: Yup.string().required("Cybersource type is required"),
     branchID: Yup.string().required("Branch Name is required")
   });
 
