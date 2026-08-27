@@ -169,6 +169,15 @@ const PasswordEntryDetails = () => {
                 }}
               />
 
+              <TextField
+                label="Environment"
+                value={row.environment || ""}
+                fullWidth
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+
               {/* PASSWORD */}
 
               <FormControl

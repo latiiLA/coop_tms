@@ -24,6 +24,7 @@ import {
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { CustomSelect } from "../../components/CustomFields";
 
 const EditPasswordEntry = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -54,6 +55,11 @@ const EditPasswordEntry = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  const environment = [
+    { value: "production", label: "Production" },
+    { value: "test", label: "Test" },
+  ];
 
   // ============================================
   // Redirect if no row was passed
@@ -146,6 +152,7 @@ const EditPasswordEntry = () => {
     serverName: row?.serverName || "",
     serverIP: row?.serverIP || "",
     serverOS: row?.serverOS || "",
+    environment: row?.environment || "",
     serverUsername: row?.serverUsername || "",
     serverPassword: row?.serverPassword || "",
     assignedUsers: assignedUserIds,
@@ -195,6 +202,10 @@ const EditPasswordEntry = () => {
 
     serverOS: Yup.string().required(
       "Server OS is required"
+    ),
+
+    serverOS: Yup.string().required(
+      "Environment is required"
     ),
 
     serverUsername: Yup.string().required(
@@ -248,6 +259,7 @@ const EditPasswordEntry = () => {
           serverName: values.serverName,
           serverIP: values.serverIP,
           serverOS: values.serverOS,
+          environment: values.environment,
           serverUsername: values.serverUsername,
           serverPassword: values.serverPassword,
           assignedUsers: values.assignedUsers,
@@ -444,6 +456,12 @@ const EditPasswordEntry = () => {
                       helperText={
                         <ErrorMessage name="serverUsername" />
                       }
+                    />
+
+                    <CustomSelect
+                        name="environment"
+                        label="Environment"
+                        options={environment}
                     />
 
                     {/* PASSWORD */}

@@ -116,6 +116,7 @@ export default function PasswordVault() {
       flex: 1,
     },
     { field: "serverOS", headerName: "Operating System", flex: 1 },
+    { field: "environment", headerName: "Environment", flex: 1 },
     { field: "serverUsername", headerName: "Username", flex: 1 },
     {
         field: "serverPassword",

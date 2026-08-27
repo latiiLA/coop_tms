@@ -24,6 +24,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuthContext } from "../../context/AuthContext";
+import { CustomSelect } from "../../components/CustomFields";
 
 const CreatePasswordEntry = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -41,6 +42,12 @@ const CreatePasswordEntry = () => {
   const [dataRows, setDataRows] = useState([]); // user data
   const { role, permissions } = useAuthContext();
   const [loading, setLoading] = useState(true);
+
+
+  const environment = [
+    { value: "production", label: "Production" },
+    { value: "test", label: "Test" },
+  ];
 
   async function fetchRows() {
     const token = localStorage.getItem("token");
@@ -85,6 +92,7 @@ const CreatePasswordEntry = () => {
     serverName: "",
     serverIP: "",
     serverOS: "",
+    environment: "",
     serverUsername: "",
     serverPassword: "",
     assignedUsers: [],
@@ -106,6 +114,7 @@ const CreatePasswordEntry = () => {
         });
         }),
     serverOS: Yup.string().required("Server OS is required"),
+    environment: Yup.string().required("Environment is required"),
     serverUsername: Yup.string().required("Server Username is required"),
     serverPassword: Yup.string().required("Server Password is required"),
     assignedUsers: Yup.array().required("Atleast one assigned user is required")
@@ -133,6 +142,7 @@ const CreatePasswordEntry = () => {
           serverName: data.serverName,
           serverIP: data.serverIP,
           serverOS: data.serverOS,
+          environment: data.environment,
           serverUsername: data.serverUsername,
           serverPassword: data.serverPassword,
           assignedUsers: data.assignedUsers,
@@ -240,6 +250,7 @@ const CreatePasswordEntry = () => {
                       helperText={<ErrorMessage name="serverOS" />}
                     />
                   </Box>
+                  
                   <Box
                     sx={{
                       display: "flex",
@@ -258,6 +269,11 @@ const CreatePasswordEntry = () => {
                       fullWidth
                       error={touched.serverUsername && !!errors.serverUsername}
                       helperText={<ErrorMessage name="serverUsername" />}
+                    />
+                    <CustomSelect
+                        name="environment"
+                        label="Environment"
+                        options={environment}
                     />
                     <FormControl
                       variant="outlined"
@@ -299,51 +315,51 @@ const CreatePasswordEntry = () => {
                   </Box>
                 </Box>
                 <FormControl component="fieldset" fullWidth sx={{ mt: 2 }}>
-  <FormLabel component="legend">
-    Assigned Users
-  </FormLabel>
+                    <FormLabel component="legend">
+                        Assigned Users
+                    </FormLabel>
 
-  <FormGroup
-    sx={{
-      mt: 1,
-      border: "1px solid",
-      borderColor: "divider",
-      borderRadius: 1,
-      p: 2,
-      maxHeight: 250,
-      overflowY: "auto",
-    }}
-  >
-    {dataRows.map((user) => (
-      <FormControlLabel
-        key={user._id}
-        control={
-          <Checkbox
-            checked={values.assignedUsers.includes(user._id)}
-            onChange={(event) => {
-              const userId = user._id;
+                    <FormGroup
+                        sx={{
+                        mt: 1,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        borderRadius: 1,
+                        p: 2,
+                        maxHeight: 250,
+                        overflowY: "auto",
+                        }}
+                    >
+                        {dataRows.map((user) => (
+                        <FormControlLabel
+                            key={user._id}
+                            control={
+                            <Checkbox
+                                checked={values.assignedUsers.includes(user._id)}
+                                onChange={(event) => {
+                                const userId = user._id;
 
-              if (event.target.checked) {
-                setFieldValue("assignedUsers", [
-                  ...values.assignedUsers,
-                  userId,
-                ]);
-              } else {
-                setFieldValue(
-                  "assignedUsers",
-                  values.assignedUsers.filter(
-                    (id) => id !== userId
-                  )
-                );
-              }
-            }}
-          />
-        }
-        label={user.username}
-      />
-    ))}
-  </FormGroup>
-</FormControl>
+                                if (event.target.checked) {
+                                    setFieldValue("assignedUsers", [
+                                    ...values.assignedUsers,
+                                    userId,
+                                    ]);
+                                } else {
+                                    setFieldValue(
+                                    "assignedUsers",
+                                    values.assignedUsers.filter(
+                                        (id) => id !== userId
+                                    )
+                                    );
+                                }
+                                }}
+                            />
+                            }
+                            label={user.username}
+                        />
+                        ))}
+                    </FormGroup>
+                </FormControl>
                 <Button
                   variant="contained"
                   type="submit"
