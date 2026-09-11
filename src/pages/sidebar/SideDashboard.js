@@ -1,17 +1,16 @@
 import * as React from "react";
-import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import DescriptionIcon from "@mui/icons-material/Description";
-import { AppProvider } from "@toolpad/core/AppProvider";
+import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { useDemoRouter } from "@toolpad/core/internal";
 import logo from "../../assets/coop.gif";
 import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer";
-import { Avatar, createTheme, IconButton, Tooltip } from "@mui/material";
+import { GlobalStyles, createTheme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import propicture from "../../assets/profile_avatar.jpg";
 import {
   Add,
@@ -19,6 +18,7 @@ import {
   Atm,
   ChangeCircle,
   Explore,
+  Home as HomeIcon,
   IntegrationInstructions,
   Link,
   PointOfSale,
@@ -66,6 +66,11 @@ const NAVIGATION = [
   {
     kind: "header",
     title: "Main items",
+  },
+  {
+    segment: "home",
+    title: "Home",
+    icon: <HomeIcon />,
   },
   {
     segment: "dashboard",
@@ -477,24 +482,57 @@ const NAVIGATION = [
   },
 ];
 
-function DemoPageContent({ pathname }) {
-  const navigate = useNavigate();
+// Matches Toolpad docs demo theme
+const toolpadTheme = createTheme({
+  cssVariables: {
+    colorSchemeSelector: "data-toolpad-color-scheme",
+  },
+  colorSchemes: { light: true, dark: true },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 600,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
+});
 
+/** Toolpad mini flyouts are position:fixed without top — pin them beside the hovered item. */
+function MiniSidebarFlyoutFix() {
   React.useEffect(() => {
-    navigate(pathname);
-  }, [pathname]);
+    const positionFlyout = (event) => {
+      const item = event.target.closest?.(".MuiDrawer-paper .MuiListItem-root");
+      if (!item?.querySelector(".MuiTypography-caption")) return;
+
+      const paper = item.querySelector(".MuiPaper-root");
+      const container = paper?.parentElement;
+      const drawer = item.closest(".MuiDrawer-paper");
+      if (!container || !paper || !drawer) return;
+
+      const itemRect = item.getBoundingClientRect();
+      // Place past the drawer edge (divider/scrollbar), not on top of it
+      const drawerRect = drawer.getBoundingClientRect();
+      container.style.position = "fixed";
+      container.style.left = `${drawerRect.right + 2}px`;
+      container.style.top = `${itemRect.top}px`;
+      container.style.transform = "none";
+      container.style.paddingLeft = "0px";
+      container.style.zIndex = "1600";
+      paper.style.transform = "none";
+    };
+
+    document.addEventListener("mouseover", positionFlyout, true);
+    return () => document.removeEventListener("mouseover", positionFlyout, true);
+  }, []);
+
+  return null;
 }
 
-DemoPageContent.propTypes = {
-  pathname: PropTypes.string.isRequired,
-};
-
-const defaultTheme = createTheme();
-
 function SideDashboard(props) {
-  // const { theme, toggleTheme } = use;
   const navigate = useNavigate();
-  const { role, permissions, currentUser } = useAuthContext();
+  const { permissions, currentUser } = useAuthContext();
 
   // Filter navigation items based on permissions
   const hasPermission = (permissions, permission) => {
@@ -557,14 +595,7 @@ function SideDashboard(props) {
       .filter(Boolean);
   };
 
-  const filteredNavigation = filterNavigation(
-    NAVIGATION,
-    permissions
-  );
-
-  const initialRoute = window.location.pathname || "/home";
-  const router = useDemoRouter(initialRoute);
-  // console.log("router", router.pathname);
+  const filteredNavigation = filterNavigation(NAVIGATION, permissions);
 
   // Session state
   const [session, setSession] = React.useState(null);
@@ -608,36 +639,17 @@ function SideDashboard(props) {
     [navigate, currentUser]
   );
 
-  function ToolbarActionsSearch() {
-    const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-    const handleOpenUserMenu = (event) => {
-      setAnchorElUser(event.currentTarget);
-    };
-    const handleCloseUserMenu = () => {
-      setAnchorElUser(null);
-    };
-    return (
-      <Tooltip title="Open setting">
-        <IconButton onClick={handleOpenUserMenu}>
-          <Avatar alt="User Photo" src={propicture} />
-        </IconButton>
-      </Tooltip>
-    );
-  }
-
   // Prevent rendering until currentUser is available
   if (!currentUser) {
     return null; // Or a loader/spinner if preferred
   }
 
   return (
-    <AppProvider
+    <ReactRouterAppProvider
       session={session}
       authentication={authentication}
       navigation={filteredNavigation}
-      router={router}
-      // theme={defaultTheme}
+      theme={toolpadTheme}
       branding={{
         title: (
           <Typography variant="h5" fontSize="20px">
@@ -647,6 +659,221 @@ function SideDashboard(props) {
         logo: <img src={logo} alt="logo" />,
       }}
     >
+      <MiniSidebarFlyoutFix />
+      <GlobalStyles
+        styles={(theme) => ({
+          ".MuiDrawer-paper, .MuiDrawer-paper nav": {
+            scrollbarWidth: "thin",
+            scrollbarColor: `${alpha(theme.palette.text.primary, 0.28)} transparent`,
+          },
+          ".MuiDrawer-paper::-webkit-scrollbar, .MuiDrawer-paper nav::-webkit-scrollbar":
+            {
+              width: 4,
+            },
+          ".MuiDrawer-paper::-webkit-scrollbar-track, .MuiDrawer-paper nav::-webkit-scrollbar-track":
+            {
+              background: "transparent",
+            },
+          ".MuiDrawer-paper::-webkit-scrollbar-thumb, .MuiDrawer-paper nav::-webkit-scrollbar-thumb":
+            {
+              backgroundColor: alpha(theme.palette.text.primary, 0.28),
+              borderRadius: 8,
+            },
+          ".MuiDrawer-paper::-webkit-scrollbar-thumb:hover, .MuiDrawer-paper nav::-webkit-scrollbar-thumb:hover":
+            {
+              backgroundColor: alpha(theme.palette.text.primary, 0.42),
+            },
+          ".MuiDrawer-paper .MuiListItem-root": {
+            paddingLeft: "8px !important",
+            paddingRight: "8px !important",
+          },
+          ".MuiDrawer-paper .MuiListItemButton-root": {
+            borderRadius: 10,
+            margin: "2px 0",
+            width: "100%",
+            minHeight: 48,
+            boxSizing: "border-box",
+            paddingTop: "8px",
+            paddingBottom: "8px",
+            paddingLeft: "12px",
+            paddingRight: "12px",
+            transition: "background-color 0.2s ease, color 0.2s ease",
+          },
+          ".MuiDrawer-paper .MuiListItemButton-root .MuiListItemIcon-root": {
+            minWidth: "36px !important",
+            width: 36,
+            height: 36,
+            marginRight: 0,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--mui-palette-text-secondary)",
+            backgroundColor: "transparent",
+            transition: "color 0.2s ease",
+          },
+          ".MuiDrawer-paper .MuiListItemButton-root .MuiListItemText-root": {
+            marginLeft: 12,
+            flex: 1,
+          },
+          ".MuiDrawer-paper .MuiListItemButton-root .MuiListItemText-root .MuiTypography-root":
+            {
+              color: "var(--mui-palette-text-primary)",
+              transition: "color 0.2s ease",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root .MuiListItemIcon-root svg": {
+            fontSize: 22,
+            color: "inherit",
+          },
+          // react-icons (e.g. Cybersource GrGlobe) — follow icon color, not hardcoded black
+          ".MuiDrawer-paper .MuiListItemIcon-root svg, .MuiDrawer-paper .MuiListItemIcon-root svg *":
+            {
+              color: "inherit !important",
+              stroke: "currentColor !important",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root > .MuiSvgIcon-root": {
+            color: "var(--mui-palette-text-primary)",
+            transition: "color 0.2s ease",
+          },
+          ".MuiDrawer-paper .MuiTypography-caption": {
+            color: "var(--mui-palette-text-primary)",
+          },
+          // Mini MAIN sidebar items only (have caption under icon) — not flyout children
+          ".MuiDrawer-paper .MuiListItem-root:has(.MuiTypography-caption)": {
+            paddingLeft: "4px !important",
+            paddingRight: "4px !important",
+            overflow: "visible !important",
+          },
+          ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption)":
+            {
+              position: "relative",
+              justifyContent: "center !important",
+              minHeight: 60,
+              paddingLeft: "0 !important",
+              paddingRight: "0 !important",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption) > .MuiBox-root":
+            {
+              left: "0 !important",
+              top: "-2px !important",
+              width: "100%",
+              display: "flex !important",
+              justifyContent: "center",
+              alignItems: "center",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption) .MuiListItemIcon-root":
+            {
+              marginLeft: "0 !important",
+              marginRight: "0 !important",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption) .MuiTypography-caption":
+            {
+              left: "50% !important",
+              width: "calc(100% - 8px) !important",
+              transform: "translateX(-50%) !important",
+              textAlign: "center !important",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption) > .MuiSvgIcon-root":
+            {
+              position: "absolute !important",
+              top: "50%",
+              right: 2,
+              margin: 0,
+              fontSize: 18,
+              transform: "translateY(-50%) rotate(-90deg)",
+              zIndex: 1,
+            },
+          ".MuiDrawer-paper .MuiListItem-root:has(.MuiTypography-caption) .MuiPaper-root":
+            {
+              transform: "none !important",
+              minWidth: 220,
+              boxShadow: theme.shadows[8],
+            },
+          // Flyout children keep normal left-aligned row (icon + label)
+          ".MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root": {
+            justifyContent: "flex-start !important",
+            minHeight: 40,
+            paddingLeft: "12px !important",
+            paddingRight: "12px !important",
+          },
+          ".MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root > .MuiBox-root":
+            {
+              left: "0 !important",
+              width: "auto",
+              display: "inline-flex",
+            },
+          ".MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root > .MuiSvgIcon-root":
+            {
+              position: "static !important",
+              transform: "none !important",
+            },
+          // Hover / selected — use CSS vars so dark theme stays light text
+          ".MuiDrawer-paper .MuiListItemButton-root:hover": {
+            backgroundColor: alpha(theme.palette.primary.main, 0.12),
+          },
+          ".MuiDrawer-paper .MuiListItemButton-root:hover .MuiListItemIcon-root":
+            {
+              color: "var(--mui-palette-primary-main)",
+              backgroundColor: "transparent",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root:hover .MuiListItemText-root .MuiTypography-root":
+            {
+              color: "var(--mui-palette-text-primary) !important",
+              fontWeight: 600,
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root:hover .MuiTypography-caption":
+            {
+              color: "var(--mui-palette-text-primary) !important",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root:hover > .MuiSvgIcon-root": {
+            color: "var(--mui-palette-text-primary)",
+          },
+          ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected": {
+            backgroundColor: alpha(theme.palette.primary.main, 0.16),
+          },
+          ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root":
+            {
+              color: "var(--mui-palette-primary-main)",
+              backgroundColor: "transparent",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemText-root .MuiTypography-root":
+            {
+              color: "var(--mui-palette-text-primary) !important",
+              fontWeight: 600,
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiTypography-caption":
+            {
+              color: "var(--mui-palette-text-primary) !important",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected > .MuiSvgIcon-root":
+            {
+              color: "var(--mui-palette-text-primary)",
+            },
+          ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected:hover": {
+            backgroundColor: alpha(theme.palette.primary.main, 0.2),
+          },
+          // Dark theme: keep labels + chevrons white (incl. children flyout)
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root .MuiListItemText-root .MuiTypography-root':
+            {
+              color: "#fff",
+            },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root:hover .MuiListItemText-root .MuiTypography-root, [data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemText-root .MuiTypography-root':
+            {
+              color: "#fff !important",
+            },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiTypography-caption':
+            {
+              color: "#fff",
+            },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root > .MuiSvgIcon-root, [data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root:hover > .MuiSvgIcon-root, [data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root.Mui-selected > .MuiSvgIcon-root':
+            {
+              color: "#fff !important",
+            },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root:hover .MuiListItemIcon-root, [data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root':
+            {
+              color: "#fff",
+            },
+        })}
+      />
       <DashboardLayout>
         <Box
           sx={{
@@ -656,7 +883,6 @@ function SideDashboard(props) {
             height: "100vh",
           }}
         >
-          <DemoPageContent pathname={router.pathname} />
           <Outlet />
           <Box
             sx={{
@@ -670,7 +896,7 @@ function SideDashboard(props) {
           </Box>
         </Box>
       </DashboardLayout>
-    </AppProvider>
+    </ReactRouterAppProvider>
   );
 }
 
