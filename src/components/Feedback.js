@@ -5,7 +5,7 @@ import {
   Typography,
   Button,
   Card,
-  Grid,
+  GridLegacy as Grid,
   Divider,
 } from "@mui/material";
 import { Formik, Form, ErrorMessage, Field } from "formik";

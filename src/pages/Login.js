@@ -15,7 +15,7 @@ import {
   CardMedia,
   useMediaQuery,
   useTheme,
-  Grid,
+  GridLegacy as Grid,
   Avatar,
   ThemeProvider,
 } from "@mui/material";
@@ -65,10 +65,14 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${apiUrl}/auth/loginUser`, {
-        username: user_data.username,
-        password: user_data.password,
-      });
+      const response = await axios.post(
+        `${apiUrl}/auth/loginUser`,
+        {
+          username: user_data.username,
+          password: user_data.password,
+        },
+        { withCredentials: true }
+      );
 
       const data = response.data;
 
