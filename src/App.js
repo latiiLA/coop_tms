@@ -9,11 +9,19 @@ import {
 } from "react-router-dom";
 import { useAuthContext } from "./context/AuthContext";
 import LoadingSpinner from "./components/LoadingSpinner";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Toaster } from "react-hot-toast";
 import SideDashboard from "./pages/sidebar/SideDashboard";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+
+const SectionMenuHint = () => (
+  <Box sx={{ p: 3 }}>
+    <Typography color="text.secondary">
+      Choose an item from the sidebar menu to continue.
+    </Typography>
+  </Box>
+);
 
 const ViewDeactivatedCybersourceTerminal = React.lazy(() => import("./pages/cybersource/ViewDeactivatedCybersourceTerminal"));
 const EditCybersourceTerminal = React.lazy(() => import("./pages/cybersource/EditCybersourceTerminal"));
@@ -289,11 +297,9 @@ function App() {
             <Route
               path="/atm"
               element={
-                <ProtectedRoute permission="atm">  
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <ATMAdministration />
-                  </Suspense>
-                </ProtectedRoute>  
+                <ProtectedRoute permission="atm">
+                  <SectionMenuHint />
+                </ProtectedRoute>
               }
             />
             <Route
@@ -440,9 +446,7 @@ function App() {
               path="/administration"
               element={
                 <ProtectedRoute permission="administration">
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <Administration />
-                  </Suspense>
+                  <SectionMenuHint />
                 </ProtectedRoute>
               }
             />
@@ -565,11 +569,7 @@ function App() {
             {/* Report related */}
             <Route
               path="/reports"
-              element={
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Report />
-                </Suspense>
-              }
+              element={<SectionMenuHint />}
             />
             <Route
               path="/reports/posreports"
@@ -619,9 +619,7 @@ function App() {
             path="/pos"
             element={
               <ProtectedRoute permission="pos">
-                <Suspense fallback={<LoadingSpinner />}>
-                  <POSAdministration />
-                </Suspense>
+                <SectionMenuHint />
               </ProtectedRoute>
             }
           />
@@ -752,9 +750,7 @@ function App() {
             path="/request"
             element={
               <ProtectedRoute permission="request">
-                <Suspense fallback={<LoadingSpinner />}>
-                  <POSRequestAdministration />
-                </Suspense>
+                <SectionMenuHint />
               </ProtectedRoute>
             }
           />
