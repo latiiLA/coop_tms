@@ -11,24 +11,11 @@ import * as Yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useAuthContext } from "../../context/AuthContext";
 import { CustomSelect } from "../../components/CustomFields";
 
 const CreateCybersourceTerminal = () => {
-  const apiUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = React.useState(false);
   const hasShownToast = useRef(false); // Use ref to track if the toast has been shown
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-  
-  const [error, setError] = useState(null);
-  const { role, permissions } = useAuthContext();
-  const [loading, setLoading] = useState(true);
 
   const cbsc_types = [
     { value: "ECOMMERCE", label: "Ecommerce" },

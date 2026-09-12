@@ -26,10 +26,6 @@ const RequestPOS = () => {
   const [selectedDistrict, setSelectedDistrict] = useState(
     row?.district?._id || ""
   );
-  const [currentSerialNumber, setSerialNumber] = useState(
-    row?.serialNumber?.serialNumber || null
-  );
-
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -65,6 +61,7 @@ const RequestPOS = () => {
     };
 
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   console.log("row", row);
@@ -119,6 +116,7 @@ const RequestPOS = () => {
     };
 
     fetchDistricts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   useEffect(() => {

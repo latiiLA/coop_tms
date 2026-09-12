@@ -26,7 +26,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function PasswordVault() {
   const navigate = useNavigate();
-  const { role, permissions } = useAuthContext();
+  const { permissions } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataRows, setDataRows] = useState([]);
@@ -76,34 +76,6 @@ export default function PasswordVault() {
       // console.error("Error deleting user:", error);
       toast.error(error.response?.data?.message || error?.message);
       handleClose();
-    }
-  };
-
-  const handleEdit = async (rowId) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      // console.error("No authentication token found");
-      toast.error("User is not an authenticated user.");
-      navigate("/home");
-      return;
-    }
-    try {
-      await axios.patch(
-        `${apiUrl}/password/editPasswordEntry/${rowId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      const updatedData = await fetchRows();
-      setDataRows(updatedData);
-      toast.success("password edited.");
-    } catch (error) {
-      // console.error("Error resetting wrong password count", error);
-      toast.error("Error: while resetting editing password count.");
     }
   };
 
@@ -278,6 +250,7 @@ export default function PasswordVault() {
       }
     }
     loadRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const rows = dataRows.map((row, index) => ({

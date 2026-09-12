@@ -66,6 +66,7 @@ export default function ComboBox({
     };
 
     fetchDevices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
   // initialValue, form, field.name;
 

@@ -54,6 +54,7 @@ const POSPerBranch = () => {
 
   useEffect(() => {
     fetchRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   rows =

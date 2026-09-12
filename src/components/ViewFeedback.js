@@ -43,6 +43,7 @@ const ViewFeedback = () => {
   };
   useEffect(() => {
     fetchRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const columns = [
     { field: "id", headerName: "No", type: "number", width: 10 },
@@ -86,7 +87,6 @@ const ViewFeedback = () => {
       ),
     },
   ];
-  const index = 0;
   const rows = feedback.map((row, index) => ({
     id: index + 1,
     ...row,

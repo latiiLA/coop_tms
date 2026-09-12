@@ -20,7 +20,6 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 
 const UserProfile = () => {
   const navigate = useNavigate();
-  const [profilePhoto, setProfilePhoto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataRows, setDataRows] = useState({
@@ -71,6 +70,7 @@ const UserProfile = () => {
     }
 
     loadRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const Gender = [
@@ -108,7 +108,7 @@ const UserProfile = () => {
       return;
     }
     try {
-      const response = await axios.patch(
+      await axios.patch(
         `${apiUrl}/auth/updateUser`,
 
         {
@@ -132,13 +132,6 @@ const UserProfile = () => {
     } catch (error) {
       // console.error("Error updating profile:", error);
       toast.error("Error updating profile");
-    }
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setProfilePhoto(file);
     }
   };
 

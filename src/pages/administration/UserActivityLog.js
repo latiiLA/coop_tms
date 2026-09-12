@@ -61,6 +61,7 @@ const UserActivityLog = () => {
     const intervalId = setInterval(fetchLogs, 5000); // Poll every 5 seconds
 
     return () => clearInterval(intervalId); // Cleanup on unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

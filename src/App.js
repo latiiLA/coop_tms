@@ -250,7 +250,7 @@ const PasswordChangeRoute = () => {
 };
 
 function App() {
-  const { role, permissions, loading } = useAuthContext();
+  const { role, loading } = useAuthContext();
 
   if (loading) {
     return <LoadingSpinner />;

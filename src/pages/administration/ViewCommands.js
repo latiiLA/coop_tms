@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function Commands({ role = "admin" }) {
   const [data_rows, setDataRows] = useState([]);
-  const [edited, setEdited] = useState({});
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate()
 
@@ -71,6 +70,7 @@ export default function Commands({ role = "admin" }) {
     }
 
     loadRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const rows = data_rows.map((row, index) => ({

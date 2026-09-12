@@ -60,7 +60,7 @@ const ATMForm = ({
   const [selectedDistrict, setSelectedDistrict] = useState(
     initialValues?.branchName?.district?._id || ""
   );
-  const { role, permissions } = useAuthContext();
+  const { permissions } = useAuthContext();
   const navigate = useNavigate();
 
   const [availablePorts, setAvailablePorts] = useState([]);

@@ -43,6 +43,7 @@ const ViewBugs = () => {
   };
   useEffect(() => {
     fetchRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const columns = [
     { field: "id", headerName: "No", type: "number", width: 10 },
@@ -87,7 +88,6 @@ const ViewBugs = () => {
       ),
     },
   ];
-  const index = 0;
   const rows = bugs.map((row, index) => ({
     id: index + 1,
     ...row,

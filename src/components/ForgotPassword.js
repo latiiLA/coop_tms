@@ -21,7 +21,7 @@ import { AppProvider } from "@toolpad/core/AppProvider";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const { role, currentUser, setRole } = useAuthContext();
+  const { currentUser, setRole } = useAuthContext();
   const [loading, setLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -47,7 +47,7 @@ const ForgotPassword = () => {
     }
     try {
       const apiUrl = process.env.REACT_APP_API_URL;
-      const response = await axios.post(
+      await axios.post(
         `${apiUrl}/auth/forgotPassword`,
         {
           password: update_data.password,

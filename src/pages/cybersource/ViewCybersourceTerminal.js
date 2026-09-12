@@ -11,7 +11,7 @@ import { isDemoMode } from "../../demo/demoApi";
 
 export default function ViewCybersourceTerminal() {
   const navigate = useNavigate();
-  const { role, permissions } = useAuthContext();
+  const { permissions } = useAuthContext();
   const can = (perm) => isDemoMode() || permissions?.includes(perm);
   const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -160,6 +160,7 @@ export default function ViewCybersourceTerminal() {
 
   useEffect(() => {
     fetchRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const rows = dataRows.map((row, index) => ({

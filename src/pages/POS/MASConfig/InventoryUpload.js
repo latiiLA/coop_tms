@@ -47,6 +47,7 @@ const InventoryUpload = () => {
 
   useEffect(() => {
     fetchRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   rows =

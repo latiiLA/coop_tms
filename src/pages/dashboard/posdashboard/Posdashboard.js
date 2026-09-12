@@ -218,10 +218,12 @@ const Posdashboard = () => {
 
   useEffect(() => {
     fetchOverview();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     fetchTrend(selectedType);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedType]);
 
   const metrics = useMemo(() => {

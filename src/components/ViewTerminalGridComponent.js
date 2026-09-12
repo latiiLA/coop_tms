@@ -1,7 +1,7 @@
 import { Edit, Preview } from "@mui/icons-material";
 import { Alert, AlertTitle, Box, IconButton, Tooltip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -14,10 +14,6 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
   const { role, permissions } = useAuthContext();
   const can = (perm) => isDemoMode() || permissions?.includes(perm);
   const [copiedData, setCopiedData] = React.useState("");
-  // console.log(pings);
-
-  const [open, setOpen] = useState(false);
-  const [configData, setConfigData] = useState("");
 
   const columns = [
     // { field: "id", headerName: "No", type: "number", width: 10 },
@@ -174,39 +170,6 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
       ),
     },
   ];
-
-  const handleCopy = (rowData) => {
-    // Format the row data into a string
-    const rowText = `
-    ${rowData.unitId}
-    ${rowData.terminalId}
-    ${rowData.terminalName}
-    ${rowData.branchName.companyName}
-    ${rowData.district.districtName}
-    ${rowData.cbsAccount}
-    ${rowData.port}
-    ${rowData.ipAddress}
-    ${rowData.type}
-    ${rowData.site}
-    ${rowData.status}
-  `;
-
-    // Check if the Clipboard API is available
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard
-        .writeText(rowText)
-        .then(() => {
-          toast.success("Copied to clipboard!");
-        })
-        .catch((err) => {
-          // console.error("Failed to copy:", err);
-          toast.error("Failed to copy.");
-        });
-    } else {
-      // Fallback for HTTP or unsupported browsers
-      fallbackCopyText(rowText);
-    }
-  };
 
   const handlePortName = async (portNumber) => {
     console.log(portNumber);

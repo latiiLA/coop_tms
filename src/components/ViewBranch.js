@@ -155,6 +155,7 @@ export default function ViewBranch() {
 
   useEffect(() => {
     fetchRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Add any necessary dependencies here
 
   const rows = dataRows.map((row, index) => ({

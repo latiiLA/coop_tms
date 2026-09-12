@@ -204,7 +204,7 @@ const EditPasswordEntry = () => {
       "Server OS is required"
     ),
 
-    serverOS: Yup.string().required(
+    environment: Yup.string().required(
       "Environment is required"
     ),
 

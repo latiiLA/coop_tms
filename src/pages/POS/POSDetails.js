@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CustomTextField } from "./../../components/CustomFields";
 import { FileOpen } from "@mui/icons-material";
-import toast from "react-hot-toast";
 import PdfBlobViewer from "../../components/PdfBlobViewer";
 
 const POSDetails = () => {
@@ -16,31 +15,6 @@ const POSDetails = () => {
   const [pdfOpen, setPdfOpen] = useState(false);
   const [pdfPath, setPdfPath] = useState("");
 
-  const handleDownload = () => {
-    try {
-      if (!row?.file?.filePath || !row?.file?.fileName) {
-        console.error("File information is missing");
-        return;
-      }
-
-      // Construct the full file URL
-      const fileUrl = `${process.env.REACT_APP_API_URL}/${row.file.filePath}`;
-      console.log("Downloading file from:", fileUrl);
-
-      // Create a temporary anchor element
-      const link = document.createElement("a");
-      link.href = fileUrl;
-      link.download = row.file.fileName;
-
-      // Append link to the document, trigger the click, and remove it
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      // console.error("Error downloading the file:", error);
-      toast.error("Error downloading the file");
-    }
-  };
   const handlePdfView = (filepath) => {
     setPdfPath(filepath);
     setPdfOpen(true);

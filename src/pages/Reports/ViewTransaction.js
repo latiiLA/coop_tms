@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -22,7 +21,6 @@ const maskPAN = (pan) => {
 
 const ViewTransaction = () => {
   const navigate = useNavigate();
-  const { role } = useAuthContext();
   const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -83,6 +81,7 @@ const ViewTransaction = () => {
     if (terminalId && startDate && endDate) {
       fetchRows();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [terminalId, startDate, endDate]);
 
   const columns = [

@@ -146,7 +146,7 @@ const BulkRequest = () => {
 
     try {
       console.log("Sending rows to backend:", rows); // Log the data being sent
-      const response = await axios.post(
+      await axios.post(
         `${apiUrl}/request/bulkrequest`,
         { rows },
         {

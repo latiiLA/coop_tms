@@ -21,7 +21,6 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useAuthContext } from "../../context/AuthContext";
 import { CustomSelect } from "../../components/CustomFields";
 
 const CreatePasswordEntry = () => {
@@ -36,10 +35,9 @@ const CreatePasswordEntry = () => {
     event.preventDefault();
   };
   
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
   const [dataRows, setDataRows] = useState([]); // user data
-  const { role, permissions } = useAuthContext();
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
 
   const environment = [
@@ -84,6 +82,7 @@ const CreatePasswordEntry = () => {
       }
     }
     loadRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const INITIAL_FORM_STATE = {

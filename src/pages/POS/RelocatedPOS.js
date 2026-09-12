@@ -35,7 +35,7 @@ export default function RelocatedPOS() {
   const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [role, setRole] = useState("user");
+  const [, setRole] = useState("user");
   const [value, setValue] = useState(0); // State for the active tab
   const [searchText, setSearchText] = useState(""); // State for search input
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -72,6 +72,7 @@ export default function RelocatedPOS() {
 
   useEffect(() => {
     fetchRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (event, newValue) => {

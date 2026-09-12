@@ -11,7 +11,7 @@ import { isDemoMode } from "../../demo/demoApi";
 
 export default function ViewDeactivatedCybersourceTerminal() {
   const navigate = useNavigate();
-  const { role, permissions } = useAuthContext();
+  const { permissions } = useAuthContext();
   const can = (perm) => isDemoMode() || permissions?.includes(perm);
   const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -96,7 +96,7 @@ export default function ViewDeactivatedCybersourceTerminal() {
                 alignItems: "center",
               }}
             >
-              {!params.status == "Deactivated" && can("edit_cybersource_terminal") && (
+              {params.row?.status !== "Deactivated" && can("edit_cybersource_terminal") && (
                 <Tooltip title="Edit Terminal">
                   <IconButton
                     color="primary"
@@ -160,6 +160,7 @@ export default function ViewDeactivatedCybersourceTerminal() {
 
   useEffect(() => {
     fetchRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const rows = dataRows.map((row, index) => ({

@@ -26,7 +26,7 @@ import { isDemoMode } from "../../demo/demoApi";
 
 export default function ViewUsers() {
   const navigate = useNavigate();
-  const { role, permissions } = useAuthContext();
+  const { permissions } = useAuthContext();
   const can = (perm) => isDemoMode() || permissions?.includes(perm);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -307,6 +307,7 @@ export default function ViewUsers() {
       }
     }
     loadRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const rows = dataRows.map((row, index) => ({

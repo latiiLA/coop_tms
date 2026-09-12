@@ -71,6 +71,7 @@ export default function RelocationRequests() {
 
   useEffect(() => {
     fetchRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (event, newValue) => {

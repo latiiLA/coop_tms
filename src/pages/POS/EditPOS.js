@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CustomSelect, CustomTextField } from "../../components/CustomFields";
 import { pos_sites, pos_status } from "../../components/DropDownFormData";
-import { useAuthContext } from "../../context/AuthContext";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -15,7 +14,6 @@ const EditPOS = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { row } = location.state;
-  const { role } = useAuthContext();
   console.log("console rows", row);
   const [loading, setLoading] = useState(false);
   const [districts, setDistricts] = useState([]);
