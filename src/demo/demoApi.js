@@ -3,6 +3,9 @@
 export const isDemoMode = () =>
   String(process.env.REACT_APP_DEMO_MODE || "").toLowerCase() === "true";
 
+export const isDemoToken = (token) =>
+  Boolean(token) && (String(token).endsWith(".demo") || String(token).includes('"alg":"none"'));
+
 export const DEMO_USERNAME = "demo";
 export const DEMO_PASSWORD = "demo123";
 

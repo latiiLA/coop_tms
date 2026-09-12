@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { isDemoMode, isDemoToken } from "../demo/demoApi";
 
 export const AuthContext = createContext();
 
@@ -30,6 +31,10 @@ export const AuthContextProvider = ({ children }) => {
       }
 
       try {
+        if (!isDemoMode() && isDemoToken(token)) {
+          throw new Error("Demo session cannot be used outside demo mode");
+        }
+
         const decoded = jwtDecode(token);
 
         // Validate expiration
