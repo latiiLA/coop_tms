@@ -8,6 +8,7 @@ import {
   Router,
 } from "react-router-dom";
 import { useAuthContext } from "./context/AuthContext";
+import { isDemoMode, isDemoPasswordPermission } from "./demo/demoApi";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { Box, Typography } from "@mui/material";
 import { Toaster } from "react-hot-toast";
@@ -181,6 +182,13 @@ const ProtectedRoute = ({ permission, children }) => {
 
   if (loading) {
     return <LoadingSpinner />;
+  }
+
+  if (isDemoMode()) {
+    if (isDemoPasswordPermission(permission)) {
+      return <Navigate to="/home" replace />;
+    }
+    return children;
   }
 
   if (!permissions) {

@@ -33,11 +33,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import toast from "react-hot-toast";
+import { apiGet } from "../../../demo/demoApi";
 
 const fadeUp = keyframes`
   from { opacity: 0; transform: translateY(10px); }
@@ -165,7 +165,7 @@ const Posdashboard = () => {
     try {
       setTrendLoading(true);
       setError(null);
-      const response = await axios.get(`${apiUrl}/pos/${endpoint}`, authConfig());
+      const response = await apiGet(`${apiUrl}/pos/${endpoint}`, authConfig());
       setChartData(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       setError("Failed to load growth trend.");
@@ -185,8 +185,8 @@ const Posdashboard = () => {
     try {
       setOverviewLoading(true);
       const [districtRes, branchRes] = await Promise.all([
-        axios.get(`${apiUrl}/pos/getPOSCountPerDistrict`, authConfig()),
-        axios.get(`${apiUrl}/pos/getPOSCountPerBranch`, authConfig()),
+        apiGet(`${apiUrl}/pos/getPOSCountPerDistrict`, authConfig()),
+        apiGet(`${apiUrl}/pos/getPOSCountPerBranch`, authConfig()),
       ]);
 
       setDistrictData(

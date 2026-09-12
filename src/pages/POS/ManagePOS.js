@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +12,7 @@ import {
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import ViewPOSGridComponent from "./requests/ViewPOSGridComponent";
+import { apiGet } from "../../demo/demoApi";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -51,7 +51,7 @@ export default function ManagePOS() {
     }
 
     try {
-      const response = await axios.get(`${apiUrl}/pos/getPos`, {
+      const response = await apiGet(`${apiUrl}/pos/getPos`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

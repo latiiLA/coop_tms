@@ -20,6 +20,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import CustomToolbar from "../../components/CustomToolbar";
 import LoadingButton from "@mui/lab/LoadingButton";
 import axios from "axios";
+import { isDemoMode } from "../../demo/demoApi";
 
 const ViewPOSRequestGrid = ({
   rows: initialRows,
@@ -34,6 +35,7 @@ const ViewPOSRequestGrid = ({
   const [selectedRow, setSelectedRow] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const { role, permissions } = useAuthContext();
+  const can = (perm) => isDemoMode() || permissions?.includes(perm);
 
   useEffect(() => {
     setRowsState(initialRows);
@@ -85,18 +87,18 @@ const ViewPOSRequestGrid = ({
             alignItems: "center",
           }}
         >
-          {!isRelocated && params.row.isDeleted === false && (permissions?.includes("edit_request") || permissions?.includes("approve_pos")) && (
+          {!isRelocated && params.row.isDeleted === false && (can("edit_request") || can("approve_pos")) && (
             <Tooltip title="Edit Request">
               <Box>
                 <IconButton
                   color="primary"
                   size="small"
                   disabled={
-                    ((permissions?.includes("edit_request") && params.row.status === "Authorized") || params.row.status === "Approved" || 
-                    ((params.row.status === "New" || params.row.status === "Rejected") && permissions?.includes("approve_pos")))
+                    ((can("edit_request") && params.row.status === "Authorized") || params.row.status === "Approved" || 
+                    ((params.row.status === "New" || params.row.status === "Rejected") && can("approve_pos")))
                   }
                   onClick={() => {
-                    if (permissions?.includes("approve_pos")) {
+                    if (can("approve_pos") && !isDemoMode()) {
                       navigate("/approverequest", {
                         state: { row: params.row },
                       });
@@ -112,7 +114,7 @@ const ViewPOSRequestGrid = ({
               </Box>
             </Tooltip>
           )}
-          {permissions?.includes("view_request_detail") &&
+          {can("view_request_detail") &&
             <Tooltip title="View Request">
               <IconButton
                 color="primary"
@@ -136,7 +138,7 @@ const ViewPOSRequestGrid = ({
               <ContentCopy />
             </IconButton>
           </Tooltip>
-          {permissions?.includes("delete_request") &&
+          {can("delete_request") &&
             params.row.isDeleted === false &&
             (params.row.status === "New" ||
               params.row.status === "Rejected") && (

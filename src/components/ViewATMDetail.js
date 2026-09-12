@@ -1,14 +1,55 @@
 import { Box, Button, Card, TextField, Typography } from "@mui/material";
 
-import React, { useState } from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CustomSelect } from "./CustomFields";
+
+const formatDate = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleString("en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
+const personName = (person) => {
+  const first = person?.firstName || "";
+  const father = person?.fatherName || "";
+  return `${first} ${father}`.trim();
+};
 
 const ViewATMDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { row } = location.state;
-  console.log("inside view detail", row);
+  const { row } = location.state || {};
+
+  if (!row) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
+          marginY: 4,
+        }}
+      >
+        <Typography variant="h5">Terminal Details</Typography>
+        <Typography color="text.secondary">
+          No record selected. Go back and open Details from the list.
+        </Typography>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button onClick={() => navigate("/")}>Home</Button>
+          <Button onClick={() => navigate(-1)}>Back</Button>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -54,7 +95,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.type}
+            defaultValue={row?.type || ""}
           />
           <TextField
             name="unitId"
@@ -64,7 +105,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.unitId}
+            defaultValue={row?.unitId ?? ""}
           />
           <TextField
             name="terminalId"
@@ -74,7 +115,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.terminalId}
+            defaultValue={row?.terminalId || ""}
           />
           <TextField
             name="terminalName"
@@ -84,7 +125,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.terminalName}
+            defaultValue={row?.terminalName || ""}
           />
           <TextField
             name="district"
@@ -115,7 +156,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.site}
+            defaultValue={row?.site || ""}
           />
           <TextField
             name="remark"
@@ -125,7 +166,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.remark}
+            defaultValue={row?.remark || ""}
           />
         </Box>
         <Box
@@ -144,7 +185,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.cbsAccount}
+            defaultValue={row?.cbsAccount || ""}
           />
           <TextField
             name="port"
@@ -154,7 +195,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.port}
+            defaultValue={row?.port ?? ""}
           />
           <TextField
             name="ipAddress"
@@ -164,7 +205,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.ipAddress}
+            defaultValue={row?.ipAddress || ""}
           />
 
           {/* {row.isDeleted === false && ( */}
@@ -176,7 +217,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            value={row.createdBy.firstName + " " + row.createdBy.fatherName} // Fallback to user ID if name is not available
+            value={personName(row?.createdBy) || "Demo User"}
           />
           {/* )} */}
           {row.isDeleted === true && (
@@ -204,14 +245,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={new Date(row.createdAt).toLocaleString("en-US", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })}
+            defaultValue={formatDate(row?.createdAt)}
           />
           <TextField
             name="updatedAt"
@@ -221,14 +255,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={new Date(row.updatedAt).toLocaleString("en-US", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })}
+            defaultValue={formatDate(row?.updatedAt)}
           />
           <TextField
             name="status"
@@ -238,7 +265,7 @@ const ViewATMDetail = () => {
             InputProps={{
               readOnly: true,
             }}
-            defaultValue={row.status}
+            defaultValue={row?.status || ""}
           />
           {row.isDeleted === true && row.relocatedTo && (
             <TextField

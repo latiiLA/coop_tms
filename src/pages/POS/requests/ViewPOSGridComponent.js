@@ -34,6 +34,7 @@ import emvCtlsTerminal from "../../../assets/posconfig/EMV_CTLS_Terminal.xml";
 import emvKeys from "../../../assets/posconfig/EMV_Keys.xml";
 import emvTerminal from "../../../assets/posconfig/EMV_Terminal.xml";
 import axios from "axios";
+import { isDemoMode } from "../../../demo/demoApi";
 
 const ViewPOSGridComponent = ({
   rows,
@@ -53,6 +54,7 @@ const ViewPOSGridComponent = ({
   const [selectedConfigData, setSelectedConfigData] = useState(null);
 
   const { role, permissions } = useAuthContext();
+  const can = (perm) => isDemoMode() || permissions?.includes(perm);
   // console.log(pings);
   const columns = [
     {
@@ -113,7 +115,7 @@ const ViewPOSGridComponent = ({
               alignItems: "center",
             }}
           >
-            {!isRelocated && permissions?.includes("edit_pos") &&(
+            {!isRelocated && can("edit_pos") &&(
               <Tooltip title="Edit POS">
                 <Box>
                   <IconButton
@@ -128,7 +130,7 @@ const ViewPOSGridComponent = ({
                 </Box>
               </Tooltip>
             )}
-            {!isRelocated && detailType && permissions?.includes("view_request_detail") && (
+            {!isRelocated && detailType && can("view_request_detail") && (
               <Tooltip Tooltip title="View Request">
                 <IconButton
                   color="primary"
@@ -143,7 +145,7 @@ const ViewPOSGridComponent = ({
                 </IconButton>
               </Tooltip>
             )}
-            {!detailType && permissions?.includes("view_pos_detail") && (
+            {!detailType && can("view_pos_detail") && (
               <Tooltip title="View POS">
                 <IconButton
                   color="primary"
@@ -171,7 +173,7 @@ const ViewPOSGridComponent = ({
                 <ContentCopy />
               </IconButton>
             </Tooltip> */}
-            {permissions?.includes("request_pos_termination") && (params.row.status === "New" || params.row.status === "Active") && (
+            {can("request_pos_termination") && (params.row.status === "New" || params.row.status === "Active") && (
               <Tooltip title="Stop POS">
                 <IconButton
                   sx={{ color: "#ff0000" }}
@@ -182,7 +184,7 @@ const ViewPOSGridComponent = ({
                 </IconButton>
               </Tooltip>
             )}
-            {!isRelocated && permissions?.includes("generate_pos_config") && (
+            {!isRelocated && can("generate_pos_config") && (
               <Tooltip title="Generate Config">
                 <IconButton
                   color="primary"

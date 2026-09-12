@@ -7,10 +7,12 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useAuthContext } from "../../context/AuthContext";
+import { isDemoMode } from "../../demo/demoApi";
 
 export default function ViewDeactivatedCybersourceTerminal() {
   const navigate = useNavigate();
   const { role, permissions } = useAuthContext();
+  const can = (perm) => isDemoMode() || permissions?.includes(perm);
   const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -96,7 +98,7 @@ export default function ViewDeactivatedCybersourceTerminal() {
                 alignItems: "center",
               }}
             >
-              {!params.status == "Deactivated" && permissions?.includes("edit_cybersource_terminal") && (
+              {!params.status == "Deactivated" && can("edit_cybersource_terminal") && (
                 <Tooltip title="Edit Terminal">
                   <IconButton
                     color="primary"
@@ -109,7 +111,7 @@ export default function ViewDeactivatedCybersourceTerminal() {
                   </IconButton>
                 </Tooltip>
               )}
-              {permissions?.includes("view_cybersource_terminal_detail") &&
+              {can("view_cybersource_terminal_detail") &&
                 <Tooltip title="View Cybersource Terminal">
                   <IconButton
                     color="primary"

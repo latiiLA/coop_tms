@@ -1,0 +1,8 @@
+{
+  "status": "true",
+  "terminalsCount": [
+    { "_id": "NCR", "count": 300 },
+    { "_id": "CRM", "count": 250 },
+    { "_id": "CRM2", "count": 50 }
+  ]
+}

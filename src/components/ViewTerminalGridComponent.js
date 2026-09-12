@@ -8,10 +8,12 @@ import toast from "react-hot-toast";
 import CustomToolbar from "./CustomToolbar";
 import { GrConfigure } from "react-icons/gr";
 import axios from "axios";
+import { isDemoMode } from "../demo/demoApi";
 
 const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
   const navigate = useNavigate();
   const { role, permissions } = useAuthContext();
+  const can = (perm) => isDemoMode() || permissions?.includes(perm);
   const [copiedData, setCopiedData] = React.useState("");
   // console.log(pings);
 
@@ -121,7 +123,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
             alignItems: "center",
           }}
         >
-          {!isRelocated && permissions?.includes("edit_terminal") && (
+          {!isRelocated && can("edit_terminal") && (
             <Tooltip title="Edit Terminal">
               <IconButton
                 color="primary"
@@ -136,7 +138,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
               </IconButton>
             </Tooltip>
           )}
-          {permissions?.includes("view_terminal_detail") &&
+          {can("view_terminal_detail") &&
             <Tooltip title="View Terminal">
               <IconButton
                 color="primary"
@@ -158,7 +160,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
               <ContentCopy />
             </IconButton>
           </Tooltip> */}
-          {!isRelocated && permissions?.includes("generate_terminal_config") && (
+          {!isRelocated && can("generate_terminal_config") && (
             <Tooltip title="Generate Config">
               <IconButton
                 color="primary"

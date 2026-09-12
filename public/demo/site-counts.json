@@ -1,0 +1,7 @@
+{
+  "data": [
+    { "type": "NCR", "onsite": 180, "offsite": 120, "total": 300 },
+    { "type": "CRM", "onsite": 160, "offsite": 90, "total": 250 },
+    { "type": "CRM2", "onsite": 30, "offsite": 20, "total": 50 }
+  ]
+}

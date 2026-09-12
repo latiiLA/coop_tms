@@ -1,0 +1,45 @@
+{
+  "status": "true",
+  "branches": [
+    {
+      "_id": "b0",
+      "branchCode": "1001",
+      "companyName": "Demo Branch Central",
+      "address": "Central HQ",
+      "mnemonic": "CEN",
+      "district": { "_id": "d0", "districtName": "Central" }
+    },
+    {
+      "_id": "b1",
+      "branchCode": "1002",
+      "companyName": "Demo Branch North",
+      "address": "North HQ",
+      "mnemonic": "NTH",
+      "district": { "_id": "d1", "districtName": "North" }
+    },
+    {
+      "_id": "b2",
+      "branchCode": "1003",
+      "companyName": "Demo Branch South",
+      "address": "South HQ",
+      "mnemonic": "STH",
+      "district": { "_id": "d2", "districtName": "South" }
+    },
+    {
+      "_id": "b3",
+      "branchCode": "1004",
+      "companyName": "Demo Branch East",
+      "address": "East HQ",
+      "mnemonic": "EST",
+      "district": { "_id": "d3", "districtName": "East" }
+    },
+    {
+      "_id": "b4",
+      "branchCode": "1005",
+      "companyName": "Demo Branch West",
+      "address": "West HQ",
+      "mnemonic": "WST",
+      "district": { "_id": "d4", "districtName": "West" }
+    }
+  ]
+}

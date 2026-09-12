@@ -34,6 +34,12 @@ import customTheme from "../DarkMode/customTheme";
 import { Lock, Person } from "@mui/icons-material";
 import { jwtDecode } from "jwt-decode";
 import { AppProvider } from "@toolpad/core/AppProvider";
+import {
+  DEMO_PASSWORD,
+  DEMO_USERNAME,
+  demoLogin,
+  isDemoMode,
+} from "../demo/demoApi";
 
 const Login = () => {
   const INITIAL_FORM_STATE = {
@@ -65,16 +71,20 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${apiUrl}/auth/loginUser`,
-        {
-          username: user_data.username,
-          password: user_data.password,
-        },
-        { withCredentials: true }
-      );
-
-      const data = response.data;
+      let data;
+      if (isDemoMode()) {
+        data = await demoLogin(user_data.username, user_data.password);
+      } else {
+        const response = await axios.post(
+          `${apiUrl}/auth/loginUser`,
+          {
+            username: user_data.username,
+            password: user_data.password,
+          },
+          { withCredentials: true }
+        );
+        data = response.data;
+      }
 
       if (!data.token) {
         throw new Error("Authentication token was not returned.");
@@ -89,8 +99,8 @@ const Login = () => {
       const decoded = jwtDecode(token);
 
       const user = {
-        id: decoded.user.id,
-        role: decoded.role,
+        id: decoded.user._id || decoded.user.id,
+        role: decoded.user?.role || decoded.role,
         status: decoded.user.status,
         firstName: decoded.user.firstName,
         fatherName: decoded.user.fatherName,
@@ -102,10 +112,6 @@ const Login = () => {
       setCurrentUser(user);
       setRole(user.role);
       setPermissions(user.permissions);
-
-      console.log("Logged in user:", user);
-      console.log("Role:", user.role);
-      console.log("Permissions:", user.permissions);
 
       if (user.status === "New") {
         navigate("/changepassword");
@@ -220,6 +226,15 @@ const Login = () => {
                           >
                             Login
                           </Typography>
+                          {isDemoMode() && (
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{ textAlign: "center" }}
+                            >
+                              Demo: {DEMO_USERNAME} / {DEMO_PASSWORD}
+                            </Typography>
+                          )}
 
                           <Field
                             as={TextField}
@@ -361,6 +376,15 @@ const Login = () => {
                           >
                             Login
                           </Typography>
+                          {isDemoMode() && (
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{ textAlign: "center" }}
+                            >
+                              Demo: {DEMO_USERNAME} / {DEMO_PASSWORD}
+                            </Typography>
+                          )}
 
                           <Field
                             as={TextField}

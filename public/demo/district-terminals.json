@@ -1,0 +1,9 @@
+{
+  "data": [
+    { "district": "Central", "districtName": "Central", "mnemonic": "CEN", "CRM": 80, "NCR": 95, "CRM2": 12 },
+    { "district": "North", "districtName": "North", "mnemonic": "NTH", "CRM": 55, "NCR": 70, "CRM2": 10 },
+    { "district": "South", "districtName": "South", "mnemonic": "STH", "CRM": 45, "NCR": 60, "CRM2": 8 },
+    { "district": "East", "districtName": "East", "mnemonic": "EST", "CRM": 40, "NCR": 45, "CRM2": 12 },
+    { "district": "West", "districtName": "West", "mnemonic": "WST", "CRM": 30, "NCR": 30, "CRM2": 8 }
+  ]
+}

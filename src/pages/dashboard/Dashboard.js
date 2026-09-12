@@ -32,9 +32,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { apiGet } from "../../demo/demoApi";
 
 const fadeUp = keyframes`
   from { opacity: 0; transform: translateY(10px); }
@@ -185,13 +185,13 @@ const Dashboard = () => {
         setLoading(true);
         const [allTerminalsRes, siteRes, districtRes, pingRes] =
           await Promise.all([
-            axios.get(`${apiUrl}/terminal/getAllTerminal`, authConfig()),
-            axios.get(`${apiUrl}/terminal/getSiteCounts`, authConfig()),
-            axios.get(`${apiUrl}/terminal/getTerminalDataPerDistrict`, {
+            apiGet(`${apiUrl}/terminal/getAllTerminal`, authConfig()),
+            apiGet(`${apiUrl}/terminal/getSiteCounts`, authConfig()),
+            apiGet(`${apiUrl}/terminal/getTerminalDataPerDistrict`, {
               ...authConfig(),
               params: { terminalType: "All" },
             }),
-            axios.get(`${apiUrl}/ping/getPings`, authConfig()).catch(() => null),
+            apiGet(`${apiUrl}/ping/getPings`, authConfig()).catch(() => null),
           ]);
 
         if (cancelled) return;
@@ -200,8 +200,8 @@ const Dashboard = () => {
         setSiteCounts(siteRes.data?.data || []);
         setDistrictData(
           (districtRes.data?.data || []).map((item) => ({
-            district: item.districtName,
-            mnemonic: item.mnemonic || item.districtName,
+            district: item.districtName || item.district,
+            mnemonic: item.mnemonic || item.districtName || item.district,
             CRM: item.CRM || 0,
             NCR: item.NCR || 0,
             total: (item.CRM || 0) + (item.NCR || 0),
@@ -236,7 +236,7 @@ const Dashboard = () => {
   const fetchDistrictData = async (terminalType) => {
     try {
       setDistrictLoading(true);
-      const response = await axios.get(
+      const response = await apiGet(
         `${apiUrl}/terminal/getTerminalDataPerDistrict`,
         {
           ...authConfig(),
@@ -245,8 +245,8 @@ const Dashboard = () => {
       );
       setDistrictData(
         (response.data?.data || []).map((item) => ({
-          district: item.districtName,
-          mnemonic: item.mnemonic || item.districtName,
+          district: item.districtName || item.district,
+          mnemonic: item.mnemonic || item.districtName || item.district,
           CRM: item.CRM || 0,
           NCR: item.NCR || 0,
           total: (item.CRM || 0) + (item.NCR || 0),

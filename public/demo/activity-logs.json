@@ -1,0 +1,26 @@
+[
+  {
+    "userId": "demo-user-1",
+    "action": "Login",
+    "description": "Demo user signed in",
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Demo Browser",
+    "createdAt": "2026-09-11T10:00:00.000Z"
+  },
+  {
+    "userId": "demo-user-1",
+    "action": "View terminals",
+    "description": "Opened Manage ATM",
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Demo Browser",
+    "createdAt": "2026-09-11T10:05:00.000Z"
+  },
+  {
+    "userId": "u2",
+    "action": "Create POS request",
+    "description": "Submitted a sample POS request",
+    "ipAddress": "10.0.0.12",
+    "userAgent": "Demo Browser",
+    "createdAt": "2026-09-11T11:20:00.000Z"
+  }
+]

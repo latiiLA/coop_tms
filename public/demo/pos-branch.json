@@ -1,0 +1,35 @@
+{
+  "status": "true",
+  "result": [
+    {
+      "branchId": "b1",
+      "branchName": "Demo Branch Central",
+      "totalCount": 120,
+      "statusCounts": { "Active": 95, "New": 12, "Stopped": 8, "ToBeRelocated": 5 }
+    },
+    {
+      "branchId": "b2",
+      "branchName": "Demo Branch North",
+      "totalCount": 88,
+      "statusCounts": { "Active": 70, "New": 10, "Stopped": 5, "ToBeRelocated": 3 }
+    },
+    {
+      "branchId": "b3",
+      "branchName": "Demo Branch South",
+      "totalCount": 76,
+      "statusCounts": { "Active": 60, "New": 8, "Stopped": 6, "ToBeRelocated": 2 }
+    },
+    {
+      "branchId": "b4",
+      "branchName": "Demo Branch East",
+      "totalCount": 64,
+      "statusCounts": { "Active": 50, "New": 7, "Stopped": 4, "ToBeRelocated": 3 }
+    },
+    {
+      "branchId": "b5",
+      "branchName": "Demo Branch West",
+      "totalCount": 52,
+      "statusCounts": { "Active": 40, "New": 6, "Stopped": 4, "ToBeRelocated": 2 }
+    }
+  ]
+}

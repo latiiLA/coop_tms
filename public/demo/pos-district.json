@@ -1,0 +1,10 @@
+{
+  "status": "true",
+  "result": [
+    { "districtId": "d1", "districtName": "Central", "count": 420 },
+    { "districtId": "d2", "districtName": "North", "count": 310 },
+    { "districtId": "d3", "districtName": "South", "count": 280 },
+    { "districtId": "d4", "districtName": "East", "count": 190 },
+    { "districtId": "d5", "districtName": "West", "count": 150 }
+  ]
+}

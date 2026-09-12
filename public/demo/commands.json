@@ -1,0 +1,23 @@
+{
+  "status": "true",
+  "commands": [
+    {
+      "_id": "c1",
+      "command": "STATUS",
+      "description": "Check ATM status",
+      "example": "STATUS"
+    },
+    {
+      "_id": "c2",
+      "command": "REBOOT",
+      "description": "Reboot the unit",
+      "example": "REBOOT"
+    },
+    {
+      "_id": "c3",
+      "command": "LOAD",
+      "description": "Load configuration",
+      "example": "LOAD CONFIG"
+    }
+  ]
+}

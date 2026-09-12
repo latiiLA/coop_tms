@@ -22,10 +22,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { LockOpen, Search } from "@mui/icons-material";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { isDemoMode } from "../../demo/demoApi";
 
 export default function ViewUsers() {
   const navigate = useNavigate();
   const { role, permissions } = useAuthContext();
+  const can = (perm) => isDemoMode() || permissions?.includes(perm);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataRows, setDataRows] = useState([]);
@@ -228,7 +230,7 @@ export default function ViewUsers() {
             margin: "auto",
           }}
         >
-          {permissions?.includes("unlock_account") && (
+          {can("unlock_account") && (
             <Tooltip title="Reset Password Count">
               <IconButton
                 color="primary"
@@ -241,7 +243,7 @@ export default function ViewUsers() {
             </Tooltip>
           )}
 
-          {permissions?.includes("reset_password") && (
+          {can("reset_password") && (
               <Tooltip title="Reset Password">
                 <IconButton
                   color="primary"
@@ -252,7 +254,7 @@ export default function ViewUsers() {
                 </IconButton>
               </Tooltip>
           )}
-          {permissions?.includes("delete_user") && (
+          {can("delete_user") && (
               <Tooltip title="Delete User">
                 <IconButton
                   color="secondary"

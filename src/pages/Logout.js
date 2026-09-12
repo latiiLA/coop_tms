@@ -3,14 +3,14 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import axios from "axios";
+import { isDemoMode } from "../demo/demoApi";
 
 const Logout = () => {
   const navigate = useNavigate();
-  const hasShownToast = useRef(false); // Track if the toast has been shown
-  const { setRole, setPermission, setCurrentUser } = useAuthContext();
-  const isMounted = useRef(true); // Track if the component is mounted
+  const hasShownToast = useRef(false);
+  const { setRole, setPermissions, setCurrentUser } = useAuthContext();
+  const isMounted = useRef(true);
 
-  // Cleanup function to set isMounted to false when the component is unmounted
   useEffect(() => {
     return () => {
       isMounted.current = false;
@@ -18,24 +18,36 @@ const Logout = () => {
   }, []);
 
   useEffect(() => {
-    const handleLogout = async () => {
-      const recieved_token = localStorage.getItem("token");
+    const clearSession = () => {
       localStorage.removeItem("token");
+      setRole(null);
+      setPermissions([]);
+      setCurrentUser(null);
+    };
 
-      if (!recieved_token) {
+    const handleLogout = async () => {
+      const receivedToken = localStorage.getItem("token");
+
+      if (!receivedToken) {
         if (!hasShownToast.current && isMounted.current) {
           toast.error(
             "Error: User is not authenticated or is already logged out."
           );
           hasShownToast.current = true;
         }
-        setRole(null);
-        setPermission(null)
-        setCurrentUser(null)
-        
-        if (isMounted.current) {
-          navigate("/login");
+        clearSession();
+        if (isMounted.current) navigate("/login");
+        return;
+      }
+
+      // Portfolio demo: no API — just clear local session
+      if (isDemoMode()) {
+        clearSession();
+        if (!hasShownToast.current && isMounted.current) {
+          toast.success("Logged out");
+          hasShownToast.current = true;
         }
+        if (isMounted.current) navigate("/login");
         return;
       }
 
@@ -46,31 +58,30 @@ const Logout = () => {
           {},
           {
             headers: {
-              Authorization: `Bearer ${recieved_token}`,
+              Authorization: `Bearer ${receivedToken}`,
             },
             withCredentials: true,
           }
         );
 
+        clearSession();
+
         if (response.status === 200) {
-          localStorage.removeItem("token"); // Clear token from localStorage
-          if (!hasShownToast.current && isMounted.current) {
-            hasShownToast.current = true;
-          }
-          setRole(null);
-          if (isMounted.current) {
-            navigate("/login"); // Redirect to login page
-          }
+          if (isMounted.current) navigate("/login");
         } else {
           toast.error("Logout failed");
+          if (isMounted.current) navigate("/login");
         }
       } catch (error) {
+        // Still clear local session if API fails
+        clearSession();
         toast.error("An error occurred during logout");
+        if (isMounted.current) navigate("/login");
       }
     };
 
     handleLogout();
-  }, [navigate, setRole, setPermission, setCurrentUser]);
+  }, [navigate, setRole, setPermissions, setCurrentUser]);
 
   return null;
 };

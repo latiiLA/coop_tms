@@ -165,10 +165,10 @@ export default function ViewBranch() {
     // Perform case-insensitive search in all text fields
     const searchLower = searchText.toLowerCase();
     return (
-      row.branchCode.toLowerCase().includes(searchLower) ||
-      row.companyName.toLowerCase().includes(searchLower) ||
-      row.address.toLowerCase().includes(searchLower) ||
-      row.mnemonic.toLowerCase().includes(searchLower)
+      row.branchCode?.toLowerCase().includes(searchLower) ||
+      row.companyName?.toLowerCase().includes(searchLower) ||
+      row.address?.toLowerCase().includes(searchLower) ||
+      row.mnemonic?.toLowerCase().includes(searchLower)
     );
   });
 

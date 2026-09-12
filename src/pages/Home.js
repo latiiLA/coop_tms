@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import {
   Box,
   Button,
@@ -17,16 +16,42 @@ import {
   Atm,
   Dashboard,
   Hub,
+  Link as LinkIcon,
+  OpenInNew,
   Place,
   PointOfSale,
   TrendingUp,
 } from "@mui/icons-material";
 import { useAuthContext } from "../context/AuthContext";
+import { apiGet, isDemoMode } from "../demo/demoApi";
 
 const fadeUp = keyframes`
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 `;
+
+const INTERNAL_LINKS = [
+  {
+    label: "Power BI",
+    href: "http://10.185.15.9:9502/analytics",
+    action: "Power BI Dashboard",
+  },
+  {
+    label: "IST GUI",
+    href: "https://10.12.11.11:8002/IST-CBOSwitch",
+    action: "IST Switch GUI",
+  },
+  {
+    label: "Coop IT Service Management",
+    href: "https://itservicemanagement.coopbank.local:8080/",
+    action: "IT Service Management",
+  },
+  {
+    label: "Cortex Web",
+    href: "https://10.12.11.90:4443/cortex-web",
+    action: "Cortex Web GUI",
+  },
+];
 
 const getGreeting = () => {
   const hour = new Date().getHours();
@@ -110,24 +135,24 @@ const Home = () => {
 
       try {
         const requests = [
-          axios.get(`${apiUrl}/terminal/getTerminalCounts`, authConfig()),
-          axios.get(`${apiUrl}/terminal/getAllTerminal`, authConfig()),
-          axios.get(`${apiUrl}/terminal/getSiteCounts`, authConfig()),
-          axios.get(`${apiUrl}/terminal/getTerminalDataPerDistrict`, {
+          apiGet(`${apiUrl}/terminal/getTerminalCounts`, authConfig()),
+          apiGet(`${apiUrl}/terminal/getAllTerminal`, authConfig()),
+          apiGet(`${apiUrl}/terminal/getSiteCounts`, authConfig()),
+          apiGet(`${apiUrl}/terminal/getTerminalDataPerDistrict`, {
             ...authConfig(),
             params: { terminalType: "All" },
           }),
-          axios.get(`${apiUrl}/pos/getPOSCountPerDistrict`, authConfig()),
-          axios.get(`${apiUrl}/pos/getPOSCountPerBranch`, authConfig()),
-          axios.get(`${apiUrl}/pos/getDailyReport`, authConfig()),
-          axios.get(`${apiUrl}/ping/getPings`, authConfig()).catch(() => null),
+          apiGet(`${apiUrl}/pos/getPOSCountPerDistrict`, authConfig()),
+          apiGet(`${apiUrl}/pos/getPOSCountPerBranch`, authConfig()),
+          apiGet(`${apiUrl}/pos/getDailyReport`, authConfig()),
+          apiGet(`${apiUrl}/ping/getPings`, authConfig()).catch(() => null),
         ];
 
         if (permissions?.includes("view_new_pos_request")) {
           requests.push(
-            axios
-              .get(`${apiUrl}/request/getNewRequest`, authConfig())
-              .catch(() => null)
+            apiGet(`${apiUrl}/request/getNewRequest`, authConfig()).catch(
+              () => null
+            )
           );
         }
 
@@ -160,7 +185,7 @@ const Home = () => {
 
         const atmByDistrict = (value(3)?.data || [])
           .map((item) => ({
-            district: item.districtName,
+            district: item.districtName || item.district,
             total: (item.CRM || 0) + (item.NCR || 0),
           }))
           .sort((a, b) => b.total - a.total);
@@ -168,7 +193,7 @@ const Home = () => {
 
         const districts = (value(4)?.result || [])
           .map((item) => ({
-            district: item.districtName,
+            district: item.districtName || item.district,
             count: item.count || 0,
           }))
           .sort((a, b) => b.count - a.count);
@@ -586,7 +611,7 @@ const Home = () => {
           flexWrap="wrap"
           useFlexGap
           alignItems="center"
-          sx={{ animation: `${fadeUp} 0.5s ease-out 0.3s both` }}
+          sx={{ mb: 2.5, animation: `${fadeUp} 0.5s ease-out 0.3s both` }}
         >
           <Dashboard fontSize="small" color="action" />
           {jumpLinks.map((link) => (
@@ -601,6 +626,61 @@ const Home = () => {
             </Button>
           ))}
         </Stack>
+      )}
+
+      {!isDemoMode() && (
+      <Box
+        sx={{
+          p: 2.5,
+          borderRadius: 1,
+          border: 1,
+          borderColor: "divider",
+          bgcolor: "background.paper",
+          animation: `${fadeUp} 0.5s ease-out 0.34s both`,
+        }}
+      >
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+          <LinkIcon color="primary" fontSize="small" />
+          <Typography variant="subtitle1" fontWeight={700}>
+            Internal links
+          </Typography>
+        </Stack>
+        <Grid container spacing={1.5}>
+          {INTERNAL_LINKS.map((item) => (
+            <Grid item xs={12} sm={6} key={item.href}>
+              <Stack
+                direction="row"
+                spacing={1.5}
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{
+                  p: 1.5,
+                  borderRadius: 1,
+                  border: 1,
+                  borderColor: "divider",
+                  bgcolor: "background.default",
+                  height: "100%",
+                }}
+              >
+                <Typography variant="body2" fontWeight={600}>
+                  {item.label}
+                </Typography>
+                <Button
+                  size="small"
+                  variant="contained"
+                  endIcon={<OpenInNew sx={{ fontSize: 16 }} />}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ textTransform: "none", flexShrink: 0 }}
+                >
+                  {item.action}
+                </Button>
+              </Stack>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
       )}
     </Box>
   );

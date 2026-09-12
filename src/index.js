@@ -5,6 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import "./index.css";
 import { ThemeProvider } from "./context/ThemeProvider";
 import { AuthContextProvider } from "./context/AuthContext";
+import { installDemoAxios, isDemoMode } from "./demo/demoApi";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -12,18 +13,22 @@ if (process.env.REACT_APP_NODE_ENV === "production") {
   console.log = () => {};
 }
 
-root.render(
-  <Router>
-    <AuthContextProvider>
-      <ThemeProvider>
-        <App />
-      </ThemeProvider>
-    </AuthContextProvider>
-  </Router>
-  //  </React.StrictMode>
-);
+const start = async () => {
+  if (isDemoMode()) {
+    await installDemoAxios();
+  }
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+  root.render(
+    <Router>
+      <AuthContextProvider>
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
+      </AuthContextProvider>
+    </Router>
+  );
+};
+
+start();
+
 reportWebVitals();

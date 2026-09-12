@@ -9,10 +9,10 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Search } from "@mui/icons-material";
-import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import toast from "react-hot-toast";
 import ViewTerminalGridComponent from "../../components/ViewTerminalGridComponent";
+import { apiGet } from "../../demo/demoApi";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -50,7 +50,7 @@ export default function ViewTerminal() {
     }
 
     try {
-      const response = await axios.get(`${apiUrl}/terminal/getTerminal`, {
+      const response = await apiGet(`${apiUrl}/terminal/getTerminal`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
