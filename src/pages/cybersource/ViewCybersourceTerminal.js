@@ -1,4 +1,4 @@
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { Alert, AlertTitle, Box, IconButton, InputAdornment, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
 import { Edit, Preview, Search } from "@mui/icons-material";
 import axios from "axios";
@@ -26,9 +26,7 @@ export default function ViewCybersourceTerminal() {
       field: "branchID",
       headerName: "Branch Name",
       flex: 1,
-      valueGetter: (params) => {
-        return params?.companyName || "N/A";
-      },
+      valueGetter: (value) => value?.companyName || "N/A",
     },
     {
       field: "district",
@@ -278,7 +276,7 @@ export default function ViewCybersourceTerminal() {
         }}
       >
         <DataGrid
-          slots={{ toolbar: GridToolbar }}
+          showToolbar
           rows={filteredRows}
           columns={columns}
           initialState={{

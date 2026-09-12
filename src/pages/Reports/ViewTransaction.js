@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import toast from "react-hot-toast";
@@ -192,7 +192,7 @@ const ViewTransaction = () => {
         <DataGrid
           rows={dataRows}
           columns={columns}
-          slots={{ toolbar: GridToolbar }}
+          showToolbar
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },

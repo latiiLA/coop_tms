@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import CustomToolbar from "../../components/CustomToolbar";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
@@ -303,9 +303,10 @@ const Transaction = () => {
               <DataGrid
                 rows={filteredRows}
                 columns={columns}
-                components={{
-                  Toolbar: role !== "user" ? GridToolbar : CustomToolbar,
-                }}
+                showToolbar
+                slots={
+                  role === "user" ? { toolbar: CustomToolbar } : undefined
+                }
                 initialState={{
                   pagination: {
                     paginationModel: { page: 0, pageSize: 20 },
@@ -340,9 +341,10 @@ const Transaction = () => {
               <DataGrid
                 rows={crmRows}
                 columns={columns}
-                components={{
-                  Toolbar: role !== "user" ? GridToolbar : CustomToolbar,
-                }}
+                showToolbar
+                slots={
+                  role === "user" ? { toolbar: CustomToolbar } : undefined
+                }
                 initialState={{
                   pagination: {
                     paginationModel: { page: 0, pageSize: 20 },
@@ -377,9 +379,10 @@ const Transaction = () => {
               <DataGrid
                 rows={ncrRows}
                 columns={columns}
-                components={{
-                  Toolbar: role !== "user" ? GridToolbar : CustomToolbar,
-                }}
+                showToolbar
+                slots={
+                  role === "user" ? { toolbar: CustomToolbar } : undefined
+                }
                 initialState={{
                   pagination: {
                     paginationModel: { page: 0, pageSize: 20 },

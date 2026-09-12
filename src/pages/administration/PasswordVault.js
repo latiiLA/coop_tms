@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import {
   Box,
   Button,
@@ -358,7 +358,7 @@ export default function PasswordVault() {
         <DataGrid
           rows={filteredRows}
           columns={columns}
-          slots={{ toolbar: GridToolbar }}
+          showToolbar
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 15 },

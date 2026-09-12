@@ -1,4 +1,4 @@
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { Box, InputAdornment, TextField, Typography } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import axios from "axios";
@@ -156,7 +156,7 @@ export default function ViewDistrict() {
         }}
       >
         <DataGrid
-          slots={{ toolbar: GridToolbar }}
+          showToolbar
           rows={filteredRows}
           columns={columns}
           initialState={{

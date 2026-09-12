@@ -72,7 +72,7 @@ const StatusPieChart = ({ data }) => {
           colors={colors} // Apply reordered colors
           width={250}
           height={200}
-          legend={false} // Remove the legend
+          hideLegend
         />
       </Box>
       <Box sx={{ maxWidth: 250 }}>

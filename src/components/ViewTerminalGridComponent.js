@@ -1,6 +1,6 @@
 import { Edit, Preview } from "@mui/icons-material";
 import { Alert, AlertTitle, Box, IconButton, Tooltip } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
@@ -28,9 +28,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
       field: "branchName",
       headerName: "Branch Name",
       flex: 1,
-      valueGetter: (params) => {
-        return params?.companyName || "N/A";
-      },
+      valueGetter: (value) => value?.companyName || "N/A",
     },
     {
       field: "district",
@@ -332,14 +330,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
         <DataGrid
           rows={rows}
           columns={columns}
-          slots={
-            // role !== "user"
-              // ? 
-              { 
-                toolbar: GridToolbar
-              }
-              // : { toolbar: CustomToolbar }
-          }
+          showToolbar
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },

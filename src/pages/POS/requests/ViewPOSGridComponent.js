@@ -16,7 +16,7 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -53,9 +53,7 @@ const ViewPOSGridComponent = ({
       headerName: "Serial No",
       type: "String",
       flex: 0.5,
-      valueGetter: (params) => {
-        return params?.serialNumber || "N/A";
-      },
+      valueGetter: (value) => value?.serialNumber || "N/A",
     },
     { field: "terminalId", headerName: "Terminal ID", flex: 0.6 },
     { field: "merchantId", headerName: "Merchant Id", flex: 0.8 },
@@ -77,7 +75,7 @@ const ViewPOSGridComponent = ({
       field: "branchName",
       headerName: "Branch Name",
       flex: 0.5,
-      valueGetter: (params) => params?.companyName || "N/A",
+      valueGetter: (value) => value?.companyName || "N/A",
     },
     {
       field: "createdAt",
@@ -334,11 +332,8 @@ const ViewPOSGridComponent = ({
             },
           }}
           loading={loading}
-          slots={
-            role !== "user"
-              ? { toolbar: GridToolbar }
-              : { toolbar: CustomToolbar }
-          }
+          showToolbar
+          slots={role === "user" ? { toolbar: CustomToolbar } : undefined}
           pageSizeOptions={[20, 50, 100]}
           autoHeight
           checkboxSelection

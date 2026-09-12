@@ -11,7 +11,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -49,14 +49,14 @@ const ViewPOSRequestGrid = ({
       headerName: "Serial No",
       type: "String",
       flex: 0.5,
-      valueGetter: (params) => params?.serialNumber || "N/A",
+      valueGetter: (value) => value?.serialNumber || "N/A",
     },
     { field: "merchantName", headerName: "Merchant Name", flex: 1 },
     {
       field: "branchName",
       headerName: "Branch Name",
       flex: 1,
-      valueGetter: (params) => params?.companyName || "N/A",
+      valueGetter: (value) => value?.companyName || "N/A",
     },
     {
       field: "district",
@@ -336,11 +336,8 @@ const ViewPOSRequestGrid = ({
         <DataGrid
           rows={rowsState}
           columns={columns}
-          slots={
-            role !== "user"
-              ? { toolbar: GridToolbar }
-              : { toolbar: CustomToolbar }
-          }
+          showToolbar
+          slots={role === "user" ? { toolbar: CustomToolbar } : undefined}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },
