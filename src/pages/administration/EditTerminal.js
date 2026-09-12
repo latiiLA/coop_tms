@@ -8,7 +8,7 @@ import ATMForm from "../../components/ATMForm";
 const EditTerminal = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { row } = location.state;
+  const { row } = location.state || {};
 
   const [error, setError] = useState(null);
 

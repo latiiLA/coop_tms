@@ -25,7 +25,8 @@ const UserActivityLog = () => {
           Authorization: `Bearer ${token}`, // Include the token in headers
         },
       });
-      setLogs(response.data);
+      const payload = response.data;
+      setLogs(Array.isArray(payload) ? payload : payload?.logs || []);
       setLoading(false);
     } catch (err) {
       // console.error("Error fetching logs:", err);

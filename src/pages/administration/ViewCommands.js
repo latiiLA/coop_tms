@@ -64,7 +64,7 @@ export default function Commands({ role = "admin" }) {
     async function loadRows() {
       try {
         const data = await fetchRows();
-        setDataRows(data);
+        setDataRows(Array.isArray(data) ? data : []);
       } catch (error) {
         // console.error("Error fetching data:", error);
       }
@@ -147,9 +147,9 @@ export default function Commands({ role = "admin" }) {
     // Perform case-insensitive search in all text fields
     const searchLower = searchText.toLowerCase();
     return (
-      row.command.toLowerCase().includes(searchLower) ||
-      row.description.toLowerCase().includes(searchLower) ||
-      row.example.toLowerCase().includes(searchLower)
+      row.command?.toLowerCase().includes(searchLower) ||
+      row.description?.toLowerCase().includes(searchLower) ||
+      row.example?.toLowerCase().includes(searchLower)
     );
   });
 

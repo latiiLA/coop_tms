@@ -10,7 +10,7 @@ import PdfBlobViewer from "../../components/PdfBlobViewer";
 const POSDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isRequest, isRelocated, row } = location.state;
+  const { isRequest, isRelocated, row } = location.state || {};
   console.log("console", row);
 
   const [pdfOpen, setPdfOpen] = useState(false);
@@ -69,14 +69,18 @@ const POSDetails = () => {
             position: "relative",
           }}
         >
-          <Formik initialValues={row}>
+          <Formik initialValues={row || {}}>
             {() => (
               <Form>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   <Typography variant="h5" sx={{ textAlign: "center" }}>
                     {isRequest ? "Request Details" : "POS Details"}
                   </Typography>
-
+                  {!row && (
+                    <Typography color="text.secondary" textAlign="center">
+                      No record selected. Go back and open Details from the list.
+                    </Typography>
+                  )}
                   <Box
                     sx={{
                       display: "flex",
