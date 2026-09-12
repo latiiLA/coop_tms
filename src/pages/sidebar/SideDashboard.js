@@ -20,7 +20,6 @@ import {
   Explore,
   Home as HomeIcon,
   IntegrationInstructions,
-  Link,
   PointOfSale,
   SummarizeOutlined,
   ManageSearch,
@@ -55,6 +54,7 @@ import {
   StopCircleTwoTone,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
+import { isDemoMode } from "../../demo/demoApi";
 import { GrGlobe } from "react-icons/gr";
 import { TbActivityHeartbeat, TbWorld, TbWorldDollar } from "react-icons/tb";
 import { MdOutlinePersonPinCircle } from "react-icons/md";
@@ -81,11 +81,6 @@ const NAVIGATION = [
     segment: "posdashboard",
     title: "POS Dashboard",
     icon: <DashboardIcon />,
-  },
-  {
-    segment: "links",
-    title: "Links",
-    icon: <Link />,
   },
   {
     segment: "reports",
@@ -595,7 +590,26 @@ function SideDashboard(props) {
       .filter(Boolean);
   };
 
-  const filteredNavigation = filterNavigation(NAVIGATION, permissions);
+  const filteredNavigation = (
+    isDemoMode()
+      ? NAVIGATION.map((item) => {
+          if (item.segment === "password" || item.permission === "view_password_entry" || item.permission === "password") {
+            return null;
+          }
+          if (item.children) {
+            return {
+              ...item,
+              children: item.children.filter(
+                (child) =>
+                  child.permission !== "view_password_entry" &&
+                  child.permission !== "create_password_entry"
+              ),
+            };
+          }
+          return item;
+        }).filter(Boolean)
+      : filterNavigation(NAVIGATION, permissions)
+  );
 
   // Session state
   const [session, setSession] = React.useState(null);
