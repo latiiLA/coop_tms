@@ -1,5 +1,4 @@
 import { Box, Typography } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import React from "react";
 import ViewTerminalGridComponent from "../../components/ViewTerminalGridComponent";
 

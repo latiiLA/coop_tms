@@ -17,7 +17,6 @@ import {
   useTheme,
   GridLegacy as Grid,
   Avatar,
-  ThemeProvider,
 } from "@mui/material";
 
 import Visibility from "@mui/icons-material/Visibility";
@@ -30,7 +29,6 @@ import { useAuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner";
 import coop from "../assets/coop.gif";
-import customTheme from "../DarkMode/customTheme";
 import { Lock, Person } from "@mui/icons-material";
 import { jwtDecode } from "jwt-decode";
 import { AppProvider } from "@toolpad/core/AppProvider";

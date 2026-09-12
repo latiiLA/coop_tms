@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import left_image2 from "../assets/signup.avif";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Box,
   Typography,

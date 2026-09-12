@@ -17,7 +17,6 @@ import {
   AdminPanelSettings,
   Atm,
   ChangeCircle,
-  Explore,
   Home as HomeIcon,
   IntegrationInstructions,
   PointOfSale,
@@ -56,11 +55,7 @@ import {
 import { useAuthContext } from "../../context/AuthContext";
 import { isDemoMode } from "../../demo/demoApi";
 import { GrGlobe } from "react-icons/gr";
-import { TbActivityHeartbeat, TbWorld, TbWorldDollar } from "react-icons/tb";
-import { MdOutlinePersonPinCircle } from "react-icons/md";
-// import { TbStatusChange } from "react-icons/tb";
-// import customTheme from "../../DarkMode/customTheme";
-// import DarkMode from "../../DarkMode/DarkMode";
+import { TbWorldDollar } from "react-icons/tb";
 
 const NAVIGATION = [
   {

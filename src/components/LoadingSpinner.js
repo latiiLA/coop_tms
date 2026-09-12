@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, CircularProgress, ThemeProvider } from "@mui/material";
-import demoTheme from "../DarkMode/customTheme";
+import { Box, CircularProgress } from "@mui/material";
 import { AppProvider } from "@toolpad/core/AppProvider";
 const LoadingSpinner = () => {
   return (

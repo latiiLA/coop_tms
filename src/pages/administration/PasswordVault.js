@@ -21,7 +21,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
-import { LockOpen, Search, Visibility, VisibilityOff} from "@mui/icons-material";
+import { Search, Visibility, VisibilityOff } from "@mui/icons-material";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function PasswordVault() {

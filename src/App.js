@@ -5,7 +5,6 @@ import {
   Navigate,
   Outlet,
   useNavigate,
-  Router,
 } from "react-router-dom";
 import { useAuthContext } from "./context/AuthContext";
 import { isDemoMode, isDemoPasswordPermission } from "./demo/demoApi";
@@ -46,12 +45,6 @@ const AllPOSUserManual = React.lazy(
 );
 // const SideDashboard = React.lazy(() => import("./pages/sidebar/SideDashboard"));
 const Dashboard = React.lazy(() => import("./pages/dashboard/Dashboard"));
-const ViewTerminal = React.lazy(
-  () => import("./pages/administration/ViewTerminal")
-);
-const Report = React.lazy(
-  () => import("./pages/Reports/GeneralTerminalReport")
-);
 const TerminalReport = React.lazy(
   () => import("./pages/Reports/TerminalReport")
 );
@@ -69,9 +62,6 @@ const EditTerminal = React.lazy(
 );
 const CreateUser = React.lazy(
   () => import("./pages/administration/CreateUser")
-);
-const Administration = React.lazy(
-  () => import("./pages/administration/Administration")
 );
 const ViewUsers = React.lazy(() => import("./pages/administration/ViewUsers"));
 const ManageTerminal = React.lazy(
@@ -98,7 +88,6 @@ const CreateBranch = React.lazy(() => import("./components/CreateBranch"));
 const ViewBranch = React.lazy(() => import("./components/ViewBranch"));
 const ViewDistrict = React.lazy(() => import("./components/ViewDistrict"));
 const Analytics = React.lazy(() => import("./pages/dashboard/Analytics"));
-const Feedback = React.lazy(() => import("./components/Feedback"));
 const ViewFeedback = React.lazy(() => import("./components/ViewFeedback"));
 const ViewBugs = React.lazy(() => import("./components/ViewBugs"));
 const Transaction = React.lazy(() => import("./pages/Reports/Transaction"));
@@ -156,15 +145,6 @@ const AccountLinkManual = React.lazy(
 );
 const ATMLocation = React.lazy(
   () => import("./pages/administration/ATMLocation")
-);
-const ATMAdministration = React.lazy(
-  () => import("./pages/administration/ATMAdministration")
-);
-const POSAdministration = React.lazy(
-  () => import("./pages/administration/POSAdministration")
-);
-const POSRequestAdministration = React.lazy(
-  () => import("./pages/POS/requests/POSRequestAdministration")
 );
 const BulkRequest = React.lazy(
   () => import("./pages/POS/requests/BulkRequest")

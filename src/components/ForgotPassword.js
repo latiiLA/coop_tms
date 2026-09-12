@@ -8,7 +8,6 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
-  ThemeProvider,
 } from "@mui/material";
 import { Formik, Form, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
@@ -18,7 +17,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import LoadingButton from "@mui/lab/LoadingButton";
-import customTheme from "../DarkMode/customTheme";
 import { AppProvider } from "@toolpad/core/AppProvider";
 
 const ForgotPassword = () => {

@@ -7,8 +7,6 @@ import {
   Card,
   FormControl,
   InputLabel,
-  Select,
-  MenuItem,
   OutlinedInput,
   InputAdornment,
   IconButton,
