@@ -24,15 +24,6 @@ import toast from "react-hot-toast";
 import { useAuthContext } from "../../../context/AuthContext";
 import CustomToolbar from "../../../components/CustomToolbar";
 import { GrConfigure } from "react-icons/gr";
-import JSZip from "jszip";
-import prmFile from "../../../assets/posconfig/00055556.PRM";
-import emvApplications from "../../../assets/posconfig/EMV_Applications.xml";
-import emvCtlsAppsScheme from "../../../assets/posconfig/EMV_CTLS_Apps_SchemeSpecific.xml";
-import emvCtlsKeysTest from "../../../assets/posconfig/EMV_CTLS_Keys_test.xml";
-import emvCtlsKeys from "../../../assets/posconfig/EMV_CTLS_Keys.xml";
-import emvCtlsTerminal from "../../../assets/posconfig/EMV_CTLS_Terminal.xml";
-import emvKeys from "../../../assets/posconfig/EMV_Keys.xml";
-import emvTerminal from "../../../assets/posconfig/EMV_Terminal.xml";
 import axios from "axios";
 import { isDemoMode } from "../../../demo/demoApi";
 
@@ -239,70 +230,69 @@ const ViewPOSGridComponent = ({
   };
 
   const handleConfig = async (configData, selectedVersion) => {
-    const HOSTIP = process.env.REACT_APP_HOSTIP;
-    const HOSTPORT = process.env.REACT_APP_HOSTPORT;
-
-    console.log("config data", configData);
-
-    let MCC = 5411;
-    if (configData.site === "BRANCH") {
-      MCC = 6010;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("User is not authenticated");
+      navigate("/home");
+      return;
     }
 
-    let configVersion = selectedVersion || "0002";
-    configVersion = configVersion.toString().padStart(4, "0");
+    const configVersion = String(selectedVersion || "0002")
+      .replace(/\D/g, "")
+      .padStart(4, "0");
+    const folderName = `ConfigurationFile_V${configVersion}`;
 
     try {
-      const prmFileContent = await (await fetch(prmFile)).text();
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await axios.post(
+        `${apiUrl}/pos/generateConfig`,
+        { id: configData._id, version: selectedVersion },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+          responseType: "blob",
+        }
+      );
 
-      // Replace specific lines in the `.PRM` file
-      let updatedPrmFile = prmFileContent
-        .replace(/^HDR1=.*$/m, `HDR1=${configData.merchantName}`)
-        .replace(/^HDR2=.*$/m, `HDR2=${configData.merchantAddress}`)
-        .replace(/^HDR3=.*$/m, `HDR3=TEL: ${configData.merchantPhonenumber}`)
-        .replace(/^MID=.*$/m, `MID=${configData.merchantId}`)
-        .replace(/^TID=.*$/m, `TID=${configData.terminalId}`)
-        .replace(/^HOSTIP=.*$/m, `HOSTIP=${HOSTIP}`)
-        .replace(/^PORT=.*$/m, `PORT=${HOSTPORT}`)
-        .replace(/^\*MCC=.*$/m, `*MCC=${MCC}`);
-
-      // Initialize JSZip
-      const zip = new JSZip();
-
-      // Create a folder with the same name as the zip file
-      const folderName = `ConfigurationFile_V${configVersion}`;
-      const folder = zip.folder(folderName);
-
-      folder.file("00055556.PRM", updatedPrmFile);
-
-      // Add other files to the ZIP
-      const fileContents = {
-        "EMV_Applications.xml": emvApplications,
-        "EMV_CTLS_Apps_SchemeSpecific.xml": emvCtlsAppsScheme,
-        "EMV_CTLS_Keys_test.xml": emvCtlsKeysTest,
-        "EMV_CTLS_Keys.xml": emvCtlsKeys,
-        "EMV_CTLS_Terminal.xml": emvCtlsTerminal,
-        "EMV_Keys.xml": emvKeys,
-        "EMV_Terminal.xml": emvTerminal,
-      };
-
-      for (const [fileName, filePath] of Object.entries(fileContents)) {
-        const content = await (await fetch(filePath)).text();
-        folder.file(fileName, content);
+      const contentType = response.headers["content-type"] || "";
+      if (
+        !contentType.includes("zip") &&
+        !contentType.includes("octet-stream")
+      ) {
+        const text = await response.data.text();
+        let message = "Error generating config file.";
+        try {
+          message = JSON.parse(text).message || message;
+        } catch {
+          /* ignore */
+        }
+        toast.error(message);
+        return;
       }
 
-      // Generate ZIP file
-      const zipContent = await zip.generateAsync({ type: "blob" });
-
-      // Create a download link and trigger the download
+      const blob = new Blob([response.data], { type: "application/zip" });
       const link = document.createElement("a");
-      link.href = URL.createObjectURL(zipContent);
+      link.href = URL.createObjectURL(blob);
       link.download = `${folderName}.zip`;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
       toast.success("successfully generated config file");
     } catch (error) {
-      // console.error("Error generating configuration ZIP:", error);
-      toast.error("Error generating config file.");
+      let message = "Error generating config file.";
+      const data = error.response?.data;
+      if (data instanceof Blob) {
+        try {
+          const parsed = JSON.parse(await data.text());
+          message = parsed.message || message;
+        } catch {
+          /* ignore */
+        }
+      } else if (data?.message) {
+        message = data.message;
+      }
+      toast.error(message);
     }
   };
 
