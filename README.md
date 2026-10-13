@@ -67,6 +67,7 @@ Create `.env` (this file is git-ignored — never commit it):
 | `API_KEY`, `API_URL`, `GROQ_API_KEY` | Optional third-party integrations |
 | `SUPERADMIN_PASSWORD` | **Required by the seed migration.** The bootstrap superadmin password is read from here so it never lives in the repo. Unset, `migrate-mongo up` fails with a clear message. |
 | `SUPERADMIN_USERNAME` | Optional. Overrides the seeded username (default `superadmin`). Point it at an account that already exists to make the seed a no-op. |
+| `POS_HOSTIP`, `POS_HOSTPORT` | **Required by `POST /pos/generateConfig`.** Written into `00055556.PRM` as `HOSTIP=` and `PORT=`. The endpoint returns 500 if unset. |
 
 Then:
 
