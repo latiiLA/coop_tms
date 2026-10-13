@@ -331,6 +331,7 @@ export default function PasswordVault() {
         <DataGrid
           rows={filteredRows}
           columns={columns}
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {

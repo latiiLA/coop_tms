@@ -145,6 +145,7 @@ const ViewBugs = () => {
         }}
       >
         <DataGrid
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           rows={rows}
           columns={columns}

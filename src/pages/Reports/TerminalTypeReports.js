@@ -147,6 +147,7 @@ const TerminalTypeReports = () => {
         <DataGrid
           {...rows}
           loading={loading}
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           rows={rows}
           columns={columns}

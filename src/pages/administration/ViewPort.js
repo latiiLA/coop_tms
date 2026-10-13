@@ -276,6 +276,7 @@ const ViewPort = () => {
         <DataGrid
           rows={filteredRows}
           columns={columns}
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           // getRowId={(row) => row.id} // Ensure unique row ID
           initialState={{

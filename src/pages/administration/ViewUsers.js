@@ -388,6 +388,7 @@ export default function ViewUsers() {
         <DataGrid
           rows={filteredRows}
           columns={columns}
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {

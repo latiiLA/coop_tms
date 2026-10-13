@@ -169,6 +169,7 @@ const MerchantUpload = () => {
         <DataGrid
           rows={rows}
           columns={columns}
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {

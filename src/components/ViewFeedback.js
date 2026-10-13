@@ -145,6 +145,7 @@ const ViewFeedback = () => {
         }}
       >
         <DataGrid
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           rows={rows}
           columns={columns}

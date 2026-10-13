@@ -229,6 +229,7 @@ export default function ViewDevices() {
         }}
       >
         <DataGrid
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           rows={filteredRows}
           columns={columns}

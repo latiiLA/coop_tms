@@ -293,6 +293,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
         <DataGrid
           rows={rows}
           columns={columns}
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {

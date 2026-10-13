@@ -150,6 +150,7 @@ const TerminalSiteReport = () => {
           rows={rows} // Provide rows directly
           columns={columns} // Provide columns directly
           loading={loading}
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           checkboxSelection
           autoHeight

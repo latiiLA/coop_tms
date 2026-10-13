@@ -277,6 +277,7 @@ export default function ViewDeactivatedCybersourceTerminal() {
         }}
       >
         <DataGrid
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           rows={filteredRows}
           columns={columns}

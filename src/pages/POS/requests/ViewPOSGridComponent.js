@@ -332,6 +332,7 @@ const ViewPOSGridComponent = ({
             },
           }}
           loading={loading}
+          showToolbar
           slots={{
             toolbar: role === "user" ? CustomToolbar : GridToolbar,
           }}

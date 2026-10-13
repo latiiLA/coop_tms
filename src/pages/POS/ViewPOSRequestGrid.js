@@ -336,6 +336,7 @@ const ViewPOSRequestGrid = ({
         <DataGrid
           rows={rowsState}
           columns={columns}
+          showToolbar
           slots={{
             toolbar: role === "user" ? CustomToolbar : GridToolbar,
           }}

@@ -157,6 +157,7 @@ export default function ViewDistrict() {
         }}
       >
         <DataGrid
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           rows={filteredRows}
           columns={columns}

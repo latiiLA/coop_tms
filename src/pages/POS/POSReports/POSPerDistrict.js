@@ -102,6 +102,7 @@ const POSPerDistrict = () => {
         <DataGrid
           rows={rows}
           columns={columns}
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {

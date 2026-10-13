@@ -245,6 +245,7 @@ export default function ViewBranch() {
         }}
       >
         <DataGrid
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           rows={filteredRows}
           columns={columns}

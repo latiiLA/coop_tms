@@ -304,6 +304,7 @@ const Transaction = () => {
               <DataGrid
                 rows={filteredRows}
                 columns={columns}
+                showToolbar
                 slots={{
                   toolbar: role === "user" ? CustomToolbar : GridToolbar,
                 }}
@@ -341,6 +342,7 @@ const Transaction = () => {
               <DataGrid
                 rows={crmRows}
                 columns={columns}
+                showToolbar
                 slots={{
                   toolbar: role === "user" ? CustomToolbar : GridToolbar,
                 }}
@@ -378,6 +380,7 @@ const Transaction = () => {
               <DataGrid
                 rows={ncrRows}
                 columns={columns}
+                showToolbar
                 slots={{
                   toolbar: role === "user" ? CustomToolbar : GridToolbar,
                 }}

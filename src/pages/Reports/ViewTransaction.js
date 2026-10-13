@@ -191,6 +191,7 @@ const ViewTransaction = () => {
         <DataGrid
           rows={dataRows}
           columns={columns}
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {

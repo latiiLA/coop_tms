@@ -144,6 +144,7 @@ const TerminalReport = () => {
           rows={rows} // Correctly pass rows
           columns={columns}
           loading={loading}
+          showToolbar
           slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {
