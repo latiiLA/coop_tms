@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -150,7 +150,7 @@ const TerminalSiteReport = () => {
           rows={rows} // Provide rows directly
           columns={columns} // Provide columns directly
           loading={loading}
-          showToolbar
+          slots={{ toolbar: GridToolbar }}
           checkboxSelection
           autoHeight
         />

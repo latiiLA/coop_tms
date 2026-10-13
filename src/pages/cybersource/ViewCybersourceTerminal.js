@@ -1,4 +1,4 @@
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Alert, AlertTitle, Box, IconButton, InputAdornment, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
 import { Edit, Preview, Search } from "@mui/icons-material";
 import axios from "axios";
@@ -277,7 +277,7 @@ export default function ViewCybersourceTerminal() {
         }}
       >
         <DataGrid
-          showToolbar
+          slots={{ toolbar: GridToolbar }}
           rows={filteredRows}
           columns={columns}
           initialState={{

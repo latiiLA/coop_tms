@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -147,7 +147,7 @@ const TerminalTypeReports = () => {
         <DataGrid
           {...rows}
           loading={loading}
-          showToolbar
+          slots={{ toolbar: GridToolbar }}
           rows={rows}
           columns={columns}
           checkboxSelection

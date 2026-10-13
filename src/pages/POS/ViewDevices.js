@@ -1,4 +1,4 @@
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
   Box,
   IconButton,
@@ -229,7 +229,7 @@ export default function ViewDevices() {
         }}
       >
         <DataGrid
-          showToolbar
+          slots={{ toolbar: GridToolbar }}
           rows={filteredRows}
           columns={columns}
           initialState={{

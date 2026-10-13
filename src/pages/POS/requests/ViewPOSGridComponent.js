@@ -16,7 +16,7 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -332,8 +332,9 @@ const ViewPOSGridComponent = ({
             },
           }}
           loading={loading}
-          showToolbar
-          slots={role === "user" ? { toolbar: CustomToolbar } : undefined}
+          slots={{
+            toolbar: role === "user" ? CustomToolbar : GridToolbar,
+          }}
           pageSizeOptions={[20, 50, 100]}
           autoHeight
           checkboxSelection

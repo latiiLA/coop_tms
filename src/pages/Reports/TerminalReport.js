@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -144,7 +144,7 @@ const TerminalReport = () => {
           rows={rows} // Correctly pass rows
           columns={columns}
           loading={loading}
-          showToolbar
+          slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 5 },

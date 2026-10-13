@@ -11,7 +11,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -336,8 +336,9 @@ const ViewPOSRequestGrid = ({
         <DataGrid
           rows={rowsState}
           columns={columns}
-          showToolbar
-          slots={role === "user" ? { toolbar: CustomToolbar } : undefined}
+          slots={{
+            toolbar: role === "user" ? CustomToolbar : GridToolbar,
+          }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },

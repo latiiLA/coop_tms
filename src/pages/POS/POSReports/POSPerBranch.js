@@ -1,5 +1,5 @@
 import { Alert, AlertTitle, Box } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -137,7 +137,7 @@ const POSPerBranch = () => {
         <DataGrid
           rows={rows}
           columns={columns}
-          showToolbar
+          slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },

@@ -1,6 +1,6 @@
 import { Edit, Preview } from "@mui/icons-material";
 import { Alert, AlertTitle, Box, IconButton, Tooltip } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
@@ -293,7 +293,7 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
         <DataGrid
           rows={rows}
           columns={columns}
-          showToolbar
+          slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },

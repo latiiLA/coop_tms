@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
   Box,
   Button,
@@ -388,7 +388,7 @@ export default function ViewUsers() {
         <DataGrid
           rows={filteredRows}
           columns={columns}
-          showToolbar
+          slots={{ toolbar: GridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 15 },
