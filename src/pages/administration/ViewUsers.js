@@ -38,8 +38,8 @@ const ROLE_RANK = {
   posuser: 2,
   posauthorizer: 3,
   posadmin: 4,
+  useradmin: 4,
   admin: 5,
-  useradmin: 5,
   superadmin: 6,
   supersuperadmin: 7,
 };
@@ -49,8 +49,8 @@ const ROLE_OPTIONS = [
   { value: "posuser", label: "POS User" },
   { value: "posauthorizer", label: "POS Request Authorizer" },
   { value: "posadmin", label: "POS Admin" },
-  { value: "admin", label: "Admin" },
   { value: "useradmin", label: "User Admin" },
+  { value: "admin", label: "Admin" },
   { value: "superadmin", label: "Superadmin" },
   { value: "supersuperadmin", label: "Super Super Admin" },
 ];
@@ -405,7 +405,8 @@ export default function ViewUsers() {
         >
           {can("edit_user_role") &&
             params.row._id !== currentUser?.id &&
-            (ROLE_RANK[params.row.role] ?? 0) <= actorRank && (
+            (currentUser?.role === "supersuperadmin" ||
+              (ROLE_RANK[params.row.role] ?? 0) < actorRank) && (
             <Tooltip title="Edit User">
               <IconButton
                 color="primary"

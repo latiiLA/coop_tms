@@ -5,7 +5,10 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
-import { DashboardLayout } from "@toolpad/core/DashboardLayout";
+import {
+  DashboardHeader,
+  DashboardLayout,
+} from "@toolpad/core/DashboardLayout";
 import logo from "../../assets/coop.gif";
 import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer";
@@ -305,16 +308,6 @@ const NAVIGATION = [
         permission: "request_pos",
         icon: <Add />,
       },
-      // {
-      //   segment: "bulkrequest",
-      //   title: "Bulk POS Request",
-      //   icon: <List />,
-      // },
-      // {
-      //   segment: "relocate",
-      //   title: "Relocate POS",
-      //   icon: <TbStatusChange />,
-      // },
       {
         segment: "requests",
         title: "New POS Requests",
@@ -489,6 +482,48 @@ const toolpadTheme = createTheme({
   },
 });
 
+const SIDEBAR_COLLAPSED_KEY = "sidebarCollapsed";
+
+/** Prefer saved preference; otherwise Toolpad default (expanded). */
+function getStoredSidebarCollapsed() {
+  if (typeof window === "undefined") return false;
+  try {
+    const saved = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
+    if (saved === null) return false;
+    return JSON.parse(saved) === true;
+  } catch {
+    return false;
+  }
+}
+
+/** Persist desktop sidebar collapse via the layout header toggle. */
+function PersistSidebarHeader(props) {
+  const { onToggleMenu, ...rest } = props;
+
+  const handleToggleMenu = React.useCallback(
+    (isExpanded) => {
+      // Only persist desktop/tablet permanent drawer (md+), not mobile temp drawer
+      const isDesktop =
+        typeof window !== "undefined" &&
+        window.matchMedia("(min-width: 600px)").matches;
+      if (isDesktop) {
+        try {
+          localStorage.setItem(
+            SIDEBAR_COLLAPSED_KEY,
+            JSON.stringify(!isExpanded)
+          );
+        } catch {
+          // ignore quota / private mode
+        }
+      }
+      onToggleMenu?.(isExpanded);
+    },
+    [onToggleMenu]
+  );
+
+  return <DashboardHeader {...rest} onToggleMenu={handleToggleMenu} />;
+}
+
 /** Toolpad mini flyouts are position:fixed without top — pin them beside the hovered item. */
 function MiniSidebarFlyoutFix() {
   React.useEffect(() => {
@@ -648,6 +683,8 @@ function SideDashboard(props) {
     [navigate, currentUser]
   );
 
+  const [defaultSidebarCollapsed] = React.useState(getStoredSidebarCollapsed);
+
   // Prevent rendering until currentUser is available
   if (!currentUser) {
     return null; // Or a loader/spinner if preferred
@@ -747,9 +784,8 @@ function SideDashboard(props) {
             color: "var(--mui-palette-text-primary)",
           },
           // Mini MAIN sidebar items only (have caption under icon) — not flyout children
+          // Keep Toolpad's default center positioning (left: 50% / top: calc(50% - 6px))
           ".MuiDrawer-paper .MuiListItem-root:has(.MuiTypography-caption)": {
-            paddingLeft: "4px !important",
-            paddingRight: "4px !important",
             overflow: "visible !important",
           },
           ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption)":
@@ -757,14 +793,14 @@ function SideDashboard(props) {
               position: "relative",
               justifyContent: "center !important",
               minHeight: 60,
-              paddingLeft: "0 !important",
-              paddingRight: "0 !important",
             },
           ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption) > .MuiBox-root":
             {
-              left: "0 !important",
-              top: "-2px !important",
-              width: "100%",
+              position: "absolute !important",
+              left: "50% !important",
+              top: "calc(50% - 6px) !important",
+              transform: "translate(-50%, -50%) !important",
+              width: "auto",
               display: "flex !important",
               justifyContent: "center",
               alignItems: "center",
@@ -777,14 +813,13 @@ function SideDashboard(props) {
           ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption) .MuiTypography-caption":
             {
               left: "50% !important",
-              width: "calc(100% - 8px) !important",
               transform: "translateX(-50%) !important",
               textAlign: "center !important",
             },
           ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption) > .MuiSvgIcon-root":
             {
               position: "absolute !important",
-              top: "50%",
+              top: "41.5%",
               right: 2,
               margin: 0,
               fontSize: 18,
@@ -883,7 +918,10 @@ function SideDashboard(props) {
             },
         })}
       />
-      <DashboardLayout>
+      <DashboardLayout
+        defaultSidebarCollapsed={defaultSidebarCollapsed}
+        slots={{ header: PersistSidebarHeader }}
+      >
         <Box
           sx={{
             display: "flex",

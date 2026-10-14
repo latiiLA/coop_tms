@@ -146,10 +146,6 @@ const AccountLinkManual = React.lazy(
 const ATMLocation = React.lazy(
   () => import("./pages/administration/ATMLocation")
 );
-const BulkRequest = React.lazy(
-  () => import("./pages/POS/requests/BulkRequest")
-);
-
 const MASConfig = React.lazy(() => import("./pages/POS/MASConfig/MASConfig"));
 
 const hasPermission = (permissions, permission) => {
@@ -793,16 +789,6 @@ function App() {
             }
           />
 
-          <Route
-            path="/request/bulkrequest"
-            element={
-              <ProtectedRoute permission="bulk_request">
-                <Suspense fallback={<LoadingSpinner />}>
-                  <BulkRequest />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="/request/relocate"
             element={

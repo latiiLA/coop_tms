@@ -139,7 +139,11 @@ All routes are mounted at the server root (`server.js`):
 
 `GET /health` is an unauthenticated liveness check returning `{"status":"ok"}`.
 
-Static uploads are served from `/uploads`.
+Uploaded files (POS/request merchant agreements) are **not** public. They are
+served by `GET /uploads/:filename`, which requires authentication and only
+resolves names inside the `uploads/` folder (no separators or traversal).
+Uploads are limited to PDF/JPG/JPEG/PNG, capped at 5 MB, and stored under random
+UUID names.
 
 ---
 

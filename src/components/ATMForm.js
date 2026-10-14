@@ -17,7 +17,11 @@ const fetchAvailablePorts = async (
   // console.log(portSiteAssignment, portAssignment, "before fetch");
   try {
     const apiUrl = process.env.REACT_APP_API_URL;
+    const token = localStorage.getItem("token");
     const response = await axios.get(`${apiUrl}/port/getAssignedPorts`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       params: {
         portSiteAssignment,
         portAssignment,

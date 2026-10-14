@@ -9,6 +9,7 @@ import * as Yup from "yup";
 import { Download } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import ComboBox from "../../components/ComboBox";
+import { downloadFile } from "../../utils/fileDownload";
 
 const ApprovePOSRequest = () => {
   const navigate = useNavigate();
@@ -157,11 +158,9 @@ const ApprovePOSRequest = () => {
     });
 
   const handleDownload = () => {
-    console.log("file", row.file.filePath);
-    const link = document.createElement("a");
-    link.href = `${process.env.REACT_APP_BASE_URL}/${row.file.filePath}`;
-    link.download = row.file.fileName;
-    link.click();
+    downloadFile(row.file.filePath, row.file.fileName).catch((error) =>
+      console.error("File download failed:", error)
+    );
   };
 
   useEffect(() => {

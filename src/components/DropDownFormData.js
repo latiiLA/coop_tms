@@ -26,6 +26,7 @@ const pos_status = [
   { value: "Active", label: "Active" },
   { value: "InActive", label: "InActive" },
   { value: "ToBeRelocated", label: "ToBeRelocated" },
+  { value: "RelocationAuthorized", label: "RelocationAuthorized" },
   { value: "Relocated", label: "Relocated" },
   { value: "Stopped", label: "Stopped" },
 ];

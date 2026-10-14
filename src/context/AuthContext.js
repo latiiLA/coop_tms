@@ -56,13 +56,7 @@ export const AuthContextProvider = ({ children }) => {
         setCurrentUser(user);
         setRole(user.role);
         setPermissions(user.permissions);
-
-        console.log("Authenticated user in auth context:", user);
-        console.log("Role in auth context:", user.role);
-        console.log("Status:", user.status);
-        console.log("Permissions in auth context:", user.permissions);
       } catch (error) {
-        console.error("Invalid or expired token:", error);
 
         localStorage.removeItem("token");
 
