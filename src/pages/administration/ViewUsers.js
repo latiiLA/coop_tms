@@ -55,6 +55,41 @@ const ROLE_OPTIONS = [
   { value: "supersuperadmin", label: "Super Super Admin" },
 ];
 
+// Mirrors the department list on CreateUser.
+const DEPARTMENT_OPTIONS = [
+  { value: "digital banking", label: "Digital Banking" },
+  { value: "monitoring", label: "Monitoring" },
+  {
+    value: "Merchant/Agent Growth and Support",
+    label: "Merchant/Agent Growth and Support",
+  },
+  {
+    value: "Accounts and Finance Team",
+    label: "Accounts and Finance Team",
+  },
+];
+
+// The fields CreateUser collects, minus password. Password changes stay on the
+// Reset Password action (its own permission), so editing a profile can never be
+// used to sign in as the user being edited.
+const EMPTY_EDIT_FORM = {
+  firstName: "",
+  fatherName: "",
+  gfatherName: "",
+  email: "",
+  department: "",
+  username: "",
+  role: "",
+};
+
+const EDIT_FORM_TEXT_FIELDS = [
+  { name: "firstName", label: "First Name" },
+  { name: "fatherName", label: "Father Name" },
+  { name: "gfatherName", label: "Grand Father Name" },
+  { name: "email", label: "Email", type: "email" },
+  { name: "username", label: "Username" },
+];
+
 export default function ViewUsers() {
   const navigate = useNavigate();
   const { permissions, currentUser } = useAuthContext();
@@ -75,7 +110,7 @@ export default function ViewUsers() {
   const [searchText, setSearchText] = useState("");
   const [openEdit, setOpenEdit] = useState(false);
   const [editRow, setEditRow] = useState(null);
-  const [editRole, setEditRole] = useState("");
+  const [editForm, setEditForm] = useState(EMPTY_EDIT_FORM);
   const [savingRole, setSavingRole] = useState(false);
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -223,21 +258,45 @@ export default function ViewUsers() {
     }
   };
 
+  const buildEditForm = (row) => ({
+    firstName: row.firstName || "",
+    fatherName: row.fatherName || "",
+    gfatherName: row.gfatherName || "",
+    email: row.email || "",
+    department: row.department || "",
+    username: row.username || "",
+    role: row.role || "",
+  });
+
   const handleEditOpen = (row) => {
     setEditRow(row);
-    setEditRole(row.role || "");
+    setEditForm(buildEditForm(row));
     setOpenEdit(true);
   };
 
   const handleEditClose = () => {
     setOpenEdit(false);
     setEditRow(null);
-    setEditRole("");
+    setEditForm(EMPTY_EDIT_FORM);
     setSavingRole(false);
   };
 
-  const handleRoleSave = async () => {
+  const handleEditFieldChange = (field) => (event) => {
+    setEditForm((previous) => ({ ...previous, [field]: event.target.value }));
+  };
+
+  const handleEditSave = async () => {
     if (!editRow) return;
+
+    // Every field is required on the model, so catch blanks up front rather
+    // than bouncing off the validator.
+    const missing = Object.keys(EMPTY_EDIT_FORM).filter(
+      (field) => !String(editForm[field] || "").trim()
+    );
+    if (missing.length > 0) {
+      toast.error(`Please fill in: ${missing.join(", ")}`);
+      return;
+    }
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -250,7 +309,7 @@ export default function ViewUsers() {
     try {
       const response = await axios.patch(
         `${apiUrl}/auth/updateUser/${editRow._id}`,
-        { role: editRole },
+        editForm,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -262,29 +321,37 @@ export default function ViewUsers() {
       const updatedData = await fetchRows();
       setDataRows(updatedData);
       handleEditClose();
-      toast.success(
-        response.data.message || "User role updated successfully."
-      );
+      toast.success(response.data.message || "User updated successfully.");
     } catch (error) {
-      // The server refuses a role above the caller's own, or a self-change, and
-      // says which; surface that rather than a generic failure.
+      // The server refuses a self-change, a target or role above the caller's
+      // own, and a duplicate email/username, and says which; surface that
+      // rather than a generic failure.
       toast.error(
-        error.response?.data?.message || "Error: while updating user role."
+        error.response?.data?.message || "Error: while updating the user."
       );
       setSavingRole(false);
     }
   };
 
-  // The current role is always offered so the Select has a matching value, even
-  // in the rare case it sits above the caller's ceiling.
-  const dialogRoleOptions = assignableRoles.some(
-    (option) => option.value === editRow?.role
-  )
-    ? assignableRoles
-    : [
-        ...ROLE_OPTIONS.filter((option) => option.value === editRow?.role),
-        ...assignableRoles,
-      ];
+  // A Select needs a matching option for its value even when the value sits
+  // outside the list - an older department string, or a role above the
+  // caller's ceiling.
+  const withCurrentOption = (options, value) =>
+    value && !options.some((option) => option.value === value)
+      ? [{ value, label: value }, ...options]
+      : options;
+
+  const dialogRoleOptions = withCurrentOption(assignableRoles, editForm.role);
+  const dialogDepartmentOptions = withCurrentOption(
+    DEPARTMENT_OPTIONS,
+    editForm.department
+  );
+
+  const editDirty =
+    !!editRow &&
+    Object.keys(EMPTY_EDIT_FORM).some(
+      (field) => editForm[field] !== (editRow[field] || "")
+    );
 
   // console.log("created by", createdByName);
 
@@ -336,8 +403,10 @@ export default function ViewUsers() {
             margin: "auto",
           }}
         >
-          {can("edit_user_role") && params.row._id !== currentUser?.id && (
-            <Tooltip title="Edit Role">
+          {can("edit_user_role") &&
+            params.row._id !== currentUser?.id &&
+            (ROLE_RANK[params.row.role] ?? 0) <= actorRank && (
+            <Tooltip title="Edit User">
               <IconButton
                 color="primary"
                 size="small"
@@ -517,41 +586,74 @@ export default function ViewUsers() {
           checkboxSelection
         />
       </Box>
-      <Dialog open={openEdit} onClose={handleEditClose} fullWidth maxWidth="xs">
-        <DialogTitle>Edit User Role</DialogTitle>
+      <Dialog open={openEdit} onClose={handleEditClose} fullWidth maxWidth="sm">
+        <DialogTitle>Edit User</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ mb: 2 }}>
             {editRow
-              ? `Change the role for ${
-                  editRow.firstName || editRow.username || "this user"
-                }.`
+              ? `Editing ${editRow.firstName || editRow.username || "user"}.`
               : ""}
           </DialogContentText>
-          <FormControl fullWidth size="small" sx={{ mt: 1 }}>
-            <InputLabel id="edit-role-label">Role</InputLabel>
-            <Select
-              labelId="edit-role-label"
-              label="Role"
-              value={editRole}
-              onChange={(event) => setEditRole(event.target.value)}
-            >
-              {dialogRoleOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+              gap: 2,
+              mt: 1,
+            }}
+          >
+            {EDIT_FORM_TEXT_FIELDS.map((field) => (
+              <TextField
+                key={field.name}
+                label={field.label}
+                type={field.type || "text"}
+                size="small"
+                fullWidth
+                value={editForm[field.name]}
+                onChange={handleEditFieldChange(field.name)}
+              />
+            ))}
+            <FormControl fullWidth size="small">
+              <InputLabel id="edit-department-label">Department</InputLabel>
+              <Select
+                labelId="edit-department-label"
+                label="Department"
+                value={editForm.department}
+                onChange={handleEditFieldChange("department")}
+              >
+                {dialogDepartmentOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth size="small">
+              <InputLabel id="edit-role-label">Role</InputLabel>
+              <Select
+                labelId="edit-role-label"
+                label="Role"
+                value={editForm.role}
+                onChange={handleEditFieldChange("role")}
+              >
+                {dialogRoleOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleEditClose} color="primary">
             Cancel
           </Button>
           <Button
-            onClick={handleRoleSave}
+            onClick={handleEditSave}
             color="primary"
             variant="contained"
-            disabled={savingRole || !editRole || editRole === editRow?.role}
+            disabled={savingRole || !editDirty}
           >
             {savingRole ? <CircularProgress size={18} /> : "Save"}
           </Button>
