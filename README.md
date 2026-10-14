@@ -59,6 +59,7 @@ Create `.env` (this file is git-ignored — never commit it):
 | `MONGODB_URL` | MongoDB connection string (**required**) |
 | `PORT` | API port, defaults to `8000` |
 | `JWT_SECRET` | Signing secret for auth tokens (**required**) |
+| `PASSWORD_VAULT_KEY` | Key used to encrypt server passwords at rest, as a 32-byte key (64 hex characters, or base64 that decodes to 32 bytes) or a passphrase of at least 16 characters (**required by the password vault**). Generate one with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Without it, the vault refuses to store or reveal secrets rather than writing them in the clear. |
 | `NODE_ENV` | `production` enables secure cookies and `trust proxy` |
 | `CORS_ORIGINS` | Comma-separated allowed origins |
 | `FRONT_END_URL` | Frontend base URL used in emails/links |

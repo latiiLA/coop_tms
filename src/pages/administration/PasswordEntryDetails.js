@@ -19,6 +19,7 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
+import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuthContext } from "../../context/AuthContext";
@@ -26,8 +27,12 @@ import { useAuthContext } from "../../context/AuthContext";
 const PasswordEntryDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const [showPassword, setShowPassword] = React.useState(false);
+  // Fetched from the reveal endpoint; the entry passed through navigation no
+  // longer carries the secret.
+  const [serverPassword, setServerPassword] = React.useState("");
   const { permissions } = useAuthContext();
 
   // Row passed from PasswordVault
@@ -40,6 +45,37 @@ const PasswordEntryDetails = () => {
       navigate("/password");
     }
   }, [row, navigate]);
+
+  // Reveal the password for this entry.
+  useEffect(() => {
+    const fetchPassword = async () => {
+      if (!row?._id) return;
+
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await axios.get(
+          `${apiUrl}/password/revealPasswordEntry/${row._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
+
+        setServerPassword(response.data?.serverPassword ?? "");
+      } catch (error) {
+        toast.error(
+          error.response?.data?.message ||
+            "Failed to reveal the server password."
+        );
+      }
+    };
+
+    fetchPassword();
+  }, [row?._id, apiUrl]);
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
@@ -195,7 +231,7 @@ const PasswordEntryDetails = () => {
                       ? "text"
                       : "password"
                   }
-                  value={row.serverPassword || ""}
+                  value={serverPassword}
                   readOnly
                   endAdornment={
                     <InputAdornment position="end">

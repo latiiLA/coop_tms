@@ -34,6 +34,11 @@ export default function PasswordVault() {
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [visiblePasswords, setVisiblePasswords] = useState({});
+  // rowId -> decrypted password, fetched on demand from the reveal endpoint.
+  // The list response no longer carries the secret, so it is only pulled for
+  // the row the user actually asks to see.
+  const [revealedPasswords, setRevealedPasswords] = useState({});
+  const [revealingId, setRevealingId] = useState(null);
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleClickOpen = (rowId) => {
@@ -79,6 +84,39 @@ export default function PasswordVault() {
     }
   };
 
+  const fetchRevealedPassword = async (rowId) => {
+    // Already fetched once - reuse it so toggling does not hit the API again.
+    if (revealedPasswords[rowId] !== undefined) {
+      return revealedPasswords[rowId];
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("User is not authenticated");
+      navigate("/home");
+      return null;
+    }
+
+    try {
+      const response = await axios.get(
+        `${apiUrl}/password/revealPasswordEntry/${rowId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      const value = response.data?.serverPassword ?? "";
+      setRevealedPasswords((prev) => ({ ...prev, [rowId]: value }));
+      return value;
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+      return null;
+    }
+  };
+
   const columns = [
     { field: "id", headerName: "No", flex: 0.1 },
     { field: "serverName", headerName: "Server Name", flex: 1 },
@@ -98,7 +136,16 @@ export default function PasswordVault() {
             const rowId = params.row._id;
             const showPassword = visiblePasswords[rowId] || false;
 
-            const handleTogglePassword = () => {
+            const handleTogglePassword = async () => {
+            // Hiding is immediate. Revealing fetches (and caches) the secret,
+            // because the list response no longer contains it.
+            if (!showPassword && revealedPasswords[rowId] === undefined) {
+                setRevealingId(rowId);
+                const value = await fetchRevealedPassword(rowId);
+                setRevealingId(null);
+                if (value === null) return;
+            }
+
             setVisiblePasswords((prev) => ({
                 ...prev,
                 [rowId]: !prev[rowId],
@@ -117,20 +164,23 @@ export default function PasswordVault() {
             >
                 <span>
                 {showPassword
-                    ? params.value
+                    ? revealedPasswords[rowId]
                     : "••••••••••••••"}
                 </span>
 
-                <IconButton
-                size="small"
-                onClick={handleTogglePassword}
-                >
-                {showPassword ? (
-                    <VisibilityOff fontSize="small" />
-                ) : (
-                    <Visibility fontSize="small" />
+                {permissions?.includes("view_password_entry_detail") && (
+                    <IconButton
+                    size="small"
+                    onClick={handleTogglePassword}
+                    disabled={revealingId === rowId}
+                    >
+                    {showPassword ? (
+                        <VisibilityOff fontSize="small" />
+                    ) : (
+                        <Visibility fontSize="small" />
+                    )}
+                    </IconButton>
                 )}
-                </IconButton>
             </Box>
             );
         },
@@ -266,7 +316,6 @@ export default function PasswordVault() {
       String(row.serverIP || "").toLowerCase().includes(searchLower) ||
       String(row.serverOS || "").toLowerCase().includes(searchLower) ||
       String(row.serverUsername || "").toLowerCase().includes(searchLower) ||
-      String(row.serverPassword || "").toLowerCase().includes(searchLower) ||
       String(row.createdBy.firstName || "").toLowerCase().includes(searchLower) ||
       String(row.createdBy.fatherName || "").toLowerCase().includes(searchLower)
     );

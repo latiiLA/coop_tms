@@ -35,6 +35,9 @@ const EditPasswordEntry = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  // The password is fetched from the reveal endpoint; the row handed over by
+  // the vault list no longer contains it.
+  const [revealedPassword, setRevealedPassword] = useState("");
 
   const hasShownToast = useRef(false);
 
@@ -71,6 +74,41 @@ const EditPasswordEntry = () => {
       navigate("/password");
     }
   }, [row, navigate]);
+
+  // ============================================
+  // Reveal the current password so the form can
+  // prefill it. The list no longer ships the secret.
+  // ============================================
+
+  useEffect(() => {
+    const fetchRevealedPassword = async () => {
+      if (!row?._id) return;
+
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await axios.get(
+          `${apiUrl}/password/revealPasswordEntry/${row._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
+
+        setRevealedPassword(response.data?.serverPassword ?? "");
+      } catch (error) {
+        toast.error(
+          error.response?.data?.message ||
+            "Failed to load the current password."
+        );
+      }
+    };
+
+    fetchRevealedPassword();
+  }, [row?._id, apiUrl]);
 
   // ============================================
   // Fetch ALL users
@@ -154,7 +192,7 @@ const EditPasswordEntry = () => {
     serverOS: row?.serverOS || "",
     environment: row?.environment || "",
     serverUsername: row?.serverUsername || "",
-    serverPassword: row?.serverPassword || "",
+    serverPassword: revealedPassword,
     assignedUsers: assignedUserIds,
   };
 
