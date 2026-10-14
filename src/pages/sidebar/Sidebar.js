@@ -565,7 +565,9 @@ const Sidebar = () => {
             </React.Fragment>
           )}
 
-          {(role === "admin" || role === "superadmin") && (
+          {(role === "admin" ||
+            role === "superadmin" ||
+            role === "useradmin") && (
             <React.Fragment key="Administration">
               <ListItem disablePadding>
                 <ListItemButton onClick={handleAdminClick}>

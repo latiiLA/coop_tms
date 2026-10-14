@@ -24,7 +24,10 @@ const Layout = ({ children }) => {
         backgroundColor: theme.palette.background.default,
       }}
     >
-      {(role === "user" || role === "admin" || role === "superadmin") && (
+      {(role === "user" ||
+        role === "admin" ||
+        role === "superadmin" ||
+        role === "useradmin") && (
         <Box
           sx={{
             width: sidebarWidth,
@@ -48,9 +51,10 @@ const Layout = ({ children }) => {
           minHeight: "100vh",
         }}
       >
-        {(role === "user" || role === "admin" || role === "superadmin") && (
-          <Header />
-        )}
+        {(role === "user" ||
+          role === "admin" ||
+          role === "superadmin" ||
+          role === "useradmin") && <Header />}
 
         {/* Container to handle content and footer positioning */}
         <Box

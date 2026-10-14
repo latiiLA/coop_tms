@@ -13,8 +13,14 @@ import {
   Tooltip,
   InputAdornment,
   TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  CircularProgress,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -24,16 +30,53 @@ import { LockOpen, Search } from "@mui/icons-material";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { isDemoMode } from "../../demo/demoApi";
 
+// Mirrors ROLE_RANK in coop_tms_server/Controllers/userController.js. The server
+// enforces the ceiling on its own; this copy only keeps unusable options out of
+// the dropdown so the UI never offers a role the API will reject.
+const ROLE_RANK = {
+  user: 1,
+  posuser: 2,
+  posauthorizer: 3,
+  posadmin: 4,
+  admin: 5,
+  useradmin: 5,
+  superadmin: 6,
+  supersuperadmin: 7,
+};
+
+const ROLE_OPTIONS = [
+  { value: "user", label: "User" },
+  { value: "posuser", label: "POS User" },
+  { value: "posauthorizer", label: "POS Request Authorizer" },
+  { value: "posadmin", label: "POS Admin" },
+  { value: "admin", label: "Admin" },
+  { value: "useradmin", label: "User Admin" },
+  { value: "superadmin", label: "Superadmin" },
+  { value: "supersuperadmin", label: "Super Super Admin" },
+];
+
 export default function ViewUsers() {
   const navigate = useNavigate();
-  const { permissions } = useAuthContext();
+  const { permissions, currentUser } = useAuthContext();
   const can = (perm) => isDemoMode() || permissions?.includes(perm);
+
+  // The roles this signed-in user is allowed to hand out. Anyone holding
+  // edit_user_role can assign up to their own level, never above it.
+  const actorRank = ROLE_RANK[currentUser?.role] ?? 0;
+  const assignableRoles = ROLE_OPTIONS.filter(
+    (option) => ROLE_RANK[option.value] <= actorRank
+  );
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataRows, setDataRows] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [openEdit, setOpenEdit] = useState(false);
+  const [editRow, setEditRow] = useState(null);
+  const [editRole, setEditRole] = useState("");
+  const [savingRole, setSavingRole] = useState(false);
   const apiUrl = process.env.REACT_APP_API_URL;
 
   // State to store the name of the user who created the terminal
@@ -180,6 +223,69 @@ export default function ViewUsers() {
     }
   };
 
+  const handleEditOpen = (row) => {
+    setEditRow(row);
+    setEditRole(row.role || "");
+    setOpenEdit(true);
+  };
+
+  const handleEditClose = () => {
+    setOpenEdit(false);
+    setEditRow(null);
+    setEditRole("");
+    setSavingRole(false);
+  };
+
+  const handleRoleSave = async () => {
+    if (!editRow) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("User is not authenticated");
+      navigate("/home");
+      return;
+    }
+
+    setSavingRole(true);
+    try {
+      const response = await axios.patch(
+        `${apiUrl}/auth/updateUser/${editRow._id}`,
+        { role: editRole },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      const updatedData = await fetchRows();
+      setDataRows(updatedData);
+      handleEditClose();
+      toast.success(
+        response.data.message || "User role updated successfully."
+      );
+    } catch (error) {
+      // The server refuses a role above the caller's own, or a self-change, and
+      // says which; surface that rather than a generic failure.
+      toast.error(
+        error.response?.data?.message || "Error: while updating user role."
+      );
+      setSavingRole(false);
+    }
+  };
+
+  // The current role is always offered so the Select has a matching value, even
+  // in the rare case it sits above the caller's ceiling.
+  const dialogRoleOptions = assignableRoles.some(
+    (option) => option.value === editRow?.role
+  )
+    ? assignableRoles
+    : [
+        ...ROLE_OPTIONS.filter((option) => option.value === editRow?.role),
+        ...assignableRoles,
+      ];
+
   // console.log("created by", createdByName);
 
   const columns = [
@@ -230,6 +336,17 @@ export default function ViewUsers() {
             margin: "auto",
           }}
         >
+          {can("edit_user_role") && params.row._id !== currentUser?.id && (
+            <Tooltip title="Edit Role">
+              <IconButton
+                color="primary"
+                size="small"
+                onClick={() => handleEditOpen(params.row)}
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          )}
           {can("unlock_account") && (
             <Tooltip title="Reset Password Count">
               <IconButton
@@ -400,6 +517,47 @@ export default function ViewUsers() {
           checkboxSelection
         />
       </Box>
+      <Dialog open={openEdit} onClose={handleEditClose} fullWidth maxWidth="xs">
+        <DialogTitle>Edit User Role</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            {editRow
+              ? `Change the role for ${
+                  editRow.firstName || editRow.username || "this user"
+                }.`
+              : ""}
+          </DialogContentText>
+          <FormControl fullWidth size="small" sx={{ mt: 1 }}>
+            <InputLabel id="edit-role-label">Role</InputLabel>
+            <Select
+              labelId="edit-role-label"
+              label="Role"
+              value={editRole}
+              onChange={(event) => setEditRole(event.target.value)}
+            >
+              {dialogRoleOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditClose} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleRoleSave}
+            color="primary"
+            variant="contained"
+            disabled={savingRole || !editRole || editRole === editRow?.role}
+          >
+            {savingRole ? <CircularProgress size={18} /> : "Save"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
