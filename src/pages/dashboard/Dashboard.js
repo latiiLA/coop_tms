@@ -49,6 +49,12 @@ const fadeUp = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
+const TYPE_MIX_COLORS = {
+  NCR: "#ff9800",
+  CRM: "#00bcd4",
+  CRM2: "#7e57c2",
+};
+
 const STATUS_COLORS = {
   Active: "#00AEEF",
   Relocated: "#FF6F00",
@@ -361,12 +367,6 @@ const Dashboard = () => {
       .map(([label, value], id) => ({ id, label, value }))
       .filter((item) => item.value > 0);
   }, [filteredTerminals]);
-
-  const TYPE_MIX_COLORS = {
-    NCR: "#ff9800",
-    CRM: "#00bcd4",
-    CRM2: "#7e57c2",
-  };
 
   // Always include all ATM types so CRM2 is never dropped from Type mix.
   const typePie = useMemo(
