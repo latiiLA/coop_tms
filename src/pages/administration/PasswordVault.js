@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import {
   Box,
   Button,
@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { Search, Visibility, VisibilityOff } from "@mui/icons-material";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { gridContainerSx, PermissionGridToolbar } from "../../components/gridStyles";
 
 export default function PasswordVault() {
   const navigate = useNavigate();
@@ -366,22 +367,13 @@ export default function PasswordVault() {
         />
       </Box>
       <Box
-        sx={{
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-          },
-          margin: 1,
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           rows={filteredRows}
           columns={columns}
           showToolbar
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: PermissionGridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 15 },

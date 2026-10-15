@@ -1,5 +1,5 @@
 import { Alert, AlertTitle, Box, Button } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { gridContainerSx, PermissionGridToolbar } from "../../../components/gridStyles";
 
 const MerchantUpload = () => {
   const navigate = useNavigate();
@@ -132,31 +133,7 @@ const MerchantUpload = () => {
   return (
     <Box>
       <Box
-        sx={{
-          width: "auto",
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-root": {
-            overflow: "hidden",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            overflowY: "hidden !important",
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none",
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
-            display: "none",
-          },
-          marginX: 1,
-        }}
+        sx={gridContainerSx}
       >
         <Button
           variant="contained"
@@ -170,7 +147,7 @@ const MerchantUpload = () => {
           rows={rows}
           columns={columns}
           showToolbar
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: PermissionGridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },

@@ -1,35 +1,97 @@
-import { Box, Button, Card, Typography } from "@mui/material";
-import { Form, Formik, Field } from "formik";
-import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Form, Formik } from "formik";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CustomSelect, CustomTextField } from "../../components/CustomFields";
 import axios from "axios";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
-import { Download } from "@mui/icons-material";
+import {
+  ArrowBack,
+  AssignmentTurnedIn,
+  FileOpen,
+  History,
+  LocationOn,
+  Router,
+  Storefront,
+} from "@mui/icons-material";
+import {
+  FieldSlot,
+  FormTextField,
+  Section,
+} from "./requests/RequestPOS";
 import LoadingButton from "@mui/lab/LoadingButton";
-import ComboBox from "../../components/ComboBox";
-import { downloadFile } from "../../utils/fileDownload";
+import PdfBlobViewer from "../../components/PdfBlobViewer";
 
+const STATUS_COLORS = {
+  New: "info",
+  Authorized: "warning",
+  Approved: "success",
+  Rejected: "error",
+};
+
+const formatDate = (value) => {
+  if (!value) return "-";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+};
+
+const personName = (user) =>
+  user && typeof user === "object"
+    ? [user.firstName, user.fatherName].filter(Boolean).join(" ") || "-"
+    : "-";
+
+// Read-only value styled like RequestPOS inputs (outlined, medium, not greyed).
+const ReadOnlyField = ({ label, value, full, multiline }) => (
+  <FieldSlot full={full}>
+    <TextField
+      label={label}
+      value={value === undefined || value === null || value === "" ? "-" : value}
+      variant="outlined"
+      size="medium"
+      fullWidth
+      multiline={multiline}
+      helperText=" "
+      InputProps={{ readOnly: true }}
+    />
+  </FieldSlot>
+);
 const ApprovePOSRequest = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [rejectionLoading, setRejectionLoading] = useState(false);
   const location = useLocation();
-  const { row } = location.state;
-  console.log(row, "row");
-  const [districts, setDistricts] = useState([]);
-  const [branches, setBranches] = useState([]);
-  const [selectedDistrict, setSelectedDistrict] = useState(
-    row?.branchName?.district?._id || ""
-  );
-  const [isRejecting, setIsRejecting] = useState(false);
+  const row = location.state?.row || null;
 
-  // const [status, setStatus] = useState("");
+  // Pending confirmation: { type: "approve" | "reject", values }
+  const [confirmAction, setConfirmAction] = useState(null);
+  // Same in-page attachment viewer as POSDetails (has its own Download button).
+  const [attachmentOpen, setAttachmentOpen] = useState(false);
+  const busy = loading || rejectionLoading;
+  const canAct = row?.status === "Authorized";
 
-  const handleSubmit = async (values, { resetForm }) => {
-    console.log("inside handle submit approval", values);
-    setLoading(true);
+  const handleActionError = (error) => {
+    toast.error(
+      error.response?.data?.message || error.message || "Something went wrong"
+    );
+    // 409: the request was already approved/rejected elsewhere - leave the page.
+    if (error.response?.status === 409) navigate(-1);
+  };
+
+  const handleSubmit = async (values, { resetForm } = {}) => {
+    if (busy) return;
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem("token");
 
@@ -37,8 +99,16 @@ const ApprovePOSRequest = () => {
       navigate("/home");
       return;
     }
+    setLoading(true);
     try {
-      const response = await axios.post(`${apiUrl}/request/approve`, values, {
+      // Only send what the approver assigns; the server reads the rest.
+      const payload = {
+        _id: row._id,
+        terminalId: values.terminalId?.trim(),
+        merchantId: values.merchantId?.trim(),
+        remark: values.remark?.trim() || "",
+      };
+      const response = await axios.post(`${apiUrl}/request/approve`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -46,21 +116,22 @@ const ApprovePOSRequest = () => {
       });
 
       toast.success(response.data.message);
-      resetForm();
+      if (resetForm) resetForm();
       navigate(-1);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || error.message || "Something went wrong"
-      );
+      handleActionError(error);
     } finally {
-      // setSubmitting(false);
       setLoading(false);
     }
   };
 
-  const handleReject = async (row) => {
-    console.log("inside handle reject request");
-    setRejectionLoading(true);
+  const handleReject = async (values) => {
+    if (busy) return;
+    const remark = values.remark?.trim() || "";
+    if (remark.length < 3) {
+      toast.error("A rejection remark of at least 3 characters is required.");
+      return;
+    }
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem("token");
 
@@ -68,10 +139,11 @@ const ApprovePOSRequest = () => {
       navigate("/home");
       return;
     }
+    setRejectionLoading(true);
     try {
       const response = await axios.post(
         `${apiUrl}/request/reject`,
-        { row },
+        { row: { _id: row._id, remark } },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -81,461 +153,340 @@ const ApprovePOSRequest = () => {
       );
 
       toast.success(response.data.message);
-      // resetForm();
       navigate(-1);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || error.message || "Something went wrong"
-      );
+      handleActionError(error);
     } finally {
-      // setSubmitting(false);
       setRejectionLoading(false);
     }
   };
 
-  // const requestedrows = { ...row, terminalId };
+  // Only the approver-editable fields are validated. The read-only request
+  // fields are not sent and are validated by the server from stored data, so a
+  // legacy value there must not silently block approval.
+  const FORM_VALIDATION = Yup.object().shape({
+    terminalId: Yup.string()
+      .trim()
+      .required("Terminal ID is required")
+      .length(8, "Terminal ID must be 8 characters"),
+    merchantId: Yup.string()
+      .trim()
+      .required("Merchant ID is required")
+      .length(15, "Merchant ID must be 15 characters"),
+    remark: Yup.string().max(500, "Remark must be at most 500 characters"),
+  });
 
-  const phoneRegExp = /^[0-9]{9}$/;
 
-  const FORM_VALIDATION = (isRejecting) =>
-    Yup.object().shape({
-      serialNumber: Yup.string().required("Serial number is required"),
-      branchName: Yup.string().required("Branch Name is required"),
-      district: Yup.string().required("District is required"),
-      site: Yup.string().required("Terminal site assignment is required"),
-      merchantName: Yup.string().required("Merchant name is required"),
-      merchantAddress: Yup.string().required("Merchant Address is required"),
-      contactName: Yup.string().required("Contact Name is required"),
-      merchantPhonenumber: Yup.string()
-        .required("Phone Number is required")
-        .matches(phoneRegExp, "Phone number must be 9 digits")
-        .min(9, "Phone number is short. it must be 9 digits")
-        .max(9, "Phone number is long. it must be 9 digits"),
-      posCbsAccount: Yup.string()
-        .required("CBS Account is required")
-        .min(
-          12,
-          "CBS Account must be at least 12 characters, eg. ETB1000200010222"
-        ),
-      serviceNumber: Yup.string()
-        .required("Service Number is required")
-        .min(9, "Service number is short. it must be at least 9 digits")
-        .max(13, "Service number is long. it must be at most 13 digits"),
-      contactPhonenumber: Yup.string()
-        .required("Phone Number is required")
-        .matches(phoneRegExp, "Phone number must be 9 digits")
-        .min(9, "Phone number is short. it must be 9 digits")
-        .max(9, "Phone number is long. it must be 9 digits"),
-      businessType: Yup.string()
-        .required("Business type is required"),
-      staticIp: Yup.string()
-        .required("IP Address is required")
-        .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
-        .test("is-valid-ip", "Invalid IP Address", (value) => {
-          const parts = value.split(".");
-          if (parts.length !== 4) return false;
-          return parts.every((part) => {
-            const num = parseInt(part, 10);
-            return !isNaN(num) && num >= 0 && num <= 255;
-          });
-        }),
-      terminalId: isRejecting
-        ? Yup.string().notRequired()
-        : Yup.string()
-            .required("Merchant ID is required")
-            .min(8, "Terminal ID is short. it must be  8 characters")
-            .max(8, "Terminal ID is long. it must be 8 characters"),
 
-      merchantId: isRejecting
-        ? Yup.string().notRequired()
-        : Yup.string()
-            .required("Merchant ID is required")
-            .min(15, "Merchant ID is short. it must be 15 characters")
-            .max(15, "Merchant ID is long. it must be 15 characters"),
-      remark: isRejecting
-        ? Yup.string().required("Remark is required for rejection")
-        : Yup.string(),
-    });
-
-  const handleDownload = () => {
-    downloadFile(row.file.filePath, row.file.fileName).catch((error) =>
-      console.error("File download failed:", error)
+  if (!row) {
+    return (
+      <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2 }}>
+        <Alert severity="warning">
+          No request was selected. Open this page from the request list.
+        </Alert>
+        <Box>
+          <Button variant="contained" onClick={() => navigate(-1)}>
+            Back
+          </Button>
+        </Box>
+      </Box>
     );
-  };
+  }
 
-  useEffect(() => {
-    const fetchRows = async () => {
-      const token = localStorage.getItem("token");
-      const apiUrl = process.env.REACT_APP_API_URL;
+  const districtName =
+    row?.branchName?.district?.districtName || row?.district?.districtName;
 
-      if (!token) {
-        toast.error("User is not authenticated");
-        navigate("/home");
-        return;
-      }
-
-      try {
-        const response = await axios.get(`${apiUrl}/district/getDistrict`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        });
-
-        console.log("API Response:", response.data); // Log the response
-
-        const formattedDistricts = response.data.alldistricts.map(
-          (district) => ({
-            value: district._id,
-            label: district.districtName.toString(),
-          })
-        );
-        setDistricts(formattedDistricts);
-        console.log("Formatted Districts:", formattedDistricts);
-      } catch (error) {
-        console.log("Error Details:", error); // Log the error
-        toast.error(`Error: ${error.response?.data?.message || error.message}`);
-        navigate("/home");
-      }
-    };
-
-    fetchRows();
-  }, [navigate]);
-
-  useEffect(() => {
-    console.log("selectedDistrict", selectedDistrict);
-    if (selectedDistrict) {
-      const fetchBranches = async () => {
-        const token = localStorage.getItem("token");
-        const apiUrl = process.env.REACT_APP_API_URL;
-        try {
-          const response = await axios.get(`${apiUrl}/branch/getBranch`, {
-            params: { districtId: selectedDistrict },
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-          });
-          setBranches(
-            response.data.branches.map((branch) => ({
-              value: branch._id,
-              label: branch.companyName,
-            }))
-          );
-        } catch (error) {
-          toast.error(
-            `Error fetching branches: ${
-              error.response?.data?.message || error.message
-            }`
-          );
-        }
-      };
-      fetchBranches();
-    } else {
-      setBranches([]);
-    }
-  }, [selectedDistrict]);
+  const iconSx = { fontSize: 20 };
+  const fieldsDisabled = !canAct || busy;
 
   return (
-    <Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          margin: "auto",
-          justifyContent: "center",
-        }}
-      >
-        <Card
-          sx={{
-            p: 3,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            margin: "auto",
-            borderRadius: 2,
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            width: { xs: "100%", sm: "95%", md: "90%" },
-            position: "relative",
+    <Box sx={{ width: "100%", display: "flex", justifyContent: "center", py: 2 }}>
+      <Box sx={{ width: { xs: "100%", sm: "95%", md: "90%", lg: "80%" }, px: { xs: 1, sm: 0 } }}>
+        <Formik
+          initialValues={{ terminalId: "", merchantId: "", remark: "" }}
+          validationSchema={FORM_VALIDATION}
+          onSubmit={(values) => {
+            // Approve goes through a confirmation dialog.
+            if (!busy) setConfirmAction({ type: "approve", values });
           }}
         >
-          <Formik
-            initialValues={{
-              ...row,
-              branchName: row?.branchName?._id,
-              district: row?.branchName?.district?._id,
-              serialNumber: row?.serialNumber?._id,
-              terminalId: "",
-              merchantId: "",
-              remark: "",
-            }}
-            validationSchema={FORM_VALIDATION(isRejecting)}
-            onSubmit={(values, { resetForm }) => {
-              if (isRejecting) {
-                // Handle rejection
-                handleReject(values, { resetForm });
-              } else {
-                // Handle approval
-                handleSubmit(values, { resetForm });
-              }
-            }}
-            validateOnMount
-          >
-            {({
-              values,
-              errors,
-              touched,
-              isValid,
-              validateForm,
-              handleChange,
-              setFieldValue,
-              resetForm,
-            }) => (
-              <Form>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Typography variant="h5" sx={{ textAlign: "center" }}>
-                    Approve Request
-                  </Typography>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: { md: "row", xs: "column" },
-                      gap: 2,
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 2,
-                        width: { md: "50%", xs: "100%" },
-                      }}
-                    >
-                      {row.status === "Authorized" && (
-                        <CustomTextField
-                          name="terminalId"
-                          label="Terminal ID"
-                          required
-                        />
-                      )}
-                      <Box sx={{ flex: 1 }}>
-                        <Field
-                          name="serialNumber"
-                          component={ComboBox}
-                          disabled={true}
-                        />
-                      </Box>
-                      <CustomTextField
-                        name="merchantName"
-                        label="Merchant Name"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-                      <CustomSelect
-                        name="district"
-                        label="District"
-                        options={districts}
-                        onChange={(e) => {
-                          handleChange(e);
-                          setSelectedDistrict(e.target.value);
-                          setBranches([]);
-                          validateForm();
-                        }}
-                        disabled={true}
-                      />
-
-                      <CustomSelect
-                        name="branchName"
-                        label="Branch Name"
-                        options={branches}
-                        onChange={(e) => {
-                          handleChange(e);
-                          validateForm();
-                        }}
-                        disabled={true}
-                        required
-                      />
-
-                      <CustomTextField
-                        name="site"
-                        label="Terminal Site"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-
-                      <CustomTextField
-                        name="merchantAddress"
-                        label="Merchant Address"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-                      <CustomTextField
-                        name="contactName"
-                        label="Contact Name"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-                      <CustomTextField
-                        name="merchantPhonenumber"
-                        label="Merchant Phone Number"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-                      <CustomTextField
-                        name="posCbsAccount"
-                        label="CBS Account"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-                      <CustomTextField
-                        name="businessType"
-                        label="Business Type"
-                        disabled
-                      />
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 2,
-                        width: { md: "50%", xs: "100%" },
-                      }}
-                    >
-                      <CustomTextField
-                        name="merchantId"
-                        label="Merchant ID"
-                        required
-                      />
-                      <CustomTextField
-                        name="serviceNumber"
-                        label="Service Number"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-                      <CustomTextField
-                        name="staticIp"
-                        label="Static IP Address"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-                      <CustomTextField
-                        name="contactPhonenumber"
-                        label="Contact Phone Number"
-                        disabled
-                      />                 
-                      <CustomTextField
-                        name="createdBy"
-                        label="Created By"
-                        value={
-                          (row?.createdBy?.firstName || "Unknown") +
-                          " " +
-                          (row?.createdBy?.fatherName || "Unknown")
-                        }
-                        disabled
-                      />
-                      <CustomTextField
-                        name="createdAt"
-                        label="Created At"
-                        disabled
-                      />
-
-                      <CustomTextField
-                        name="updatedAt"
-                        label="Updated At"
-                        disabled
-                      />
-                      <CustomTextField
-                        name="status"
-                        label="Request Status"
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                      />
-
-                      {/* <CustomSelect
-                        name="status"
-                        label="Status"
-                        // default={status}
-                        options={request_status}
-                      /> */}
-                      <CustomTextField name="remark" label="Remark" />
-                      {/* Download Button */}
-
-                      {row.file && (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            gap: 3,
-                            justifyContent: "left",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Typography>Merchant Agreement</Typography>
-
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleDownload}
-                            startIcon={<Download />}
-                          >
-                            Download {row.file.fileName}
-                          </Button>
-                        </Box>
-                      )}
-                    </Box>
+          {({ values, resetForm }) => (
+            <Form noValidate>
+              <Stack spacing={2}>
+                {/* Header */}
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="flex-start"
+                  justifyContent="space-between"
+                  flexWrap="wrap"
+                  useFlexGap
+                >
+                  <Box>
+                    <Typography variant="h5" fontWeight={600}>
+                      Approve POS Configuration Request
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {row?.merchantName || "-"} · Serial{" "}
+                      {row?.serialNumber?.serialNumber || "-"} · Submitted{" "}
+                      {formatDate(row?.createdAt)}
+                    </Typography>
                   </Box>
-                </Box>
+                  <Chip
+                    label={row?.status || "Unknown"}
+                    color={STATUS_COLORS[row?.status] || "default"}
+                  />
+                </Stack>
 
-                <Box
+                {!canAct && (
+                  <Alert severity="warning" sx={{ borderRadius: 2 }}>
+                    This request is in status "{row?.status || "-"}" and can only
+                    be approved or rejected while it is Authorized.
+                  </Alert>
+                )}
+
+                <Section
+                  step={1}
+                  title="Location"
+                  subtitle="Where the terminal will be installed"
+                  icon={<LocationOn sx={iconSx} />}
+                >
+                  <ReadOnlyField label="District" value={districtName} />
+                  <ReadOnlyField label="Terminal Site" value={row?.site} />
+                  <ReadOnlyField label="Branch" value={row?.branchName?.companyName} />
+                </Section>
+
+                <Section
+                  step={2}
+                  title="Merchant"
+                  subtitle="Business and contact details"
+                  icon={<Storefront sx={iconSx} />}
+                >
+                  <ReadOnlyField label="Merchant Name" value={row?.merchantName} />
+                  <ReadOnlyField label="Business Type" value={row?.businessType} />
+                  <ReadOnlyField label="Merchant Address" value={row?.merchantAddress} />
+                  <ReadOnlyField label="Contact Name" value={row?.contactName} />
+                  <ReadOnlyField label="Merchant Phone Number" value={row?.merchantPhonenumber} />
+                  <ReadOnlyField label="Contact Phone Number" value={row?.contactPhonenumber} />
+                  <ReadOnlyField label="CBS Account" value={row?.posCbsAccount} />
+                </Section>
+
+                <Section
+                  step={3}
+                  title="Device & Network"
+                  subtitle="Terminal hardware and connectivity"
+                  icon={<Router sx={iconSx} />}
+                >
+                  <ReadOnlyField label="Serial Number" value={row?.serialNumber?.serialNumber} />
+                  <ReadOnlyField label="Service Number" value={row?.serviceNumber} />
+                  <ReadOnlyField label="Static IP Address" value={row?.staticIp} />
+                </Section>
+
+                <Section
+                  step={4}
+                  title="Request History"
+                  subtitle="Who submitted and authorized this request"
+                  icon={<History sx={iconSx} />}
+                >
+                  <ReadOnlyField label="Requested By" value={personName(row?.createdBy)} />
+                  <ReadOnlyField label="Authorized By" value={personName(row?.reqAuthorizedBy)} />
+                  <ReadOnlyField label="Created At" value={formatDate(row?.createdAt)} />
+                  <ReadOnlyField label="Last Updated" value={formatDate(row?.updatedAt)} />
+                  {row?.remark && (
+                    <ReadOnlyField label="Previous Remark" value={row.remark} full multiline />
+                  )}
+                  {row?.file?.filePath && (
+                    <FieldSlot full>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 2,
+                          flexWrap: "wrap",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" fontWeight={600}>
+                          Merchant Agreement
+                        </Typography>
+                        <Button
+                          variant="outlined"
+                          onClick={() => setAttachmentOpen(true)}
+                          startIcon={<FileOpen />}
+                        >
+                          View {row.file.fileName || "attachment"}
+                        </Button>
+                      </Box>
+                      <PdfBlobViewer
+                        filePath={row.file.filePath}
+                        fileName={row.file.fileName}
+                        open={attachmentOpen}
+                        onClose={() => setAttachmentOpen(false)}
+                      />
+                    </FieldSlot>
+                  )}
+                </Section>
+
+                <Section
+                  step={5}
+                  title="Approval"
+                  subtitle="Assign terminal identifiers, or reject with a reason"
+                  icon={<AssignmentTurnedIn sx={iconSx} />}
+                >
+                  <FieldSlot name="terminalId">
+                    <FormTextField
+                      name="terminalId"
+                      label="Terminal ID"
+                      required
+                      disabled={fieldsDisabled}
+                      inputProps={{ maxLength: 8 }}
+                      helperText={`Exactly 8 characters (${(values.terminalId || "").length}/8)`}
+                    />
+                  </FieldSlot>
+                  <FieldSlot name="merchantId">
+                    <FormTextField
+                      name="merchantId"
+                      label="Merchant ID"
+                      required
+                      disabled={fieldsDisabled}
+                      inputProps={{ maxLength: 15 }}
+                      helperText={`Exactly 15 characters (${(values.merchantId || "").length}/15)`}
+                    />
+                  </FieldSlot>
+                  <FieldSlot name="remark" full>
+                    <FormTextField
+                      name="remark"
+                      label="Remark"
+                      multiline
+                      minRows={3}
+                      disabled={fieldsDisabled}
+                      inputProps={{ maxLength: 500 }}
+                      helperText={`Optional for approval; required (min 3 characters) to reject (${(values.remark || "").length}/500)`}
+                    />
+                  </FieldSlot>
+                </Section>
+
+                {/* Sticky footer, same as RequestPOS */}
+                <Paper
+                  elevation={3}
                   sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    margin: "auto",
-                    gap: 2,
-                    marginTop: 2,
+                    position: "sticky",
+                    bottom: 0,
+                    zIndex: 2,
+                    borderRadius: 2,
+                    px: { xs: 2, md: 3 },
+                    py: 1.5,
                   }}
                 >
-                  <LoadingButton
-                    loading={loading}
-                    variant="contained"
-                    type="Submit"
-                    onClick={() => setIsRejecting(false)}
+                  <Stack
+                    direction={{ xs: "column-reverse", sm: "row" }}
+                    spacing={1.5}
+                    justifyContent="space-between"
+                    alignItems={{ xs: "stretch", sm: "center" }}
                   >
-                    Approve
-                  </LoadingButton>
-                  <LoadingButton
-                    loading={rejectionLoading}
-                    variant="contained"
-                    style={{ backgroundColor: "red", color: "white" }}
-                    onClick={async () => {
-                      setIsRejecting(true)
-                      if (!values.remark || values.remark.trim() === "") {
-                        toast.error("Remark is required for rejection.");
-                        return;
+                    <Button
+                      startIcon={<ArrowBack />}
+                      onClick={() => navigate(-1)}
+                      disabled={busy}
+                    >
+                      Back
+                    </Button>
+                    <Stack direction={{ xs: "column-reverse", sm: "row" }} spacing={1.5}>
+                      <LoadingButton
+                        loading={rejectionLoading}
+                        disabled={fieldsDisabled}
+                        variant="outlined"
+                        color="error"
+                        onClick={() => {
+                          if ((values.remark?.trim() || "").length < 3) {
+                            toast.error(
+                              "A rejection remark of at least 3 characters is required."
+                            );
+                            return;
+                          }
+                          setConfirmAction({ type: "reject", values });
+                        }}
+                      >
+                        Reject
+                      </LoadingButton>
+                      <LoadingButton
+                        loading={loading}
+                        disabled={fieldsDisabled}
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        sx={{ minWidth: 200 }}
+                      >
+                        Approve
+                      </LoadingButton>
+                    </Stack>
+                  </Stack>
+                </Paper>
+              </Stack>
+
+              <Dialog
+                open={Boolean(confirmAction)}
+                onClose={() => !busy && setConfirmAction(null)}
+                fullWidth
+                maxWidth="sm"
+              >
+                <DialogTitle>
+                  {confirmAction?.type === "reject"
+                    ? "Confirm Rejection"
+                    : "Confirm Approval"}
+                </DialogTitle>
+                <DialogContent>
+                  {confirmAction?.type === "reject" ? (
+                    <>
+                      Reject the request for{" "}
+                      <strong>{row?.merchantName || "-"}</strong>?
+                      <br />
+                      Reason: {confirmAction?.values?.remark?.trim()}
+                    </>
+                  ) : (
+                    <>
+                      Approve the request for{" "}
+                      <strong>{row?.merchantName || "-"}</strong> with Terminal
+                      ID <strong>{confirmAction?.values?.terminalId?.trim()}</strong>{" "}
+                      and Merchant ID{" "}
+                      <strong>{confirmAction?.values?.merchantId?.trim()}</strong>?
+                      {confirmAction?.values?.remark?.trim() && (
+                        <>
+                          <br />
+                          Remark: {confirmAction.values.remark.trim()}
+                        </>
+                      )}
+                    </>
+                  )}
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    color="secondary"
+                    disabled={busy}
+                    onClick={() => setConfirmAction(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    color={confirmAction?.type === "reject" ? "error" : "primary"}
+                    disabled={busy}
+                    onClick={() => {
+                      const action = confirmAction;
+                      setConfirmAction(null);
+                      if (action?.type === "reject") {
+                        handleReject(action.values);
+                      } else if (action) {
+                        handleSubmit(action.values, { resetForm });
                       }
-                      handleReject(values);
                     }}
                   >
-                    Reject
-                  </LoadingButton>
-
-                  <Button onClick={() => navigate(-1)}>Back</Button>
-                </Box>
-              </Form>
-            )}
-          </Formik>
-        </Card>
+                    Confirm
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </Form>
+          )}
+        </Formik>
       </Box>
     </Box>
   );

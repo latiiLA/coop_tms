@@ -128,12 +128,13 @@ const POSDetails = () => {
     !!row &&
     (RELOCATION_STATUSES.includes(status) ||
       !!row.assignRelocationAuthorizer ||
-      !!row.relocationAuthorizedBy);
+      !!row.relocationAuthorizedBy ||
+      !!row.relocationRejectedBy);
 
   const iconSx = { color: "primary.main" };
 
   return (
-    <Box sx={{ width: { xs: "100%", sm: "95%", md: "90%" }, mx: "auto" }}>
+    <Box sx={{ width: { xs: "100%", sm: "95%", md: "90%" }, mx: "auto", mt: 2 }}>
       {/* Header */}
       <Card
         sx={{
@@ -225,6 +226,12 @@ const POSDetails = () => {
                 </>
               )}
               <Field label="Created By" value={personName(row.createdBy)} />
+              {isRequest && (
+                <Field
+                  label="Assigned User"
+                  value={personName(row.assignAuthorizationUser)}
+                />
+              )}
               {isRequest && row.reqAuthorizedBy && (
                 <Field label="Request Authorized By" value={personName(row.reqAuthorizedBy)} />
               )}
@@ -259,10 +266,21 @@ const POSDetails = () => {
                   value={personName(row.assignRelocationAuthorizer)}
                 />
                 <Field label="Requested By" value={personName(row.deleteRequestedBy)} />
-                <Field
-                  label="Authorized By"
-                  value={personName(row.relocationAuthorizedBy)}
-                />
+                {row.relocationAuthorizedBy && (
+                  <Field
+                    label="Relocation Authorized By"
+                    value={personName(row.relocationAuthorizedBy)}
+                  />
+                )}
+                {row.relocationRejectedBy && (
+                  <Field
+                    label="Relocation Rejected By"
+                    value={personName(row.relocationRejectedBy)}
+                  />
+                )}
+                {row.relocationRejectedBy && (
+                  <Field label="Rejected At" value={formatDate(row.relocationRejectedAt)} />
+                )}
                 {status === "Relocated" && (
                   <Field label="Relocated By" value={personName(row.deletedBy)} />
                 )}

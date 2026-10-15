@@ -69,6 +69,7 @@ const NCRData = () => {
         >
           <MenuItem value="All">All</MenuItem>
           <MenuItem value="CRM">CRM</MenuItem>
+          <MenuItem value="CRM2">CRM2</MenuItem>
           <MenuItem value="NCR">NCR</MenuItem>
         </Select>
       </FormControl>

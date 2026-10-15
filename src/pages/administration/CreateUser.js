@@ -1,353 +1,400 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   TextField,
   Typography,
   Button,
   Card,
-  FormControl,
-  InputLabel,
-  Select,
+  Divider,
   MenuItem,
-  OutlinedInput,
   InputAdornment,
   IconButton,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
-import { Formik, Form, ErrorMessage, Field } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+  Visibility,
+  VisibilityOff,
+  PersonAddAlt1,
+  Badge,
+  AdminPanelSettings,
+  Key,
+} from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
+const DEPARTMENTS = [
+  { value: "digital banking", label: "Digital Banking" },
+  { value: "monitoring", label: "Monitoring" },
+  { value: "Merchant/Agent Growth and Support", label: "Merchant/Agent Growth and Support" },
+  { value: "Accounts and Finance Team", label: "Accounts and Finance Team" },
+];
+
+const INITIAL_FORM_STATE = {
+  firstName: "",
+  fatherName: "",
+  gfatherName: "",
+  email: "",
+  roleId: "",
+  department: "",
+  district: "",
+  username: "",
+  password: "",
+};
+
+const buildValidation = (roles) =>
+  Yup.object().shape({
+    firstName: Yup.string()
+      .trim()
+      .required("First name is required")
+      .min(3, "First name must be at least 3 characters"),
+    fatherName: Yup.string().trim().required("Father name is required"),
+    gfatherName: Yup.string().trim().required("Grandfather name is required"),
+    email: Yup.string()
+      .trim()
+      .email("Invalid email")
+      .required("Email is required"),
+    roleId: Yup.string().required("Role is required"),
+    district: Yup.string().when("roleId", {
+      is: (roleId) =>
+        !!roles.find((r) => r._id === roleId)?.requiresDistrict,
+      then: (schema) =>
+        schema.required("District is required for district roles"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    department: Yup.string().when("roleId", {
+      is: (roleId) =>
+        !roles.find((r) => r._id === roleId)?.requiresDistrict,
+      then: (schema) => schema.required("Department is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    username: Yup.string().trim().required("Username is required"),
+    password: Yup.string()
+      .required("Password is required")
+      .min(8, "Password must be at least 8 characters"),
+  });
+
+const Section = ({ icon, title, subtitle, children }) => (
+  <Box sx={{ mb: 1 }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
+      {icon}
+      <Typography variant="subtitle1" fontWeight={600}>
+        {title}
+      </Typography>
+    </Box>
+    {subtitle && (
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        {subtitle}
+      </Typography>
+    )}
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+        columnGap: 2,
+        rowGap: 0.5,
+        mt: subtitle ? 0 : 1,
+      }}
+    >
+      {children}
+    </Box>
+  </Box>
+);
+
 const CreateUser = () => {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = React.useState(false);
-  const hasShownToast = useRef(false); // Use ref to track if the toast has been shown
+  const [showPassword, setShowPassword] = useState(false);
+  const [districts, setDistricts] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const hasShownToast = useRef(false);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  useEffect(() => {
+    const fetchMeta = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        const [districtRes, rolesRes] = await Promise.all([
+          axios.get(`${apiUrl}/district/getDistrict`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }),
+          axios.get(`${apiUrl}/rbac/roles?lean=true`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }),
+        ]);
+        setDistricts(
+          (districtRes.data.alldistricts || []).map((district) => ({
+            value: district._id,
+            label: district.districtName,
+          }))
+        );
+        setRoles(
+          (rolesRes.data.roles || []).map((r) => ({
+            _id: r._id,
+            name: r.name,
+            label: r.displayName || r.name,
+            requiresDistrict: !!r.requiresDistrict,
+            rank: r.rank ?? 0,
+          }))
+        );
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
+      }
+    };
+    fetchMeta();
+  }, [apiUrl]);
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
-  const INITIAL_FORM_STATE = {
-    firstName: "",
-    fatherName: "",
-    gfatherName: "",
-    email: "",
-    department: "",
-    role: "",
-    username: "",
-    password: "",
-  };
-
-  const FORM_VALIDATION = Yup.object().shape({
-    firstName: Yup.string()
-      .required("First Name is required")
-      .min(3, "First Name must be at least 3 characters"),
-    fatherName: Yup.string().required("Father Name is required"),
-    gfatherName: Yup.string().required("Grand Father Name is required"),
-    email: Yup.string().email("Invalid Email").required("Email is required"),
-    department: Yup.string().required("Department is required"),
-    role: Yup.string().required("Role is required"),
-    username: Yup.string().required("Username is required"),
-    password: Yup.string().required("Password is required"),
-  });
-  const role = [
-    { value: "user", label: "User" },
-    { value: "admin", label: "Admin" },
-    { value: "superadmin", label: "Superadmin" },
-    { value: "useradmin", label: "User Admin" },
-    { value: "posuser", label: "POS User" },
-    { value: "posauthorizer", label: "POS Request Authorizer" },
-    { value: "posadmin", label: "POS Admin" },
-  ];
-
-  const department = [
-    { value: "digital banking", label: "Digital Banking" },
-    { value: "monitoring", label: "Monitoring" },
-    {
-      value: "Merchant/Agent Growth and Support",
-      label: "Merchant/Agent Growth and Support",
-    },
-    {
-      value: "Accounts and Finance Team",
-      label: "Accounts and Finance Team",
-    },
-  ];
-
-  const handleSubmit = async (data, { resetForm }) => {
-    // console.log("handle submit", data.firstName);
+  const handleSubmit = async (data, { resetForm, setSubmitting }) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      // console.error("No authentication token found");
       if (!hasShownToast.current) {
         toast.error("User is not authenticated");
         hasShownToast.current = true;
       }
       navigate("/home");
-      return; // Exit the function if no token is found
+      return;
     }
+    const selected = roles.find((r) => r._id === data.roleId);
+    const districtUser = !!selected?.requiresDistrict;
     try {
-      const apiUrl = process.env.REACT_APP_API_URL;
       const response = await axios.post(
         `${apiUrl}/auth/createUser`,
         {
-          firstName: data.firstName,
-          fatherName: data.fatherName,
-          gfatherName: data.gfatherName,
-          email: data.email,
-          department: data.department,
-          role: data.role,
-          username: data.username,
+          firstName: data.firstName.trim(),
+          fatherName: data.fatherName.trim(),
+          gfatherName: data.gfatherName.trim(),
+          email: data.email.trim(),
+          roleId: data.roleId,
+          // A district user belongs to a district, not a department.
+          department: districtUser ? undefined : data.department,
+          district: districtUser ? data.district : undefined,
+          username: data.username.trim(),
           password: data.password,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         }
       );
-      // console.log("New user is created:", response.data);
       resetForm();
       toast.success(response.data.message);
-
-      // setfirstName("");
-      // setlastName("");
-      // setEmail("");
-      // setPassword("");
-      // setconfirmPassword("");
-      // navigate("/login");
-      // You can redirect the user to the newly created post or update the post list
     } catch (error) {
-      // console.error("Error creating a user:", error);
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        toast.error(error.response.data.message);
-      } else {
-        // console.error("Error adding an user:", error);
-        toast.error(error.message);
-      }
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        margin: 1,
-      }}
-    >
-      <Card
-        sx={{
-          p: 3,
-          px: 5,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          borderRadius: 2,
-          width: { xs: "100%", sm: "80%", md: "70%" },
-        }}
-      >
-        <Formik
-          initialValues={INITIAL_FORM_STATE}
-          validationSchema={FORM_VALIDATION}
-          onSubmit={(values, formikHelpers) => {
-            handleSubmit(values, formikHelpers);
+    <Box sx={{ display: "flex", justifyContent: "center", p: { xs: 1, md: 2 } }}>
+      <Card sx={{ width: "100%", maxWidth: 900, borderRadius: 2, overflow: "hidden" }}>
+        <Box
+          sx={{
+            px: { xs: 2, md: 4 },
+            py: 1.5,
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            borderBottom: 1,
+            borderColor: "divider",
           }}
         >
-          {({ errors, touched, resetForm }) => (
-            <Form>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Typography variant="h5" sx={{ textAlign: "center" }}>
-                  Add New User
-                </Typography>
+          <PersonAddAlt1 color="primary" fontSize="large" />
+          <Box>
+            <Typography variant="h5" fontWeight={600}>
+              Add New User
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Fill in the details below to create an account.
+            </Typography>
+          </Box>
+        </Box>
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 5,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: "50%",
-                      gap: 2,
-                    }}
+        <Formik
+          initialValues={INITIAL_FORM_STATE}
+          validationSchema={buildValidation(roles)}
+          enableReinitialize
+          onSubmit={handleSubmit}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleChange,
+            handleBlur,
+            setFieldValue,
+            setFieldTouched,
+            isSubmitting,
+            submitCount,
+            resetForm,
+          }) => {
+            const selectedRole = roles.find((r) => r._id === values.roleId);
+            const districtUser = !!selectedRole?.requiresDistrict;
+            const fieldProps = (name) => ({
+              name,
+              value: values[name],
+              onChange: handleChange,
+              onBlur: handleBlur,
+              fullWidth: true,
+              error: Boolean(touched[name] && errors[name]),
+              helperText: touched[name] && errors[name] ? errors[name] : " ",
+            });
+            const errorCount = Object.keys(errors).length;
+
+            const onRoleChange = (e) => {
+              const next = e.target.value;
+              setFieldValue("roleId", next);
+              const nextRole = roles.find((r) => r._id === next);
+              if (nextRole?.requiresDistrict) {
+                setFieldValue("department", "");
+                setFieldTouched("department", false, false);
+              } else {
+                setFieldValue("district", "");
+                setFieldTouched("district", false, false);
+              }
+            };
+
+            return (
+              <Form noValidate>
+                <Box sx={{ px: { xs: 2, md: 4 }, pt: 2 }}>
+                  {submitCount > 0 && errorCount > 0 && (
+                    <Alert severity="error" sx={{ mb: 1.5 }}>
+                      Please fix {errorCount} field{errorCount > 1 ? "s" : ""} below.
+                    </Alert>
+                  )}
+
+                  <Section
+                    icon={<Badge color="action" />}
+                    title="Personal information"
                   >
-                    <Field
-                      as={TextField}
-                      name="firstName"
-                      label="First Name"
-                      variant="outlined"
-                      fullWidth
-                      error={touched.firstName && !!errors.firstName}
-                      helperText={<ErrorMessage name="firstName" />}
-                    />
-                    <Field
-                      as={TextField}
-                      name="fatherName"
-                      label="Father Name"
-                      variant="outlined"
-                      fullWidth
-                      error={touched.fatherName && !!errors.fatherName}
-                      helperText={<ErrorMessage name="fatherName" />}
-                    />
-                    <Field
-                      as={TextField}
-                      name="gfatherName"
-                      label="GrandFather Name"
-                      variant="outlined"
-                      fullWidth
-                      error={touched.gfatherName && !!errors.gfatherName}
-                      helperText={<ErrorMessage name="gfatherName" />}
-                    />
-                    <Field
-                      as={TextField}
-                      name="email"
-                      label="Email"
-                      variant="outlined"
-                      fullWidth
-                      error={touched.email && !!errors.email}
-                      helperText={<ErrorMessage name="email" />}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: "50%",
-                      gap: 2,
-                    }}
+                    <TextField label="First name" {...fieldProps("firstName")} />
+                    <TextField label="Father name" {...fieldProps("fatherName")} />
+                    <TextField label="Grandfather name" {...fieldProps("gfatherName")} />
+                    <TextField label="Email" type="email" {...fieldProps("email")} />
+                  </Section>
+
+                  <Divider sx={{ mb: 1.5 }} />
+
+                  <Section
+                    icon={<AdminPanelSettings color="action" />}
+                    title="Access"
+                    subtitle={
+                      districtUser
+                        ? "District users only see and act on their own district's POS data, so they have no department."
+                        : "Head-office users belong to a department."
+                    }
                   >
-                    <FormControl
-                      variant="outlined"
-                      fullWidth
-                      error={touched.department && !!errors.department}
+                    <TextField
+                      select
+                      label="Role"
+                      {...fieldProps("roleId")}
+                      onChange={onRoleChange}
                     >
-                      <InputLabel id="department-label">Department</InputLabel>
-                      <Field
-                        as={Select}
-                        name="department"
-                        labelId="department-label"
-                        label="Department"
-                        // helperText={<ErrorMessage name="role" />}
-                      >
-                        {department.map((option) => (
+                      {roles.length === 0 && (
+                        <MenuItem disabled value="">
+                          Loading roles...
+                        </MenuItem>
+                      )}
+                      {roles.map((option) => (
+                        <MenuItem key={option._id} value={option._id}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    {districtUser ? (
+                      <TextField select label="District" {...fieldProps("district")}>
+                        {districts.length === 0 && (
+                          <MenuItem disabled value="">
+                            No districts found
+                          </MenuItem>
+                        )}
+                        {districts.map((option) => (
                           <MenuItem key={option.value} value={option.value}>
                             {option.label}
                           </MenuItem>
                         ))}
-                      </Field>
-                      <ErrorMessage
-                        name="department"
-                        component="div"
-                        style={{ color: "red" }}
-                      />
-                    </FormControl>
-                    <FormControl
-                      variant="outlined"
-                      fullWidth
-                      error={touched.role && !!errors.role}
-                    >
-                      <InputLabel id="role-label">Role</InputLabel>
-                      <Field
-                        as={Select}
-                        name="role"
-                        labelId="role-label"
-                        label="Role"
-                        // helperText={<ErrorMessage name="role" />}
-                      >
-                        {role.map((option) => (
+                      </TextField>
+                    ) : (
+                      <TextField select label="Department" {...fieldProps("department")}>
+                        {DEPARTMENTS.map((option) => (
                           <MenuItem key={option.value} value={option.value}>
                             {option.label}
                           </MenuItem>
                         ))}
-                      </Field>
-                      <ErrorMessage
-                        name="role"
-                        component="div"
-                        style={{ color: "red" }}
-                      />
-                    </FormControl>
+                      </TextField>
+                    )}
+                  </Section>
 
-                    {/* <Typography variant="h6">Login Information</Typography> */}
-                    <Field
-                      as={TextField}
-                      name="username"
+                  <Divider sx={{ mb: 1.5 }} />
+
+                  <Section icon={<Key color="action" />} title="Login credentials">
+                    <TextField
                       label="Username"
-                      variant="outlined"
-                      fullWidth
-                      error={touched.username && !!errors.username}
-                      helperText={<ErrorMessage name="username" />}
+                      autoComplete="off"
+                      {...fieldProps("username")}
                     />
-                    {/* <Field
-                  as={TextField}
-                  name="password"
-                  label="Password"
-                  variant="outlined"
-                  type="password"
-                  fullWidth
-                /> */}
-                    <FormControl
-                      variant="outlined"
-                      error={touched.password && !!errors.password}
-                      fullWidth
-                    >
-                      <InputLabel htmlFor="outlined-adornment-password">
-                        Password
-                      </InputLabel>
-                      <Field
-                        as={OutlinedInput}
-                        id="outlined-adornment-password"
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        endAdornment={
+                    <TextField
+                      label="Password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      {...fieldProps("password")}
+                      InputProps={{
+                        endAdornment: (
                           <InputAdornment position="end">
                             <IconButton
                               aria-label="toggle password visibility"
-                              onClick={handleClickShowPassword}
-                              onMouseDown={handleMouseDownPassword}
+                              onClick={() => setShowPassword((s) => !s)}
+                              onMouseDown={(e) => e.preventDefault()}
                               edge="end"
                             >
-                              {showPassword ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
                           </InputAdornment>
-                        }
-                        label="Password"
-                      />
-                      <ErrorMessage
-                        name="password"
-                        component="div"
-                        style={{ color: "red" }}
-                      />
-                    </FormControl>
-                  </Box>
+                        ),
+                      }}
+                    />
+                  </Section>
                 </Box>
-                <Button
-                  variant="contained"
-                  type="submit"
-                  sx={{ width: "25%", margin: "auto" }}
+
+                <Box
+                  sx={{
+                    px: { xs: 2, md: 4 },
+                    py: 1.25,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: 1.5,
+                    borderTop: 1,
+                    borderColor: "divider",
+                    bgcolor: "action.hover",
+                  }}
                 >
-                  Add User
-                </Button>
-              </Box>
-            </Form>
-          )}
+                  <Button
+                    variant="outlined"
+                    disabled={isSubmitting}
+                    onClick={() => resetForm()}
+                  >
+                    Clear
+                  </Button>
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    disabled={isSubmitting}
+                    startIcon={
+                      isSubmitting ? <CircularProgress size={18} color="inherit" /> : <PersonAddAlt1 />
+                    }
+                  >
+                    {isSubmitting ? "Creating..." : "Create user"}
+                  </Button>
+                </Box>
+              </Form>
+            );
+          }}
         </Formik>
       </Card>
     </Box>

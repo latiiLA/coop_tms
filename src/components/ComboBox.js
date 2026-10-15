@@ -79,8 +79,11 @@ export default function ComboBox({
 
   const handleDeviceChange = (event, newValue) => {
     setSelectedDevice(newValue);
-    form.setFieldValue(field.name, newValue?.value || "");
-    form.setFieldTouched(field.name, true);
+    // Mark touched without validating, then set the value and validate with it.
+    // (Validating on setFieldTouched used the old empty value, so the field
+    // stayed red until blur.)
+    form.setFieldTouched(field.name, true, false);
+    form.setFieldValue(field.name, newValue?.value || "", true);
   };
 
   const handleBlur = () => {

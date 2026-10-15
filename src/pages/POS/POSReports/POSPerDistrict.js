@@ -1,10 +1,11 @@
 import { Alert, AlertTitle, Box } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import { gridContainerSx, PermissionGridToolbar } from "../../../components/gridStyles";
 
 const POSPerDistrict = () => {
   const navigate = useNavigate();
@@ -73,37 +74,13 @@ const POSPerDistrict = () => {
   return (
     <Box>
       <Box
-        sx={{
-          width: "auto",
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-root": {
-            overflow: "hidden",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            overflowY: "hidden !important",
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none",
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
-            display: "none",
-          },
-          marginX: 1,
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           rows={rows}
           columns={columns}
           showToolbar
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: PermissionGridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },

@@ -38,6 +38,14 @@ import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import toast from "react-hot-toast";
 import { apiGet } from "../../../demo/demoApi";
+import {
+  chartGridStroke,
+  chartThemeSx,
+  chartTickFill,
+  chartTooltipStyle,
+  pieChartSlotProps,
+} from "../chartTheme";
+
 
 const fadeUp = keyframes`
   from { opacity: 0; transform: translateY(10px); }
@@ -137,7 +145,7 @@ const Posdashboard = () => {
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
 
-  const [selectedType, setSelectedType] = useState("Daily");
+  const [selectedType, setSelectedType] = useState("Monthly"); // default period
   const [chartData, setChartData] = useState([]);
   const [districtData, setDistrictData] = useState([]);
   const [branchData, setBranchData] = useState([]);
@@ -145,8 +153,8 @@ const Posdashboard = () => {
   const [overviewLoading, setOverviewLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const chartText = theme.palette.text.secondary;
-  const gridStroke = alpha(theme.palette.text.primary, 0.12);
+  const chartText = chartTickFill;
+  const gridStroke = chartGridStroke;
 
   const fetchTrend = async (reportType = "Daily") => {
     const token = localStorage.getItem("token");
@@ -376,7 +384,7 @@ const Posdashboard = () => {
   }
 
   return (
-    <Box sx={{ px: { xs: 2, md: 3 }, py: { xs: 3, md: 3.5 }, bgcolor: "background.default" }}>
+    <Box sx={{ px: { xs: 2, md: 3 }, py: { xs: 3, md: 3.5 }, bgcolor: "background.default", ...chartThemeSx }}>
       <Stack
         direction={{ xs: "column", md: "row" }}
         justifyContent="space-between"
@@ -555,10 +563,9 @@ const Posdashboard = () => {
                     />
                     <YAxis tick={{ fill: chartText, fontSize: 11 }} />
                     <Tooltip
-                      contentStyle={{
-                        background: theme.palette.background.paper,
-                        border: `1px solid ${theme.palette.divider}`,
-                      }}
+                      contentStyle={chartTooltipStyle}
+                      labelStyle={{ color: chartTooltipStyle.color }}
+                      itemStyle={{ color: chartTooltipStyle.color }}
                       labelFormatter={(label) => String(label)}
                     />
                     <Area
@@ -609,9 +616,11 @@ const Posdashboard = () => {
                       tick={{ fill: chartText, fontSize: 11 }}
                     />
                     <Tooltip
-                      contentStyle={{
-                        background: theme.palette.background.paper,
-                        border: `1px solid ${theme.palette.divider}`,
+                      contentStyle={chartTooltipStyle}
+                      labelStyle={{ color: chartTooltipStyle.color }}
+                      itemStyle={{ color: chartTooltipStyle.color }}
+                      cursor={{
+                        fill: "color-mix(in srgb, var(--mui-palette-text-primary) 6%, transparent)",
                       }}
                     />
                     <Bar dataKey="count" name="POS" fill="#00bcd4" radius={[0, 4, 4, 0]} />
@@ -638,6 +647,7 @@ const Posdashboard = () => {
                       paddingAngle: 2,
                     },
                   ]}
+                  slotProps={pieChartSlotProps}
                   width={280}
                   height={260}
                 />

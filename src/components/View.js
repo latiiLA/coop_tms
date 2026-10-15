@@ -5,6 +5,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useAuthContext } from "../context/AuthContext";
+import { gridContainerSx } from "./gridStyles";
 
 async function fetchRows() {
   const response = await axios.get(
@@ -14,6 +16,7 @@ async function fetchRows() {
   return response.data.terminals; // Adjust this line based on your JSON structure
 }
 export default function View({ role }) {
+  const { can } = useAuthContext();
   const [data_rows, setDataRows] = useState([]);
   const [editingRow, setEditingRow] = useState(null);
   const [edited, setEdited] = useState({});
@@ -211,12 +214,9 @@ export default function View({ role }) {
     setEdited({ ...edited, [name]: value });
   };
 
-  const columns =
-    role === "user"
-      ? allColumns.filter((col) => col.field !== "actions")
-      : role === "admin"
-        ? allColumns
-        : allColumns.filter((col) => col.field !== "actions"); // Modify this part if you want to apply a different filter for other roles
+  const columns = can("edit_terminal")
+    ? allColumns
+    : allColumns.filter((col) => col.field !== "actions");
 
   useEffect(() => {
     async function loadRows() {
@@ -251,19 +251,7 @@ export default function View({ role }) {
     <Box>
       <Typography variant="h4">All ATM Terminals</Typography>
       <Box
-        sx={{
-          height: 400,
-          width: "auto",
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#0693e3",
-          },
-        }}
+        sx={{ ...gridContainerSx, height: 400 }}
       >
         <DataGrid
           rows={rows}

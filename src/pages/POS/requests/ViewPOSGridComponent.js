@@ -20,16 +20,31 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
 import { useAuthContext } from "../../../context/AuthContext";
-import CustomToolbar from "../../../components/CustomToolbar";
 import { GrConfigure } from "react-icons/gr";
 import axios from "axios";
 import { isDemoMode } from "../../../demo/demoApi";
+import { gridContainerSx, PermissionGridToolbar } from "../../../components/gridStyles";
+
+const PENDING_RELOCATION_STATUSES = ["ToBeRelocated", "RelocationAuthorized"];
+const RETIRED_POS_STATUSES = ["Stopped", "Relocated"];
+
+// Why a stop request / edit is not possible for this POS ("" when it is).
+// Applies to every role, including supersuperadmin.
+const posLockReason = (row) => {
+  if (!row) return "POS not available";
+  if (RETIRED_POS_STATUSES.includes(row.status)) return `POS is already ${row.status}`;
+  if (row.isDeleted) return "POS is deleted";
+  if (PENDING_RELOCATION_STATUSES.includes(row.status)) {
+    return `A stop/relocation request is already pending (${row.status})`;
+  }
+  return "";
+};
 
 const ViewPOSGridComponent = ({
   rows,
@@ -65,7 +80,7 @@ const ViewPOSGridComponent = ({
   const [configVersion, setConfigVersion] = useState("0002");
   const [selectedConfigData, setSelectedConfigData] = useState(null);
 
-  const { role, permissions } = useAuthContext();
+  const { permissions } = useAuthContext();
   const can = (perm) => isDemoMode() || permissions?.includes(perm);
   // console.log(pings);
   const columns = [
@@ -128,21 +143,28 @@ const ViewPOSGridComponent = ({
             {!isRelocated &&
               can("edit_pos") &&
               (!isRelocatedReq ||
-                params.row.status === "RelocationAuthorized") && (
-              <Tooltip title="Edit POS">
-                <Box>
-                  <IconButton
-                    color="primary"
-                    size="small"
-                    onClick={() =>
-                      navigate("/editpos", { state: { row: params.row } })
-                    }
-                  >
-                    <Edit />
-                  </IconButton>
-                </Box>
-              </Tooltip>
-            )}
+                params.row.status === "RelocationAuthorized") &&
+              (() => {
+                // The server refuses edits during the stop/relocation
+                // workflow (409), so show the button disabled instead.
+                const lock = posLockReason(params.row);
+                return (
+                  <Tooltip title={lock ? `Edit not available: ${lock}` : "Edit POS"}>
+                    <span>
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        disabled={!!lock}
+                        onClick={() =>
+                          navigate("/editpos", { state: { row: params.row } })
+                        }
+                      >
+                        <Edit />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                );
+              })()}
             {!isRelocated && detailType && can("view_request_detail") && (
               <Tooltip Tooltip title="View Request">
                 <IconButton
@@ -187,19 +209,37 @@ const ViewPOSGridComponent = ({
               </IconButton>
             </Tooltip> */}
             {!isRelocatedReq &&
+              !isRelocated &&
               can("request_pos_termination") &&
-              (params.row.status === "New" ||
-                params.row.status === "Active") && (
-              <Tooltip title="Stop POS">
-                <IconButton
-                  sx={{ color: "#ff0000" }}
-                  size="small"
-                  onClick={() => handleRelocate(params.row._id)}
-                >
-                  <Stop />
-                </IconButton>
-              </Tooltip>
-            )}
+              (() => {
+                // Keep the button in place (stable layout); disable it once a
+                // stop is requested or the POS is no longer New/Active.
+                const lock = posLockReason(params.row);
+                const canStop =
+                  !lock &&
+                  (params.row.status === "New" ||
+                    params.row.status === "Active");
+                return (
+                  <Tooltip
+                    title={
+                      canStop
+                        ? "Stop POS"
+                        : `Stop not available: ${lock || `status ${params.row.status}`}`
+                    }
+                  >
+                    <span>
+                      <IconButton
+                        sx={{ color: canStop ? "#ff0000" : undefined }}
+                        size="small"
+                        disabled={!canStop}
+                        onClick={() => canStop && handleRelocate(params.row._id)}
+                      >
+                        <Stop />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                );
+              })()}
             {isRelocatedReq &&
               params.row.status === "ToBeRelocated" &&
               can("authorize_pos_relocation") && (
@@ -339,6 +379,7 @@ const ViewPOSGridComponent = ({
       toast.success(response.data.message);
       setOpenDialog(false);
       setSelectedRow(null);
+      onRefresh?.(); // show the new status (button becomes disabled)
       setSelectedAuthorizer("");
       setRemark("");
     } catch (error) {
@@ -535,16 +576,7 @@ const ViewPOSGridComponent = ({
   return (
     <Box>
       <Box
-        sx={{
-          width: "auto",
-          margin: 1,
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           rows={rows}
@@ -556,9 +588,7 @@ const ViewPOSGridComponent = ({
           }}
           loading={loading}
           showToolbar
-          slots={{
-            toolbar: role === "user" ? CustomToolbar : GridToolbar,
-          }}
+          slots={{ toolbar: PermissionGridToolbar }}
           pageSizeOptions={[20, 50, 100]}
           autoHeight
           checkboxSelection

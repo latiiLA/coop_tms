@@ -85,7 +85,7 @@ const Sidebar = () => {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
 
-  const { role, loading } = useAuthContext();
+  const { role, loading, can } = useAuthContext();
 
   if (!role) {
     return null;
@@ -200,7 +200,7 @@ const Sidebar = () => {
               path: "/posdashboard",
               icon: <Dashboard sx={{ color: theme.palette.primary.main }} />,
             },
-            ...(role === "user"
+            ...(can("ui_explore_atm")
               ? [
                   {
                     text: "Explore ATM",
@@ -257,7 +257,7 @@ const Sidebar = () => {
                         ),
                       },
 
-                      ...(role === "superadmin"
+                      ...(can("ui_superadmin_menus")
                         ? [
                             {
                               text: "Transaction",
@@ -316,7 +316,7 @@ const Sidebar = () => {
             )
           )}
 
-          {(role === "user" || role === "superadmin") && (
+          {can("ui_pos_menu") && (
             <React.Fragment key="request">
               <ListItem disablePadding>
                 <ListItemButton
@@ -419,7 +419,7 @@ const Sidebar = () => {
             </React.Fragment>
           )}
 
-          {(role === "admin" || role === "superadmin") && (
+          {can("ui_admin_menus") && (
             <React.Fragment key="posadministration">
               <ListItem disablePadding>
                 <ListItemButton
@@ -507,7 +507,7 @@ const Sidebar = () => {
               </Collapse>
             </React.Fragment>
           )}
-          {(role === "admin" || role === "superadmin") && (
+          {can("ui_admin_menus") && (
             <React.Fragment key="atmadministration">
               <ListItem disablePadding>
                 <ListItemButton
@@ -598,9 +598,7 @@ const Sidebar = () => {
             </React.Fragment>
           )}
 
-          {(role === "admin" ||
-            role === "superadmin" ||
-            role === "useradmin") && (
+          {can("ui_administration_menu") && (
             <React.Fragment key="Administration">
               <ListItem disablePadding>
                 <ListItemButton onClick={handleAdminClick}>
@@ -625,7 +623,7 @@ const Sidebar = () => {
               <Collapse in={openAdmin} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   {[
-                    ...(role === "superadmin"
+                    ...(can("ui_superadmin_menus")
                       ? [
                           {
                             text: "Create User",
@@ -656,7 +654,7 @@ const Sidebar = () => {
                         <Feedback sx={{ color: theme.palette.primary.main }} />
                       ),
                     },
-                    ...(role === "superadmin"
+                    ...(can("ui_superadmin_menus")
                       ? [
                           {
                             text: "Explore Feedback",

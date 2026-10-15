@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import {
   Box,
   Button,
@@ -29,31 +29,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import { LockOpen, Search } from "@mui/icons-material";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { isDemoMode } from "../../demo/demoApi";
-
-// Mirrors ROLE_RANK in coop_tms_server/Controllers/userController.js. The server
-// enforces the ceiling on its own; this copy only keeps unusable options out of
-// the dropdown so the UI never offers a role the API will reject.
-const ROLE_RANK = {
-  user: 1,
-  posuser: 2,
-  posauthorizer: 3,
-  posadmin: 4,
-  useradmin: 4,
-  admin: 5,
-  superadmin: 6,
-  supersuperadmin: 7,
-};
-
-const ROLE_OPTIONS = [
-  { value: "user", label: "User" },
-  { value: "posuser", label: "POS User" },
-  { value: "posauthorizer", label: "POS Request Authorizer" },
-  { value: "posadmin", label: "POS Admin" },
-  { value: "useradmin", label: "User Admin" },
-  { value: "admin", label: "Admin" },
-  { value: "superadmin", label: "Superadmin" },
-  { value: "supersuperadmin", label: "Super Super Admin" },
-];
+import { gridContainerSx, PermissionGridToolbar } from "../../components/gridStyles";
 
 // Mirrors the department list on CreateUser.
 const DEPARTMENT_OPTIONS = [
@@ -79,7 +55,7 @@ const EMPTY_EDIT_FORM = {
   email: "",
   department: "",
   username: "",
-  role: "",
+  roleId: "",
 };
 
 const EDIT_FORM_TEXT_FIELDS = [
@@ -95,13 +71,6 @@ export default function ViewUsers() {
   const { permissions, currentUser } = useAuthContext();
   const can = (perm) => isDemoMode() || permissions?.includes(perm);
 
-  // The roles this signed-in user is allowed to hand out. Anyone holding
-  // edit_user_role can assign up to their own level, never above it.
-  const actorRank = ROLE_RANK[currentUser?.role] ?? 0;
-  const assignableRoles = ROLE_OPTIONS.filter(
-    (option) => ROLE_RANK[option.value] <= actorRank
-  );
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataRows, setDataRows] = useState([]);
@@ -112,7 +81,63 @@ export default function ViewUsers() {
   const [editRow, setEditRow] = useState(null);
   const [editForm, setEditForm] = useState(EMPTY_EDIT_FORM);
   const [savingRole, setSavingRole] = useState(false);
+  const [districtOptions, setDistrictOptions] = useState([]);
+  const [roleOptions, setRoleOptions] = useState([]);
+  const [resetRow, setResetRow] = useState(null);
+  const [resetPasswordValue, setResetPasswordValue] = useState("");
+  const [resetting, setResetting] = useState(false);
+  const [issuedPassword, setIssuedPassword] = useState("");
   const apiUrl = process.env.REACT_APP_API_URL;
+
+  // Roles this signed-in user may assign (rank ceiling from DB).
+  const actorRank =
+    roleOptions.find(
+      (r) =>
+        r.name === currentUser?.role ||
+        String(r._id) === String(currentUser?.roleId)
+    )?.rank ?? 0;
+  const assignableRoles = roleOptions.filter(
+    (option) => (option.rank ?? 0) <= actorRank
+  );
+
+  // District + role lists for the edit dialog.
+  useEffect(() => {
+    const fetchMeta = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        const [districtRes, rolesRes] = await Promise.all([
+          axios.get(`${apiUrl}/district/getDistrict`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }),
+          axios.get(`${apiUrl}/rbac/roles?lean=true`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }),
+        ]);
+        setDistrictOptions(
+          (districtRes.data.alldistricts || []).map((district) => ({
+            value: district._id,
+            label: district.districtName,
+          }))
+        );
+        setRoleOptions(
+          (rolesRes.data.roles || []).map((r) => ({
+            _id: r._id,
+            value: r._id,
+            name: r.name,
+            label: r.displayName || r.name,
+            rank: r.rank ?? 0,
+            requiresDistrict: !!r.requiresDistrict,
+          }))
+        );
+      } catch (error) {
+        // Lists are only needed for edit dialog; ignore failures here.
+      }
+    };
+    fetchMeta();
+  }, [apiUrl]);
 
   // State to store the name of the user who created the terminal
   // const [createdByName, setCreatedByName] = useState("default");
@@ -230,7 +255,26 @@ export default function ViewUsers() {
     }
   };
 
-  const handleResetPassword = async (rowId) => {
+  const handleResetPassword = (rowId) => {
+    setResetRow(dataRows.find((r) => r._id === rowId) || { _id: rowId });
+    setResetPasswordValue("");
+    setIssuedPassword("");
+  };
+
+  const handleResetClose = () => {
+    setResetRow(null);
+    setResetPasswordValue("");
+    setIssuedPassword("");
+  };
+
+  const submitResetPassword = async () => {
+    const rowId = resetRow?._id;
+    if (!rowId) return;
+    const typed = resetPasswordValue.trim();
+    if (typed && typed.length < 8) {
+      toast.error("Password must be at least 8 characters.");
+      return;
+    }
     const token = localStorage.getItem("token");
     if (!token) {
       // console.error("No authentication token found");
@@ -238,10 +282,11 @@ export default function ViewUsers() {
       navigate("/home");
       return;
     }
+    setResetting(true);
     try {
-      await axios.patch(
+      const response = await axios.patch(
         `${apiUrl}/auth/resetPassword/${rowId}`,
-        {},
+        typed ? { password: typed } : {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -249,12 +294,17 @@ export default function ViewUsers() {
           withCredentials: true,
         }
       );
+      setIssuedPassword(response.data?.temporaryPassword || typed);
       const updatedData = await fetchRows();
       setDataRows(updatedData);
-      toast.success("Password reset is successfull.");
+      toast.success("Password reset is successful.");
     } catch (error) {
       // console.error("Error resetting user password:", error);
-      toast.error("Error: while resetting user password.");
+      toast.error(
+        error.response?.data?.message || "Error: while resetting user password."
+      );
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -265,7 +315,10 @@ export default function ViewUsers() {
     email: row.email || "",
     department: row.department || "",
     username: row.username || "",
-    role: row.role || "",
+    roleId: row.roleId
+      ? String(row.roleId._id || row.roleId)
+      : roleOptions.find((r) => r.name === row.role)?._id || "",
+    district: row.district ? String(row.district._id || row.district) : "",
   });
 
   const handleEditOpen = (row) => {
@@ -277,7 +330,7 @@ export default function ViewUsers() {
   const handleEditClose = () => {
     setOpenEdit(false);
     setEditRow(null);
-    setEditForm(EMPTY_EDIT_FORM);
+    setEditForm({ ...EMPTY_EDIT_FORM, district: "" });
     setSavingRole(false);
   };
 
@@ -285,16 +338,27 @@ export default function ViewUsers() {
     setEditForm((previous) => ({ ...previous, [field]: event.target.value }));
   };
 
+  const selectedEditRole = roleOptions.find(
+    (r) => String(r._id) === String(editForm.roleId)
+  );
+
   const handleEditSave = async () => {
     if (!editRow) return;
 
     // Every field is required on the model, so catch blanks up front rather
     // than bouncing off the validator.
-    const missing = Object.keys(EMPTY_EDIT_FORM).filter(
+    const requiredFields = selectedEditRole?.requiresDistrict
+      ? Object.keys(EMPTY_EDIT_FORM).filter((f) => f !== "department")
+      : Object.keys(EMPTY_EDIT_FORM);
+    const missing = requiredFields.filter(
       (field) => !String(editForm[field] || "").trim()
     );
     if (missing.length > 0) {
       toast.error(`Please fill in: ${missing.join(", ")}`);
+      return;
+    }
+    if (selectedEditRole?.requiresDistrict && !editForm.district) {
+      toast.error("Please select a district for district roles.");
       return;
     }
 
@@ -309,7 +373,15 @@ export default function ViewUsers() {
     try {
       const response = await axios.patch(
         `${apiUrl}/auth/updateUser/${editRow._id}`,
-        editForm,
+        {
+          ...editForm,
+          department: selectedEditRole?.requiresDistrict
+            ? ""
+            : editForm.department,
+          district: selectedEditRole?.requiresDistrict
+            ? editForm.district
+            : undefined,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -341,7 +413,10 @@ export default function ViewUsers() {
       ? [{ value, label: value }, ...options]
       : options;
 
-  const dialogRoleOptions = withCurrentOption(assignableRoles, editForm.role);
+  const dialogRoleOptions = withCurrentOption(
+    assignableRoles,
+    editForm.roleId
+  );
   const dialogDepartmentOptions = withCurrentOption(
     DEPARTMENT_OPTIONS,
     editForm.department
@@ -349,9 +424,18 @@ export default function ViewUsers() {
 
   const editDirty =
     !!editRow &&
-    Object.keys(EMPTY_EDIT_FORM).some(
-      (field) => editForm[field] !== (editRow[field] || "")
-    );
+    (Object.keys(EMPTY_EDIT_FORM).some((field) => {
+      if (field === "roleId") {
+        const original =
+          editRow.roleId
+            ? String(editRow.roleId._id || editRow.roleId)
+            : roleOptions.find((r) => r.name === editRow.role)?._id || "";
+        return String(editForm.roleId || "") !== String(original || "");
+      }
+      return editForm[field] !== (editRow[field] || "");
+    }) ||
+      String(editForm.district || "") !==
+        String(editRow.district?._id || editRow.district || ""));
 
   // console.log("created by", createdByName);
 
@@ -405,8 +489,9 @@ export default function ViewUsers() {
         >
           {can("edit_user_role") &&
             params.row._id !== currentUser?.id &&
-            (currentUser?.role === "supersuperadmin" ||
-              (ROLE_RANK[params.row.role] ?? 0) < actorRank) && (
+            (can("super_access") ||
+              (roleOptions.find((r) => r.name === params.row.role)?.rank ??
+                0) < actorRank) && (
             <Tooltip title="Edit User">
               <IconButton
                 color="primary"
@@ -561,22 +646,13 @@ export default function ViewUsers() {
         />
       </Box>
       <Box
-        sx={{
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-          },
-          margin: 1,
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           rows={filteredRows}
           columns={columns}
           showToolbar
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: PermissionGridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 15 },
@@ -614,28 +690,30 @@ export default function ViewUsers() {
                 onChange={handleEditFieldChange(field.name)}
               />
             ))}
-            <FormControl fullWidth size="small">
-              <InputLabel id="edit-department-label">Department</InputLabel>
-              <Select
-                labelId="edit-department-label"
-                label="Department"
-                value={editForm.department}
-                onChange={handleEditFieldChange("department")}
-              >
-                {dialogDepartmentOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            {!selectedEditRole?.requiresDistrict && (
+              <FormControl fullWidth size="small">
+                <InputLabel id="edit-department-label">Department</InputLabel>
+                <Select
+                  labelId="edit-department-label"
+                  label="Department"
+                  value={editForm.department}
+                  onChange={handleEditFieldChange("department")}
+                >
+                  {dialogDepartmentOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <FormControl fullWidth size="small">
               <InputLabel id="edit-role-label">Role</InputLabel>
               <Select
                 labelId="edit-role-label"
                 label="Role"
-                value={editForm.role}
-                onChange={handleEditFieldChange("role")}
+                value={editForm.roleId}
+                onChange={handleEditFieldChange("roleId")}
               >
                 {dialogRoleOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -644,6 +722,23 @@ export default function ViewUsers() {
                 ))}
               </Select>
             </FormControl>
+            {selectedEditRole?.requiresDistrict && (
+              <FormControl fullWidth size="small">
+                <InputLabel id="edit-district-label">District</InputLabel>
+                <Select
+                  labelId="edit-district-label"
+                  label="District"
+                  value={editForm.district || ""}
+                  onChange={handleEditFieldChange("district")}
+                >
+                  {withCurrentOption(districtOptions, editForm.district).map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           </Box>
         </DialogContent>
         <DialogActions>
@@ -658,6 +753,68 @@ export default function ViewUsers() {
           >
             {savingRole ? <CircularProgress size={18} /> : "Save"}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={Boolean(resetRow)} onClose={handleResetClose} fullWidth maxWidth="xs">
+        <DialogTitle>Reset Password</DialogTitle>
+        <DialogContent>
+          {issuedPassword ? (
+            <>
+              <DialogContentText sx={{ mb: 2 }}>
+                The password for {resetRow?.username || "this user"} has been reset.
+                Share it securely; they must change it at next login.
+              </DialogContentText>
+              <TextField
+                fullWidth
+                label="New password"
+                value={issuedPassword}
+                InputProps={{ readOnly: true }}
+              />
+              <Button
+                sx={{ mt: 1 }}
+                onClick={() => {
+                  navigator.clipboard?.writeText(issuedPassword);
+                  toast.success("Password copied.");
+                }}
+              >
+                Copy
+              </Button>
+            </>
+          ) : (
+            <>
+              <DialogContentText sx={{ mb: 2 }}>
+                Assign a password for {resetRow?.username || "this user"}, or leave it
+                empty to generate a random one. The user must change it at next login.
+              </DialogContentText>
+              <TextField
+                fullWidth
+                label="Password (optional)"
+                value={resetPasswordValue}
+                onChange={(e) => setResetPasswordValue(e.target.value)}
+                helperText="At least 8 characters"
+                autoComplete="new-password"
+              />
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {issuedPassword ? (
+            <Button onClick={handleResetClose}>Done</Button>
+          ) : (
+            <>
+              <Button onClick={handleResetClose} disabled={resetting}>
+                Cancel
+              </Button>
+              <Button
+                onClick={submitResetPassword}
+                variant="contained"
+                disabled={resetting}
+              >
+                {resetting ? <CircularProgress size={20} /> : "Reset Password"}
+              </Button>
+            </>
+          )}
         </DialogActions>
       </Dialog>
 

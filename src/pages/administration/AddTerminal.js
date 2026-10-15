@@ -1,92 +1,162 @@
-import React, { useRef, useState } from "react";
-import { Box } from "@mui/material";
+import React, { useMemo, useRef, useState } from "react";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
+import { Form, Formik } from "formik";
 import axios from "axios";
 import toast from "react-hot-toast";
-import ATMForm from "../../components/ATMForm";
 import { useNavigate } from "react-router-dom";
-import LoadingSpinner from "../../components/LoadingSpinner";
+import { useAuthContext } from "../../context/AuthContext";
+import {
+  ATM_INITIAL_VALUES,
+  AtmFormFooter,
+  AtmFormSections,
+  ConfirmRows,
+  buildAtmSchema,
+  idOf,
+  labelOf,
+  toPortOptions,
+  trimValues,
+  useAvailablePorts,
+  useBranchOptions,
+  useDistrictOptions,
+} from "../../components/atm/atmFormShared";
 
 const AddTerminal = () => {
   const navigate = useNavigate();
-  const hasShownToast = useRef(false); // Use ref to track if the toast has been shown
+  const { currentUser } = useAuthContext();
+  const userDistrict = idOf(currentUser?.district) || "";
+
   const [loading, setLoading] = useState(false);
+  const submittingRef = useRef(false);
+  const [pendingValues, setPendingValues] = useState(null);
+  const [selectedDistrict, setSelectedDistrict] = useState(userDistrict);
+  const [selectedType, setSelectedType] = useState("");
+  const [selectedSite, setSelectedSite] = useState("");
 
-  const handleSubmit = async (values, { setSubmitting }) => {
-    console.log("values inside create terminal", values);
-    setLoading(true);
-    const apiUrl = process.env.REACT_APP_API_URL;
+  const districts = useDistrictOptions();
+  const { branches, branchesLoaded } = useBranchOptions(selectedDistrict);
+  const { availablePorts, portsLoaded } = useAvailablePorts(selectedSite, selectedType);
+  const portOptions = toPortOptions(availablePorts);
+  const validationSchema = useMemo(() => buildAtmSchema(availablePorts), [availablePorts]);
+
+  const handleCreate = async (values) => {
+    if (submittingRef.current) return;
     const token = localStorage.getItem("token");
-
     if (!token) {
-      // console.error("No authentication token found");
-      if (!hasShownToast.current) {
-        toast.error("User is not authenticated");
-        hasShownToast.current = true;
-      }
+      toast.error("User is not authenticated");
       navigate("/home");
-      return; // Exit the function if no token is found
+      return;
     }
+    submittingRef.current = true;
+    setLoading(true);
     try {
       const response = await axios.post(
-        `${apiUrl}/terminal/createTerminal`,
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
+        `${process.env.REACT_APP_API_URL}/terminal/createTerminal`,
+        trimValues(values),
+        { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
       );
-      // console.log("terminals,", response.data.terminal);
-      navigate("/viewdetail", { state: { row: response.data.terminal } });
-      // console.log("New ATM is added:", response.data);
-      toast.success(response.data.message);
+      toast.success(response.data?.message || "The terminal is successfully created.");
+      // Existing behaviour: open the new terminal's detail page.
+      navigate("/atmdetail", { state: { row: response.data?.terminal } });
     } catch (error) {
-      // console.error(
-      //   "Error adding an ATM:",
-      //   error,
-      //   error.response?.data?.message
-      // );
-      toast.error(
-        error.response?.data?.message || error.message || "Something went wrong"
-      );
-      hasShownToast.current = true;
+      toast.error(error.response?.data?.message || error.message || "Something went wrong");
     } finally {
-      setSubmitting(false);
+      submittingRef.current = false;
       setLoading(false);
     }
   };
 
   return (
-    <Box
-      sx={{
-        // height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        margin: 1,
-      }}
-    >
-      <ATMForm initialValues={{}} onSubmit={handleSubmit} isEdit={false} />
-      {/* Loading Spinner */}
-      {loading && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            // marginLeft: 10,
-            zIndex: 10, // Ensures the spinner is above the form
+    <Box sx={{ width: "100%", display: "flex", justifyContent: "center", py: 2 }}>
+      <Box sx={{ width: { xs: "100%", sm: "95%", md: "90%", lg: "80%" }, px: { xs: 1, sm: 0 } }}>
+        <Formik
+          initialValues={{ ...ATM_INITIAL_VALUES, district: userDistrict }}
+          validationSchema={validationSchema}
+          onSubmit={(values) => {
+            if (!loading) setPendingValues(values);
           }}
         >
-          <LoadingSpinner />
-        </Box>
-      )}
+          {({ setFieldValue, setFieldTouched }) => (
+            <Form noValidate>
+              <Stack spacing={2}>
+                <Box>
+                  <Typography variant="h5" fontWeight={600}>
+                    Add New ATM Terminal
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Fields marked * are required.
+                  </Typography>
+                </Box>
+
+                <AtmFormSections
+                  formik={{ setFieldValue, setFieldTouched }}
+                  districts={districts}
+                  branches={branches}
+                  branchesLoaded={branchesLoaded}
+                  userDistrict={userDistrict}
+                  selectedDistrict={selectedDistrict}
+                  selectedSite={selectedSite}
+                  selectedType={selectedType}
+                  portOptions={portOptions}
+                  portsLoaded={portsLoaded}
+                  onDistrictChange={setSelectedDistrict}
+                  onTypeChange={setSelectedType}
+                  onSiteChange={setSelectedSite}
+                />
+
+                <AtmFormFooter
+                  loading={loading}
+                  submitLabel="Add Terminal"
+                  onBack={() => navigate(-1)}
+                />
+              </Stack>
+
+              <Dialog
+                open={Boolean(pendingValues)}
+                onClose={() => !loading && setPendingValues(null)}
+                fullWidth
+                maxWidth="sm"
+              >
+                <DialogTitle>Confirm New Terminal</DialogTitle>
+                <DialogContent>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    Create this ATM terminal?
+                  </Typography>
+                  <ConfirmRows
+                    rows={[
+                      ["Type", pendingValues?.type],
+                      ["Unit ID", pendingValues?.unitId],
+                      ["Terminal ID", pendingValues?.terminalId],
+                      ["Terminal Name", pendingValues?.terminalName],
+                      ["District", labelOf(districts, pendingValues?.district)],
+                      ["Branch", labelOf(branches, pendingValues?.branchName)],
+                      ["Site", pendingValues?.site],
+                      ["Port", pendingValues?.port],
+                      ["IP Address", pendingValues?.ipAddress],
+                      ["CBS Account", pendingValues?.cbsAccount],
+                    ]}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button color="secondary" disabled={loading} onClick={() => setPendingValues(null)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    color="primary"
+                    disabled={loading}
+                    onClick={() => {
+                      const values = pendingValues;
+                      setPendingValues(null);
+                      if (values) handleCreate(values);
+                    }}
+                  >
+                    Confirm
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </Form>
+          )}
+        </Formik>
+      </Box>
     </Box>
   );
 };

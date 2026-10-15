@@ -43,7 +43,6 @@ export default function SendRequests() {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      // console.error("No authentication token found");
       toast.error("User is not authenticated");
       navigate("/home");
       return;
@@ -57,9 +56,8 @@ export default function SendRequests() {
         withCredentials: true,
       });
 
-      setDataRows(response.data.newRequests);
+      setDataRows(response.data.newRequests || []);
     } catch (error) {
-      // console.error("Error fetching terminals:", error);
       setError(error.message);
       toast.error(`Error: ${error.response?.data?.message || error.message}`);
       navigate("/home");
@@ -81,11 +79,36 @@ export default function SendRequests() {
     setSearchText(event.target.value);
   };
 
-  const rows =
+  const allRows =
     dataRows?.map((row, index) => ({
       id: index + 1,
       ...row,
     })) ?? [];
+
+  // Case-insensitive search over the text shown in the grid.
+  const getSearchableText = (row) =>
+    [
+      row.serialNumber?.serialNumber,
+      row.merchantName,
+      row.branchName?.companyName,
+      row.branchName?.district?.districtName,
+      row.district?.districtName,
+      row.site,
+      row.contactName,
+      row.merchantAddress,
+      row.posCbsAccount,
+      row.serviceNumber,
+      row.staticIp,
+      row.status,
+    ]
+      .filter((v) => v !== undefined && v !== null)
+      .map((v) => String(v).toLowerCase())
+      .join(" ");
+
+  const query = searchText.trim().toLowerCase();
+  const rows = query
+    ? allRows.filter((row) => getSearchableText(row).includes(query))
+    : allRows;
 
   if (loading) {
     return <LoadingSpinner />;
@@ -111,9 +134,9 @@ export default function SendRequests() {
         }}
       >
         <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
-          <Tab label="All New Requests" />
-          <Tab label="All Merchant Requests" />
-          <Tab label="All Branch Requests" />
+          <Tab label={`All New Requests (${rows.length})`} />
+          <Tab label={`All Merchant Requests (${merchantRequest.length})`} />
+          <Tab label={`All Branch Requests (${branchRequest.length})`} />
         </Tabs>
         <TextField
           label="Search"
@@ -130,17 +153,15 @@ export default function SendRequests() {
           }}
         />
       </Box>
-      <TabPanel value={value} index={0}>
-        <ViewPOSRequestGrid rows={rows} isRequestApproval={true} />
-      </TabPanel>
-
-      <TabPanel value={value} index={1}>
-        <ViewPOSRequestGrid rows={merchantRequest} isRequestApproval={true} />
-      </TabPanel>
-
-      <TabPanel value={value} index={2}>
-        <ViewPOSRequestGrid rows={branchRequest} isRequestApproval={true} />
-      </TabPanel>
+      {[rows, merchantRequest, branchRequest].map((tabRows, index) => (
+        <TabPanel value={value} index={index} key={index}>
+          <ViewPOSRequestGrid
+            rows={tabRows}
+            isRequestApproval={true}
+            onRefresh={fetchRows}
+          />
+        </TabPanel>
+      ))}
     </Box>
   );
 }

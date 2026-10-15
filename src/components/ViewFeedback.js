@@ -1,10 +1,11 @@
 import { Box, Typography } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "./LoadingSpinner";
+import { gridContainerSx, PermissionGridToolbar } from "./gridStyles";
 
 const ViewFeedback = () => {
   const navigate = useNavigate();
@@ -118,35 +119,11 @@ const ViewFeedback = () => {
         </Typography>
       </Box>
       <Box
-        sx={{
-          width: "auto",
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-root": {
-            overflow: "hidden",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            overflowY: "hidden !important", // Hides the vertical scrollbar
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none", // Hides the scrollbar for WebKit browsers
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
-            display: "none",
-          },
-          margin: 1,
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           showToolbar
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: PermissionGridToolbar }}
           rows={rows}
           columns={columns}
           initialState={{

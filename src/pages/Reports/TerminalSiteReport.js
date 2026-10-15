@@ -1,10 +1,11 @@
 import { Box, Typography } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { gridContainerSx, PermissionGridToolbar } from "../../components/gridStyles";
 
 const columns = [
   {
@@ -113,36 +114,9 @@ const TerminalSiteReport = () => {
       <Typography variant="h6">Total ATM Terminals</Typography>
       <Box
         sx={{
-          width: "100%",
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-            "& .MuiCheckbox-root": {
-              color: "#fff",
-            },
-          },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#0693e3",
-            color: "#fff !important",
-          },
-          "& .MuiTablePagination-root": {
-            backgroundColor: "#0693e3",
-            color: "#fff !important",
-          },
-          "& .MuiTablePagination-actions button": {
-            color: "#fff",
-          },
-          "& .MuiDataGrid-sortIcon": {
-            color: "#fff",
-          },
+          ...gridContainerSx,
           "& .MuiDataGrid-cell:focus-within": {
             outline: "none !important",
-          },
-          "& .MuiPaginationItem-root": {
-            color: "#fff !important",
           },
         }}
       >
@@ -151,7 +125,7 @@ const TerminalSiteReport = () => {
           columns={columns} // Provide columns directly
           loading={loading}
           showToolbar
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: PermissionGridToolbar }}
           checkboxSelection
           autoHeight
         />

@@ -68,6 +68,8 @@ export const DEMO_PERMISSIONS = [
   "view_relocation_request",
   "authorize_pos_relocation",
   "reject_pos_relocation",
+  "manage_role",
+  "manage_permission",
   "view_request_status",
   "view_rejected_request",
   "view_deleted_request",

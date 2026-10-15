@@ -46,10 +46,12 @@ export const AuthContextProvider = ({ children }) => {
         const user = {
           id: decoded.user._id,
           role: decoded.user.role,
+          roleId: decoded.user.roleId || null,
           status: decoded.user.status,
           username: decoded.user.username,
           firstName: decoded.user.firstName,
           fatherName: decoded.user.fatherName,
+          district: decoded.user.district || null,
           permissions: decoded.permissions || [],
         };
 
@@ -86,6 +88,10 @@ export const AuthContextProvider = ({ children }) => {
         setPermissions,
 
         setCurrentUser,
+
+        // Permission check used for all UI authorization decisions.
+        can: (permission) =>
+          isDemoMode() || (permissions || []).includes(permission),
 
         loading,
       }}
