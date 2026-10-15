@@ -40,7 +40,7 @@ function TabPanel(props) {
 
 const Transaction = () => {
   const navigate = useNavigate();
-  const { setRole, can } = useAuthContext();
+  const { setRole } = useAuthContext();
   const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
