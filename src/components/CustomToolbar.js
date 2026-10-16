@@ -6,9 +6,12 @@ import {
 } from "@mui/x-data-grid";
 import { useMemo } from "react";
 import { GridToolbarExport } from "@mui/x-data-grid";
+import { useAuthContext } from "../context/AuthContext";
 
-const CustomToolbar = ({ role }) => {
-  const showExportButton = useMemo(() => role === "user", [role]);
+// Restricted toolbar for users without export_data.
+const CustomToolbar = () => {
+  const { can } = useAuthContext();
+  const showExportButton = useMemo(() => can("export_data"), [can]);
 
   return (
     <GridToolbarContainer>

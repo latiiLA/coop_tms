@@ -3,6 +3,7 @@ import { Form, Formik } from "formik";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CustomTextField } from "../../../components/CustomFields";
+import { downloadFile } from "../../../utils/fileDownload";
 
 const RequestDetails = () => {
   const navigate = useNavigate();
@@ -11,12 +12,9 @@ const RequestDetails = () => {
   console.log("console", row);
 
   const handleDownload = () => {
-    // Assumes the file path is relative to the server's public directory.
-    console.log("file", row.file.filePath);
-    const link = document.createElement("a");
-    link.href = `${process.env.REACT_APP_BASE_URL}/${row.file.filePath}`; // Adjust this based on server configuration
-    link.download = row.file.fileName;
-    link.click();
+    downloadFile(row.file.filePath, row.file.fileName).catch((error) =>
+      console.error("File download failed:", error)
+    );
   };
 
   return (

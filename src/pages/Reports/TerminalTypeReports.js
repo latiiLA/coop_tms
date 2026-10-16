@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { gridContainerSx, PermissionGridToolbar } from "../../components/gridStyles";
 
 const columns = [
   {
@@ -130,24 +131,13 @@ const TerminalTypeReports = () => {
       <Typography variant="h4">Total Terminals Added</Typography>
 
       <Box
-        sx={{
-          //   height: 400,
-          width: "auto",
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#0693e3",
-          },
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           {...rows}
           loading={loading}
           showToolbar
+          slots={{ toolbar: PermissionGridToolbar }}
           rows={rows}
           columns={columns}
           checkboxSelection

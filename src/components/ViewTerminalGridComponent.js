@@ -8,10 +8,12 @@ import toast from "react-hot-toast";
 import { GrConfigure } from "react-icons/gr";
 import axios from "axios";
 import { isDemoMode } from "../demo/demoApi";
+import { gridContainerSx, PermissionGridToolbar } from "./gridStyles";
+import { isRetiredAtm, retiredAtmMessage } from "./atm/atmFormShared";
 
 const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
   const navigate = useNavigate();
-  const { role, permissions } = useAuthContext();
+  const { permissions } = useAuthContext();
   const can = (perm) => isDemoMode() || permissions?.includes(perm);
   const [copiedData, setCopiedData] = React.useState("");
 
@@ -116,28 +118,36 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
             alignItems: "center",
           }}
         >
-          {!isRelocated && can("edit_terminal") && (
-            <Tooltip title="Edit Terminal">
-              <IconButton
-                color="primary"
-                size="small"
-                disabled={role === "user"}
-                style={{ display: role === "user" ? "none" : "inline-flex" }}
-                onClick={() =>
-                  navigate("/edit", { state: { row: params.row } })
-                }
-              >
-                <Edit />
-              </IconButton>
-            </Tooltip>
-          )}
+          {can("edit_terminal") &&
+            (isRelocated || isRetiredAtm(params.row) ? (
+              <Tooltip title={retiredAtmMessage(params.row)}>
+                {/* span: a disabled button can't show a tooltip itself */}
+                <span>
+                  <IconButton size="small" disabled aria-label="Edit disabled">
+                    <Edit />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            ) : (
+              <Tooltip title="Edit Terminal">
+                <IconButton
+                  color="primary"
+                  size="small"
+                  onClick={() =>
+                    navigate("/edit", { state: { row: params.row } })
+                  }
+                >
+                  <Edit />
+                </IconButton>
+              </Tooltip>
+            ))}
           {can("view_terminal_detail") &&
             <Tooltip title="View Terminal">
               <IconButton
                 color="primary"
                 size="small"
                 onClick={() =>
-                  navigate("/viewdetail", { state: { row: params.row } })
+                  navigate("/atmdetail", { state: { row: params.row, isRelocated } })
                 }
               >
                 <Preview />
@@ -158,8 +168,6 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
               <IconButton
                 color="primary"
                 size="small"
-                disabled={role === "user"}
-                style={{ display: role === "user" ? "none" : "inline-flex" }}
                 onClick={() => handleConfig(params.row)}
               >
                 <GrConfigure />
@@ -264,36 +272,13 @@ const ViewTerminalGridComponent = ({ rows, isRelocated }) => {
   return (
     <Box>
       <Box
-        sx={{
-          width: "auto",
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-root": {
-            overflow: "hidden",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            overflowY: "hidden !important", // Hides the vertical scrollbar
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none", // Hides the scrollbar for WebKit browsers
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
-            display: "none",
-          },
-          marginX: 1,
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           rows={rows}
           columns={columns}
           showToolbar
+          slots={{ toolbar: PermissionGridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },

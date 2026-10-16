@@ -13,12 +13,19 @@ import {
 } from "recharts";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import {
+  chartGridStroke,
+  chartThemeSx,
+  chartTickFill,
+  chartTooltipStyle,
+} from "./chartTheme";
 
 const TerminalCountPerDistrict = () => {
   const [selectedType, setSelectedType] = useState("All");
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const chartText = chartTickFill;
 
   // Fetch data from backend
   const fetchData = async (terminalType) => {
@@ -47,8 +54,9 @@ const TerminalCountPerDistrict = () => {
         district: item.districtName,
         mnemonic: item.mnemonic,
         CRM: item.CRM || 0,
+        CRM2: item.CRM2 || 0,
         NCR: item.NCR || 0,
-        Total: (item.CRM || 0) + (item.NCR + 0),
+        Total: (item.CRM || 0) + (item.CRM2 || 0) + (item.NCR || 0),
       }));
       setChartData(transformedData);
       console.log("Response:", response);
@@ -71,13 +79,22 @@ const TerminalCountPerDistrict = () => {
   const getColorForType = (type) => {
     const colors = {
       CRM: "#00bcd4", // Cyan
+      CRM2: "#7e57c2", // Purple
       NCR: "#ff9800", // Orange
     };
     return colors[type] || "#8884d8"; // Default color
   };
 
   return (
-    <Box sx={{ width: "100%", height: 350, margin: "auto", paddingBottom: 2 }}>
+    <Box
+      sx={{
+        width: "100%",
+        height: 350,
+        margin: "auto",
+        paddingBottom: 2,
+        ...chartThemeSx,
+      }}
+    >
       <FormControl fullWidth sx={{ mb: 1 }}>
         <InputLabel id="terminal-type-select-label">Terminal Type</InputLabel>
         <Select
@@ -90,18 +107,26 @@ const TerminalCountPerDistrict = () => {
         >
           <MenuItem value="All">All</MenuItem>
           <MenuItem value="CRM">CRM</MenuItem>
+          <MenuItem value="CRM2">CRM2</MenuItem>
           <MenuItem value="NCR">NCR</MenuItem>
         </Select>
       </FormControl>
 
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="mnemonic" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          {["CRM", "NCR"].map((type) => (
+          <CartesianGrid strokeDasharray="3 3" stroke={chartGridStroke} />
+          <XAxis dataKey="mnemonic" tick={{ fill: chartText, fontSize: 11 }} />
+          <YAxis tick={{ fill: chartText, fontSize: 11 }} />
+          <Tooltip
+            contentStyle={chartTooltipStyle}
+            labelStyle={{ color: chartTooltipStyle.color }}
+            itemStyle={{ color: chartTooltipStyle.color }}
+            cursor={{
+              fill: "color-mix(in srgb, var(--mui-palette-text-primary) 6%, transparent)",
+            }}
+          />
+          <Legend wrapperStyle={{ color: chartText }} />
+          {["CRM", "CRM2", "NCR"].map((type) => (
             <Bar key={type} dataKey={type} fill={getColorForType(type)} />
           ))}
         </BarChart>

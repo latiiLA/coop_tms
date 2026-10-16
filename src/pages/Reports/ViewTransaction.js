@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { gridContainerSx, PermissionGridToolbar } from "../../components/gridStyles";
 
 // Utility function to mask PAN
 const maskPAN = (pan) => {
@@ -171,27 +172,13 @@ const ViewTransaction = () => {
       </Box>
 
       <Box
-        sx={{
-          width: "auto",
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-          },
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           rows={dataRows}
           columns={columns}
           showToolbar
+          slots={{ toolbar: PermissionGridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },

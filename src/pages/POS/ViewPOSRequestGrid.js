@@ -1,4 +1,11 @@
-import { ContentCopy, Delete, Edit, Preview } from "@mui/icons-material";
+import {
+  Block,
+  CheckCircle,
+  ContentCopy,
+  Delete,
+  Edit,
+  Preview,
+} from "@mui/icons-material";
 import {
   Alert,
   AlertTitle,
@@ -9,7 +16,9 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  TextField,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
@@ -17,31 +26,68 @@ import { useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
 import { useAuthContext } from "../../context/AuthContext";
-import CustomToolbar from "../../components/CustomToolbar";
 import LoadingButton from "@mui/lab/LoadingButton";
 import axios from "axios";
 import { isDemoMode } from "../../demo/demoApi";
+import { gridContainerSx, PermissionGridToolbar } from "../../components/gridStyles";
+
+// POS requests may only be edited while New or Rejected (server enforces 409).
+const EDITABLE_REQUEST_STATUSES = ["New", "Rejected"];
 
 const ViewPOSRequestGrid = ({
   rows: initialRows,
   isRelocated,
   isRequestApproval,
+  onRefresh,
 }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [copiedData, setCopiedData] = React.useState("");
-  // console.log("grid request", rows);
   const [rowsState, setRowsState] = useState(initialRows);
   const [selectedRow, setSelectedRow] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const { role, permissions } = useAuthContext();
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [confirmSendOpen, setConfirmSendOpen] = useState(false);
+  const [rejectRow, setRejectRow] = useState(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectLoading, setRejectLoading] = useState(false);
+  const { permissions, currentUser } = useAuthContext();
   const can = (perm) => isDemoMode() || permissions?.includes(perm);
+  const isRequestInitiator = (row) => {
+    const creatorId =
+      row?.createdBy && typeof row.createdBy === "object"
+        ? row.createdBy._id
+        : row?.createdBy;
+    return (
+      !!currentUser?.id &&
+      !!creatorId &&
+      String(creatorId) === String(currentUser.id)
+    );
+  };
 
   useEffect(() => {
     setRowsState(initialRows);
+    setSelectedIds([]);
   }, [initialRows]);
-  
-  // console.log(pings);
+
+  // Normalizes DataGrid v7 (array) and v8 ({ type, ids }) selection models.
+  const handleSelectionChange = (model) => {
+    if (Array.isArray(model)) {
+      setSelectedIds(model);
+    } else if (model?.type === "exclude") {
+      const excluded = model.ids || new Set();
+      setSelectedIds(
+        (rowsState || []).map((r) => r.id).filter((id) => !excluded.has(id))
+      );
+    } else {
+      setSelectedIds(Array.from(model?.ids || []));
+    }
+  };
+
+  const rowsToSend =
+    selectedIds.length > 0
+      ? (rowsState || []).filter((r) => selectedIds.includes(r.id))
+      : rowsState || [];
   const columns = [
     // { field: "id", headerName: "No", type: "number", width: 10 },
     {
@@ -87,34 +133,73 @@ const ViewPOSRequestGrid = ({
             alignItems: "center",
           }}
         >
-          {!isRelocated && params.row.isDeleted === false && (can("edit_request") || can("approve_pos")) && (
-            <Tooltip title="Edit Request">
-              <Box>
-                <IconButton
-                  color="primary"
-                  size="small"
-                  disabled={
-                    ((can("edit_request") && params.row.status === "Authorized") || params.row.status === "Approved" || 
-                    ((params.row.status === "New" || params.row.status === "Rejected") && can("approve_pos")))
+          {/* Keep icons in place (disabled) so columns stay aligned. */}
+          {!isRelocated &&
+            params.row.isDeleted === false &&
+            can("edit_request") &&
+            (() => {
+              const isInitiator = isRequestInitiator(params.row);
+              const statusOk = EDITABLE_REQUEST_STATUSES.includes(
+                params.row.status
+              );
+              const editable = isInitiator && statusOk;
+              const title = !isInitiator
+                ? "Only the request initiator can edit this request"
+                : statusOk
+                  ? "Edit Request"
+                  : `Only New or Rejected requests can be edited (status: ${params.row.status})`;
+              return (
+                <Tooltip title={title}>
+                  <span>
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      disabled={!editable}
+                      onClick={() =>
+                        navigate("/request/request", {
+                          state: { row: params.row, isEdit: true },
+                        })
+                      }
+                    >
+                      <Edit />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              );
+            })()}
+          {/* Approvers: the approve page (was reached through the Edit icon). */}
+          {!isRelocated &&
+            params.row.isDeleted === false &&
+            can("approve_pos") &&
+            !isDemoMode() &&
+            (() => {
+              const approvable = params.row.status === "Authorized";
+              return (
+                <Tooltip
+                  title={
+                    approvable
+                      ? "Review / Approve Request"
+                      : `Only Authorized requests can be approved (status: ${params.row.status})`
                   }
-                  onClick={() => {
-                    if (can("approve_pos") && !isDemoMode()) {
-                      navigate("/approverequest", {
-                        state: { row: params.row },
-                      });
-                    } else {
-                      navigate("/request/request", {
-                        state: { row: params.row, isEdit: true },
-                      });
-                    }
-                  }}
                 >
-                  <Edit />
-                </IconButton>
-              </Box>
-            </Tooltip>
-          )}
-          {can("view_request_detail") &&
+                  <span>
+                    <IconButton
+                      color="success"
+                      size="small"
+                      disabled={!approvable}
+                      onClick={() =>
+                        navigate("/approverequest", {
+                          state: { row: params.row },
+                        })
+                      }
+                    >
+                      <CheckCircle />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              );
+            })()}
+          {can("view_request_detail") && (
             <Tooltip title="View Request">
               <IconButton
                 color="primary"
@@ -128,7 +213,7 @@ const ViewPOSRequestGrid = ({
                 <Preview />
               </IconButton>
             </Tooltip>
-          }
+          )}
           <Tooltip title="Copy Request Information">
             <IconButton
               color="primary"
@@ -138,22 +223,63 @@ const ViewPOSRequestGrid = ({
               <ContentCopy />
             </IconButton>
           </Tooltip>
+          {isRequestApproval &&
+            can("reject_pos_request") &&
+            params.row.isDeleted === false &&
+            (() => {
+              const rejectable = params.row.status === "New";
+              return (
+                <Tooltip
+                  title={
+                    rejectable
+                      ? "Reject Request"
+                      : `Only New requests can be rejected (status: ${params.row.status})`
+                  }
+                >
+                  <span>
+                    <IconButton
+                      color="error"
+                      size="small"
+                      disabled={!rejectable}
+                      onClick={() => {
+                        setRejectReason("");
+                        setRejectRow(params.row);
+                      }}
+                    >
+                      <Block />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              );
+            })()}
           {can("delete_request") &&
             params.row.isDeleted === false &&
-            (params.row.status === "New" ||
-              params.row.status === "Rejected") && (
-              <Tooltip title="Delete Request">
-                <Box>
-                  <IconButton
-                    color="secondary"
-                    size="small"
-                    onClick={() => handleDeleteRequest(params.row._id)}
-                  >
-                    <Delete />
-                  </IconButton>
-                </Box>
-              </Tooltip>
-            )}
+            (() => {
+              const isInitiator = isRequestInitiator(params.row);
+              const statusOk =
+                params.row.status === "New" ||
+                params.row.status === "Rejected";
+              const deletable = isInitiator && statusOk;
+              const title = !isInitiator
+                ? "Only the request initiator can delete this request"
+                : statusOk
+                  ? "Delete Request"
+                  : `Only New or Rejected requests can be deleted (status: ${params.row.status})`;
+              return (
+                <Tooltip title={title}>
+                  <span>
+                    <IconButton
+                      color="secondary"
+                      size="small"
+                      disabled={!deletable}
+                      onClick={() => handleDeleteRequest(params.row._id)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              );
+            })()}
         </Box>
       ),
     },
@@ -162,10 +288,10 @@ const ViewPOSRequestGrid = ({
   const handleCopy = (rowData) => {
     // Format the row data into a string
     const rowText = `
-    ${rowData.serialNumber.serialNumber}
-    ${rowData.merchantName}
-    ${rowData.branchName.companyName}
-    ${rowData.district.districtName}
+    ${rowData.serialNumber?.serialNumber || "-"}
+    ${rowData.merchantName || "-"}
+    ${rowData.branchName?.companyName || "-"}
+    ${rowData.district?.districtName || rowData.branchName?.district?.districtName || "-"}
     ${rowData.site}
     ${rowData.merchantAddress}
     ${rowData.merchantPhonenumber}
@@ -183,8 +309,7 @@ const ViewPOSRequestGrid = ({
           toast.success("Request details copied to clipboard!");
         })
         .catch((err) => {
-          // console.error("Failed to copy:", err);
-          toast.error("Failed to copy request details.");
+              toast.error("Failed to copy request details.");
         });
     } else {
       // Fallback for HTTP or unsupported browsers
@@ -193,16 +318,15 @@ const ViewPOSRequestGrid = ({
   };
 
   const handleDelete = async (row) => {
-    setLoading(true);
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem("token");
 
-    console.log("handle request deletion", row);
     if (!token) {
       navigate("/home");
       return;
     }
 
+    setLoading(true);
     try {
       const response = await axios.patch(
         `${apiUrl}/request/deleteRequest/${row}`,
@@ -216,13 +340,65 @@ const ViewPOSRequestGrid = ({
       );
 
       toast.success(response.data.message);
+      if (onRefresh) {
+        onRefresh();
+      } else {
+        setRowsState((prev) => (prev || []).filter((r) => r._id !== row));
+      }
     } catch (error) {
       toast.error(
         error.response?.data?.message || error.message || "Something went wrong"
       );
     } finally {
-      // setSubmitting(false);
       setLoading(false);
+    }
+  };
+
+  const handleConfirmReject = async () => {
+    if (rejectLoading || !rejectRow) return;
+    const reason = rejectReason.trim();
+    if (reason.length < 3) {
+      toast.error("Please enter a rejection reason (at least 3 characters).");
+      return;
+    }
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/home");
+      return;
+    }
+    setRejectLoading(true);
+    try {
+      const row = {
+        _id: rejectRow._id,
+        remark: reason,
+        merchantName: rejectRow.merchantName,
+        serialNumber: rejectRow.serialNumber?.serialNumber || "-",
+        createdBy: rejectRow.createdBy?._id || rejectRow.createdBy,
+      };
+      const response = await axios.post(
+        `${apiUrl}/request/reject`,
+        { row },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+      toast.success(response.data.message);
+      const rejectedId = rejectRow._id;
+      setRejectRow(null);
+      setRejectReason("");
+      if (onRefresh) {
+        onRefresh();
+      } else {
+        setRowsState((prev) => (prev || []).filter((r) => r._id !== rejectedId));
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || error.message || "Something went wrong"
+      );
+    } finally {
+      setRejectLoading(false);
     }
   };
 
@@ -253,7 +429,6 @@ const ViewPOSRequestGrid = ({
       document.execCommand("copy"); // Fallback to execCommand for unsupported environments
       toast.success("POS request details copied to clipboard!");
     } catch (err) {
-      // console.error("Fallback: Failed to copy:", err);
       toast.error("Failed to copy POS request details.");
     }
 
@@ -261,13 +436,21 @@ const ViewPOSRequestGrid = ({
     document.body.removeChild(textArea);
   };
 
-  const handleSend = async (rows) => {
-    setLoading(true)
-    if (rows.length === 0) {
+  const handleOpenSendConfirm = () => {
+    if (loading) return;
+    if (rowsToSend.length === 0) {
       toast.error("There is no request to be authorized!");
       return;
     }
-    setLoading(true);
+    setConfirmSendOpen(true);
+  };
+
+  const handleSend = async (rows) => {
+    if (loading) return;
+    if (!rows || rows.length === 0) {
+      toast.error("There is no request to be authorized!");
+      return;
+    }
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem("token");
 
@@ -276,10 +459,7 @@ const ViewPOSRequestGrid = ({
       return;
     }
 
-    // Create FormData object and populate it with values and file
-
-    console.log("rows to send", rows);
-
+    setLoading(true);
     try {
       const response = await axios.post(
         `${apiUrl}/request/sendRequests`,
@@ -293,9 +473,14 @@ const ViewPOSRequestGrid = ({
       );
 
       toast.success(response.data.message);
-      setRowsState([]);
+      const sentIds = new Set(rows.map((r) => r._id));
+      setSelectedIds([]);
+      if (onRefresh) {
+        onRefresh();
+      } else {
+        setRowsState((prev) => (prev || []).filter((r) => !sentIds.has(r._id)));
+      }
     } catch (error) {
-      setLoading(false)
       toast.error(
         error.response?.data?.message || error.message || "Something went wrong"
       );
@@ -307,37 +492,13 @@ const ViewPOSRequestGrid = ({
   return (
     <Box>
       <Box
-        sx={{
-          width: "auto",
-          margin: 1,
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-root": {
-            overflow: "hidden",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            overflowY: "hidden !important",
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none",
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
-            display: "none",
-          },
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           rows={rowsState}
           columns={columns}
           showToolbar
-          slots={role === "user" ? { toolbar: CustomToolbar } : undefined}
+          slots={{ toolbar: PermissionGridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },
@@ -346,6 +507,7 @@ const ViewPOSRequestGrid = ({
           pageSizeOptions={[20, 50, 100]}
           autoHeight
           checkboxSelection
+          onRowSelectionModelChange={handleSelectionChange}
           onClipboardCopy={(copiedString) => setCopiedData(copiedString)}
         />
       </Box>
@@ -362,7 +524,7 @@ const ViewPOSRequestGrid = ({
           {copiedData}
         </code>
       </Alert>
-      {isRequestApproval && role === "posauthorizer" && (
+      {isRequestApproval && can("send_request") && (
         <Box
           sx={{
             flex: 1,
@@ -370,14 +532,91 @@ const ViewPOSRequestGrid = ({
             justifyContent: "center",
             alignItems: "center",
           }}
-          loading={loading}
-          onClick={() => handleSend(rowsState)}
         >
-          <LoadingButton variant="contained">
-            {loading ? "Processing..." : "Approve and Send All Requests"}
+          <LoadingButton
+            variant="contained"
+            loading={loading}
+            disabled={loading || rowsToSend.length === 0}
+            onClick={handleOpenSendConfirm}
+          >
+            {loading
+              ? "Processing..."
+              : selectedIds.length > 0
+              ? `Approve and Send Selected Requests (${rowsToSend.length})`
+              : "Approve and Send All Requests"}
           </LoadingButton>
         </Box>
       )}
+      <Dialog
+        open={confirmSendOpen}
+        onClose={() => !loading && setConfirmSendOpen(false)}
+      >
+        <DialogTitle>Confirm Send</DialogTitle>
+        <DialogContent>
+          Approve and send {rowsToSend.length}{" "}
+          {selectedIds.length > 0 ? "selected " : ""}
+          request{rowsToSend.length === 1 ? "" : "s"}?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmSendOpen(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            disabled={loading}
+            onClick={() => {
+              setConfirmSendOpen(false);
+              handleSend(rowsToSend);
+            }}
+          >
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={Boolean(rejectRow)}
+        onClose={() => !rejectLoading && setRejectRow(null)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Reject Request</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Reject request for{" "}
+            <strong>{rejectRow?.merchantName || "-"}</strong> (Serial:{" "}
+            {rejectRow?.serialNumber?.serialNumber || "-"})?
+          </Typography>
+          <TextField
+            autoFocus
+            label="Reason for rejection"
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            fullWidth
+            multiline
+            minRows={3}
+            required
+            error={rejectReason.length > 0 && rejectReason.trim().length < 3}
+            helperText="At least 3 characters"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setRejectRow(null)}
+            color="secondary"
+            disabled={rejectLoading}
+          >
+            Cancel
+          </Button>
+          <LoadingButton
+            color="error"
+            loading={rejectLoading}
+            disabled={rejectReason.trim().length < 3}
+            onClick={handleConfirmReject}
+          >
+            Reject
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
       <Dialog open={openDialog} onClose={handleCancel}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>

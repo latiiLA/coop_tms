@@ -46,23 +46,19 @@ export const AuthContextProvider = ({ children }) => {
         const user = {
           id: decoded.user._id,
           role: decoded.user.role,
+          roleId: decoded.user.roleId || null,
           status: decoded.user.status,
           username: decoded.user.username,
           firstName: decoded.user.firstName,
           fatherName: decoded.user.fatherName,
+          district: decoded.user.district || null,
           permissions: decoded.permissions || [],
         };
 
         setCurrentUser(user);
         setRole(user.role);
         setPermissions(user.permissions);
-
-        console.log("Authenticated user in auth context:", user);
-        console.log("Role in auth context:", user.role);
-        console.log("Status:", user.status);
-        console.log("Permissions in auth context:", user.permissions);
       } catch (error) {
-        console.error("Invalid or expired token:", error);
 
         localStorage.removeItem("token");
 
@@ -92,6 +88,10 @@ export const AuthContextProvider = ({ children }) => {
         setPermissions,
 
         setCurrentUser,
+
+        // Permission check used for all UI authorization decisions.
+        can: (permission) =>
+          isDemoMode() || (permissions || []).includes(permission),
 
         loading,
       }}

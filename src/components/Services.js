@@ -43,7 +43,7 @@ const Description = styled(Typography)(({ theme }) => ({
 }));
 
 const Services = () => {
-  const { role } = useAuthContext();
+  const { can } = useAuthContext();
   const admin_services = [
     {
       title: "Terminal Creation",
@@ -104,7 +104,7 @@ const Services = () => {
         Things You Can Do
       </Typography>
       <Grid container spacing={3} justifyContent="center">
-        {(role === "admin" || role === "superadmin") &&
+        {can("ui_admin_menus") &&
           admin_services.map((service, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Tile>
@@ -114,7 +114,7 @@ const Services = () => {
               </Tile>
             </Grid>
           ))}
-        {role === "user" &&
+        {can("ui_explore_atm") &&
           user_services.map((service, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Tile>

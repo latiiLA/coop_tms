@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { gridContainerSx, PermissionGridToolbar } from "./gridStyles";
 
 export default function ViewDistrict() {
   const navigate = useNavigate();
@@ -130,34 +131,11 @@ export default function ViewDistrict() {
         />
       </Box>
       <Box
-        sx={{
-          width: "auto",
-          margin: 1,
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-root": {
-            overflow: "hidden",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            overflowY: "hidden !important", // Hides the vertical scrollbar
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none", // Hides the scrollbar for WebKit browsers
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
-            display: "none",
-          },
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           showToolbar
+          slots={{ toolbar: PermissionGridToolbar }}
           rows={filteredRows}
           columns={columns}
           initialState={{

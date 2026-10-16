@@ -30,6 +30,7 @@ const ViewCybersourceTerminal = React.lazy(() => import("./pages/cybersource/Vie
 const CreateCybersourceTerminal = React.lazy(() => import("./pages/cybersource/CreateCybersourceTerminal"));
 
 const CreatePasswordEntry = React.lazy(() => import("./pages/administration/CreatePasswordEntry"))
+const ATMDetails = React.lazy(() => import("./pages/administration/ATMDetails"))
 const EditPasswordEntry =  React.lazy(() => import("./pages/administration/EditPasswordEntry"))
 const PasswordVault = React.lazy(() => import("./pages/administration/PasswordVault"));
 const PasswordEntryDetails = React.lazy(() => import("./pages/administration/PasswordEntryDetails"))
@@ -64,6 +65,12 @@ const CreateUser = React.lazy(
   () => import("./pages/administration/CreateUser")
 );
 const ViewUsers = React.lazy(() => import("./pages/administration/ViewUsers"));
+const ManageRoles = React.lazy(
+  () => import("./pages/administration/rbac/ManageRoles")
+);
+const ManagePermissions = React.lazy(
+  () => import("./pages/administration/rbac/ManagePermissions")
+);
 const ManageTerminal = React.lazy(
   () => import("./pages/administration/ManageTerminal")
 );
@@ -146,10 +153,6 @@ const AccountLinkManual = React.lazy(
 const ATMLocation = React.lazy(
   () => import("./pages/administration/ATMLocation")
 );
-const BulkRequest = React.lazy(
-  () => import("./pages/POS/requests/BulkRequest")
-);
-
 const MASConfig = React.lazy(() => import("./pages/POS/MASConfig/MASConfig"));
 
 const hasPermission = (permissions, permission) => {
@@ -264,6 +267,15 @@ function App() {
 
         <Route path="/login" element={<ProtectedLogin />} />
         <Route path="/changepassword" element={<PasswordChangeRoute />} />
+        {/* Outside the auth layout so clearing the session cannot unmount it mid-flight. */}
+        <Route
+          path="/logout"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <Logout />
+            </Suspense>
+          }
+        />
 
         {/* Protected Routes */}
         <Route element={<AuthenticatedRoute />}>
@@ -340,6 +352,16 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/atmdetail"
+              element={
+                <ProtectedRoute permission="view_terminal_detail">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ATMDetails />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
 
             {/* Port relocated */}
             <Route
@@ -377,7 +399,7 @@ function App() {
             <Route
               path="/atm/viewbranch"
               element={
-                <ProtectedRoute permission="view_branch">
+                <ProtectedRoute permission="view_all_districts">
                   <Suspense fallback={<LoadingSpinner />}>
                     <ViewBranch />
                   </Suspense>
@@ -399,7 +421,7 @@ function App() {
             <Route
               path="/atm/viewdistrict"
               element={
-                <ProtectedRoute permission="view_district">
+                <ProtectedRoute permission="view_all_districts">
                   <Suspense fallback={<LoadingSpinner />}>
                     <ViewDistrict />
                   </Suspense>
@@ -454,6 +476,26 @@ function App() {
                 <ProtectedRoute permission="manage_user">
                   <Suspense fallback={<LoadingSpinner />}>
                     <ViewUsers />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/administration/manageroles"
+              element={
+                <ProtectedRoute permission="manage_role">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ManageRoles />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/administration/managepermissions"
+              element={
+                <ProtectedRoute permission="manage_permission">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ManagePermissions />
                   </Suspense>
                 </ProtectedRoute>
               }
@@ -543,17 +585,6 @@ function App() {
                   </ProtectedRoute>
               }
               />
-              <Route
-                path="/logout"
-                element={
-                  <ProtectedRoute permission="logout">
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <Logout />
-                    </Suspense>
-                  </ProtectedRoute>
-                }
-              />
-
             {/* Report related */}
             <Route
               path="/reports"
@@ -793,16 +824,6 @@ function App() {
             }
           />
 
-          <Route
-            path="/request/bulkrequest"
-            element={
-              <ProtectedRoute permission="bulk_request">
-                <Suspense fallback={<LoadingSpinner />}>
-                  <BulkRequest />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="/request/relocate"
             element={

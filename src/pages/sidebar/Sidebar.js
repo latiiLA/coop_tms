@@ -61,7 +61,16 @@ const Sidebar = () => {
   const [openPOSAdmin, setOpenPOSAdmin] = useState(false);
   const [openATMAdmin, setOpenATMAdmin] = useState(false);
   const [openRequest, setRequest] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    // Read from localStorage on initial render (only runs once)
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("sidebarCollapsed");
+      if (saved !== null) {
+        return JSON.parse(saved);
+      }
+    }
+    return false; // Default: expanded
+  });
   const [open, setOpen] = useState(true);
 
   const handleDrawerOpen = () => {
@@ -76,7 +85,7 @@ const Sidebar = () => {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
 
-  const { role, loading } = useAuthContext();
+  const { role, loading, can } = useAuthContext();
 
   if (!role) {
     return null;
@@ -111,7 +120,7 @@ const Sidebar = () => {
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
   }));
 
   return (
@@ -128,12 +137,12 @@ const Sidebar = () => {
         variant="persistent"
         anchor="left"
         sx={{
-          width: open ? "240px" : "0px",
+          width: open ? (isCollapsed ? "72px" : "240px") : "0px",
           transition: theme.transitions.create(["width"], {
             duration: theme.transitions.duration.enteringScreen,
           }),
           "& .MuiDrawer-paper": {
-            width: open ? "240px" : "0px",
+            width: open ? (isCollapsed ? "72px" : "240px") : "0px",
             overflowY: "auto",
             backgroundColor: theme.palette.background.paper,
             borderRight: `1px solid ${theme.palette.divider}`,
@@ -143,6 +152,15 @@ const Sidebar = () => {
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "ltr" ? <ChevronLeft /> : <ChevronRight />}
+          </IconButton>
+          <IconButton onClick={() => setIsCollapsed(prev => {
+              const next = !prev;
+              if (typeof window !== "undefined") {
+                localStorage.setItem("sidebarCollapsed", JSON.stringify(next));
+              }
+              return next;
+            })} aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}>
+            {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
           </IconButton>
         </DrawerHeader>
         <Toolbar>
@@ -182,7 +200,7 @@ const Sidebar = () => {
               path: "/posdashboard",
               icon: <Dashboard sx={{ color: theme.palette.primary.main }} />,
             },
-            ...(role === "user"
+            ...(can("ui_explore_atm")
               ? [
                   {
                     text: "Explore ATM",
@@ -200,7 +218,10 @@ const Sidebar = () => {
             item.text === "Reports" ? (
               <React.Fragment key={item.text}>
                 <ListItem disablePadding>
-                  <ListItemButton onClick={handleReportClick}>
+                  <ListItemButton
+                    onClick={handleReportClick}
+                    sx={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
+                  >
                     <ListItemIcon>{item.icon}</ListItemIcon>
                     {!isCollapsed && (
                       <ListItemText
@@ -236,7 +257,7 @@ const Sidebar = () => {
                         ),
                       },
 
-                      ...(role === "superadmin"
+                      ...(can("ui_superadmin_menus")
                         ? [
                             {
                               text: "Transaction",
@@ -279,7 +300,10 @@ const Sidebar = () => {
               </React.Fragment>
             ) : (
               <ListItem key={item.text} disablePadding>
-                <ListItemButton onClick={() => navigate(item.path)}>
+                <ListItemButton
+                  onClick={() => navigate(item.path)}
+                  sx={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
+                >
                   <ListItemIcon>{item.icon}</ListItemIcon>
                   {!isCollapsed && (
                     <ListItemText
@@ -292,10 +316,13 @@ const Sidebar = () => {
             )
           )}
 
-          {(role === "user" || role === "superadmin") && (
+          {can("ui_pos_menu") && (
             <React.Fragment key="request">
               <ListItem disablePadding>
-                <ListItemButton onClick={handleRequestClick}>
+                <ListItemButton
+                  onClick={handleRequestClick}
+                  sx={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
+                >
                   <ListItemIcon>
                     <Box
                       sx={{
@@ -374,7 +401,7 @@ const Sidebar = () => {
                   ].map((subItem) => (
                     <ListItem key={subItem.text} disablePadding>
                       <ListItemButton
-                        sx={{ pl: 4 }}
+                        sx={{ pl: 4, justifyContent: isCollapsed ? "center" : "flex-start" }}
                         onClick={() => navigate(subItem.path)}
                       >
                         <ListItemIcon>{subItem.icon}</ListItemIcon>
@@ -392,10 +419,13 @@ const Sidebar = () => {
             </React.Fragment>
           )}
 
-          {(role === "admin" || role === "superadmin") && (
+          {can("ui_admin_menus") && (
             <React.Fragment key="posadministration">
               <ListItem disablePadding>
-                <ListItemButton onClick={handlePOSAdminClick}>
+                <ListItemButton
+                  onClick={handlePOSAdminClick}
+                  sx={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
+                >
                   <ListItemIcon>
                     <PointOfSale sx={{ color: theme.palette.primary.main }} />
                   </ListItemIcon>
@@ -460,7 +490,7 @@ const Sidebar = () => {
                   ].map((subItem) => (
                     <ListItem key={subItem.text} disablePadding>
                       <ListItemButton
-                        sx={{ pl: 4 }}
+                        sx={{ pl: 4, justifyContent: isCollapsed ? "center" : "flex-start" }}
                         onClick={() => navigate(subItem.path)}
                       >
                         <ListItemIcon>{subItem.icon}</ListItemIcon>
@@ -477,10 +507,13 @@ const Sidebar = () => {
               </Collapse>
             </React.Fragment>
           )}
-          {(role === "admin" || role === "superadmin") && (
+          {can("ui_admin_menus") && (
             <React.Fragment key="atmadministration">
               <ListItem disablePadding>
-                <ListItemButton onClick={handleATMAdminClick}>
+                <ListItemButton
+                  onClick={handleATMAdminClick}
+                  sx={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
+                >
                   <ListItemIcon>
                     <AtmOutlined sx={{ color: theme.palette.primary.main }} />
                   </ListItemIcon>
@@ -547,7 +580,7 @@ const Sidebar = () => {
                   ].map((subItem) => (
                     <ListItem key={subItem.text} disablePadding>
                       <ListItemButton
-                        sx={{ pl: 4 }}
+                        sx={{ pl: 4, justifyContent: isCollapsed ? "center" : "flex-start" }}
                         onClick={() => navigate(subItem.path)}
                       >
                         <ListItemIcon>{subItem.icon}</ListItemIcon>
@@ -565,7 +598,7 @@ const Sidebar = () => {
             </React.Fragment>
           )}
 
-          {(role === "admin" || role === "superadmin") && (
+          {can("ui_administration_menu") && (
             <React.Fragment key="Administration">
               <ListItem disablePadding>
                 <ListItemButton onClick={handleAdminClick}>
@@ -590,7 +623,7 @@ const Sidebar = () => {
               <Collapse in={openAdmin} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   {[
-                    ...(role === "superadmin"
+                    ...(can("ui_superadmin_menus")
                       ? [
                           {
                             text: "Create User",
@@ -621,7 +654,7 @@ const Sidebar = () => {
                         <Feedback sx={{ color: theme.palette.primary.main }} />
                       ),
                     },
-                    ...(role === "superadmin"
+                    ...(can("ui_superadmin_menus")
                       ? [
                           {
                             text: "Explore Feedback",

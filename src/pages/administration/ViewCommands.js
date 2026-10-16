@@ -6,8 +6,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { CopyAll, Search } from "@mui/icons-material";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext";
+import { gridContainerSx } from "../../components/gridStyles";
 
-export default function Commands({ role = "admin" }) {
+export default function Commands() {
+  const { can } = useAuthContext();
   const [data_rows, setDataRows] = useState([]);
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate()
@@ -136,12 +139,9 @@ export default function Commands({ role = "admin" }) {
     // Add your delete logic here
   };
 
-  const columns =
-    role === "user"
-      ? allColumns.filter((col) => col.field !== "actions")
-      : role === "admin"
-        ? allColumns
-        : allColumns.filter((col) => col.field !== "actions");
+  const columns = can("create_command")
+    ? allColumns
+    : allColumns.filter((col) => col.field !== "actions");
 
   const filteredRows = rows.filter((row) => {
     // Perform case-insensitive search in all text fields
@@ -190,16 +190,7 @@ export default function Commands({ role = "admin" }) {
         />
       </Box>
       <Box
-        sx={{
-          width: "auto",
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-          },
-          margin: 1,
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           rows={filteredRows}

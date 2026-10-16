@@ -10,7 +10,6 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import CustomToolbar from "../../components/CustomToolbar";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { CurrencyExchange, Search } from "@mui/icons-material";
@@ -21,6 +20,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import { gridContainerSx, PermissionGridToolbar } from "../../components/gridStyles";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -40,7 +40,7 @@ function TabPanel(props) {
 
 const Transaction = () => {
   const navigate = useNavigate();
-  const { role, setRole } = useAuthContext();
+  const { setRole } = useAuthContext();
   const [dataRows, setDataRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -229,7 +229,9 @@ const Transaction = () => {
       return (a.unitId || 0) - (b.unitId || 0); // Handle cases where unitId might be missing or non-numeric
     });
 
+  // Split sorted rows by terminal type
   const crmRows = filteredRows.filter((row) => row.type === "CRM");
+  const crm2Rows = filteredRows.filter((row) => row.type === "CRM2");
   const ncrRows = filteredRows.filter((row) => row.type === "NCR");
 
   if (loading) {
@@ -265,6 +267,7 @@ const Transaction = () => {
             >
               <Tab label="All Terminals" />
               <Tab label="CRM Terminals" />
+              <Tab label="CRM2 Terminals" />
               <Tab label="NCR Terminals" />
             </Tabs>
             <TextField
@@ -284,30 +287,13 @@ const Transaction = () => {
           </Box>
           <TabPanel value={value} index={0}>
             <Box
-              sx={{
-                width: "auto",
-                "& .super-app-theme--header": {
-                  backgroundColor: "#0693e3",
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  backgroundColor: "#0693e3",
-                  color: "#fff",
-                  fontSize: 13,
-                  fontWeight: "bold",
-                },
-                "& .MuiDataGrid-footerContainer": {
-                  backgroundColor: "#0693e3",
-                  color: "#fff",
-                },
-              }}
+              sx={gridContainerSx}
             >
               <DataGrid
                 rows={filteredRows}
                 columns={columns}
                 showToolbar
-                slots={
-                  role === "user" ? { toolbar: CustomToolbar } : undefined
-                }
+                slots={{ toolbar: PermissionGridToolbar }}
                 initialState={{
                   pagination: {
                     paginationModel: { page: 0, pageSize: 20 },
@@ -322,30 +308,13 @@ const Transaction = () => {
 
           <TabPanel value={value} index={1}>
             <Box
-              sx={{
-                width: "auto",
-                "& .super-app-theme--header": {
-                  backgroundColor: "#0693e3",
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  backgroundColor: "#0693e3",
-                  color: "#fff",
-                  fontSize: 13,
-                  fontWeight: "bold",
-                },
-                "& .MuiDataGrid-footerContainer": {
-                  backgroundColor: "#0693e3",
-                  color: "#fff",
-                },
-              }}
+              sx={gridContainerSx}
             >
               <DataGrid
                 rows={crmRows}
                 columns={columns}
                 showToolbar
-                slots={
-                  role === "user" ? { toolbar: CustomToolbar } : undefined
-                }
+                slots={{ toolbar: PermissionGridToolbar }}
                 initialState={{
                   pagination: {
                     paginationModel: { page: 0, pageSize: 20 },
@@ -360,30 +329,34 @@ const Transaction = () => {
 
           <TabPanel value={value} index={2}>
             <Box
-              sx={{
-                width: "auto",
-                "& .super-app-theme--header": {
-                  backgroundColor: "#0693e3",
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  backgroundColor: "#0693e3",
-                  color: "#fff",
-                  fontSize: 13,
-                  fontWeight: "bold",
-                },
-                "& .MuiDataGrid-footerContainer": {
-                  backgroundColor: "#0693e3",
-                  color: "#fff",
-                },
-              }}
+              sx={gridContainerSx}
+            >
+              <DataGrid
+                rows={crm2Rows}
+                columns={columns}
+                showToolbar
+                slots={{ toolbar: PermissionGridToolbar }}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 20 },
+                  },
+                }}
+                pageSizeOptions={[20, 50, 100]}
+                autoHeight
+                checkboxSelection
+              />
+            </Box>
+          </TabPanel>
+
+          <TabPanel value={value} index={3}>
+            <Box
+              sx={gridContainerSx}
             >
               <DataGrid
                 rows={ncrRows}
                 columns={columns}
                 showToolbar
-                slots={
-                  role === "user" ? { toolbar: CustomToolbar } : undefined
-                }
+                slots={{ toolbar: PermissionGridToolbar }}
                 initialState={{
                   pagination: {
                     paginationModel: { page: 0, pageSize: 20 },

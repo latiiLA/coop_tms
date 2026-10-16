@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { gridContainerSx, PermissionGridToolbar } from "../../../components/gridStyles";
 
 const InventoryUpload = () => {
   const navigate = useNavigate();
@@ -155,31 +156,7 @@ const InventoryUpload = () => {
   return (
     <Box>
       <Box
-        sx={{
-          width: "auto",
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-root": {
-            overflow: "hidden",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            overflowY: "hidden !important",
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none",
-          },
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
-            display: "none",
-          },
-          marginX: 1,
-        }}
+        sx={gridContainerSx}
       >
         <Button
           variant="contained"
@@ -193,6 +170,7 @@ const InventoryUpload = () => {
           rows={rows}
           columns={columns}
           showToolbar
+          slots={{ toolbar: PermissionGridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 20 },

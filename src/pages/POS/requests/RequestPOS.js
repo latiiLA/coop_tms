@@ -1,76 +1,271 @@
-import { Box, Button, Card, Divider, MenuItem, Typography } from "@mui/material";
-import { Form, Formik, Field } from "formik";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  IconButton,
+  MenuItem,
+  Paper,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { Form, Formik, Field, useField, useFormikContext } from "formik";
 import * as Yup from "yup";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  CustomSelect,
-  CustomTextField,
-} from "../../../components/CustomFields";
+import { CustomSelect } from "../../../components/CustomFields";
 import { pos_sites } from "../../../components/DropDownFormData";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { CloudUpload } from "@mui/icons-material";
+import {
+  ArrowBack,
+  CloudUpload,
+  Close,
+  InsertDriveFile,
+  LocationOn,
+  Lock,
+  Router,
+  Storefront,
+  VerifiedUser,
+} from "@mui/icons-material";
 import ComboBox from "../../../components/ComboBox";
+import { useAuthContext } from "../../../context/AuthContext";
 
-const RequestPOS = () => {
+// Mirrors the server upload rules (coop_tms_server/Middleware/upload.js).
+const ACCEPTED_FILE_TYPES = ".pdf,.jpg,.jpeg,.png";
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+// Human-readable labels used by the error summary.
+const FIELD_LABELS = {
+  district: "District",
+  site: "Terminal Site",
+  branchName: "Branch",
+  merchantName: "Merchant Name",
+  merchantPhonenumber: "Merchant Phone Number",
+  merchantAddress: "Merchant Address",
+  businessType: "Business Type",
+  contactName: "Contact Name",
+  contactPhonenumber: "Contact Phone Number",
+  serialNumber: "Serial Number",
+  serviceNumber: "Service Number",
+  staticIp: "Static IP Address",
+  posCbsAccount: "CBS Account",
+  assignAuthorizationUser: "Authorizing User",
+};
+
+// Display order for the error summary / scroll-to-first-error.
+const FIELD_ORDER = Object.keys(FIELD_LABELS);
+
+const formatFileSize = (bytes) => {
+  if (!bytes && bytes !== 0) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+// Text field showing a helper hint until the field is touched (or the form
+// is submitted), then the validation error in its place.
+// Id of a ref that may be populated ({ _id }) or a plain id string.
+const refId = (v) => (v && typeof v === "object" ? v._id : v) || "";
+
+export const FormTextField = ({ label, helperText, required, ...props }) => {
+  const [field, meta] = useField(props);
+  const showError = meta.touched && !!meta.error;
+  return (
+    <TextField
+      {...field}
+      {...props}
+      id={`field-${props.name}`}
+      label={label}
+      required={required}
+      error={showError}
+      helperText={showError ? meta.error : helperText || " "}
+      variant="outlined"
+      size="medium"
+      fullWidth
+    />
+  );
+};
+
+// Wrapper that gives each field a scroll anchor for the error summary.
+export const FieldSlot = ({ name, full, children }) => (
+  <Box
+    data-field={name}
+    sx={{ gridColumn: full ? "1 / -1" : "auto", scrollMarginTop: 96 }}
+  >
+    {children}
+  </Box>
+);
+
+export const Section = ({ step, title, subtitle, icon, children }) => (
+  <Card variant="outlined" sx={{ borderRadius: 2 }}>
+    <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+      <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: "50%",
+            bgcolor: "primary.main",
+            color: "primary.contrastText",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          {icon}
+        </Box>
+        <Box>
+          <Typography variant="overline" color="text.secondary" lineHeight={1.2}>
+            Step {step}
+          </Typography>
+          <Typography variant="subtitle1" fontWeight={600} lineHeight={1.3}>
+            {title}
+          </Typography>
+          {subtitle && (
+            <Typography variant="body2" color="text.secondary">
+              {subtitle}
+            </Typography>
+          )}
+        </Box>
+      </Stack>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+          columnGap: 2,
+          rowGap: 1,
+        }}
+      >
+        {children}
+      </Box>
+    </CardContent>
+  </Card>
+);
+
+// After a failed submit attempt, scrolls to and focuses the first invalid
+// field (per-field messages show the errors; no summary box).
+const ScrollToFirstError = () => {
+  const { errors, submitCount, isSubmitting } = useFormikContext();
+  const lastHandled = useRef(0);
+
+  const invalidFields = FIELD_ORDER.filter((name) => errors[name]);
+
+  useEffect(() => {
+    if (submitCount === 0 || submitCount === lastHandled.current) return;
+    if (isSubmitting) return;
+    lastHandled.current = submitCount;
+    if (invalidFields.length === 0) return;
+    const first = document.querySelector(`[data-field="${invalidFields[0]}"]`);
+    if (first) {
+      first.scrollIntoView({ behavior: "smooth", block: "center" });
+      const input = first.querySelector("input, textarea, [role='combobox'], [role='button']");
+      if (input && typeof input.focus === "function") {
+        input.focus({ preventScroll: true });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submitCount, isSubmitting]);
+
+  return null;
+};
+
+const RequestPOSForm = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const location = useLocation();
   const { row, isEdit } = location.state || {};
+  // Initiator may change serial only while the request is still New.
+  const canEditSerial = !isEdit || row?.status === "New";
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(row?.file || null);
   const [districts, setDistricts] = useState([]);
   const [branches, setBranches] = useState([]);
+  const { currentUser } = useAuthContext();
+  const userDistrict = currentUser?.district || "";
+  const formikRef = useRef(null);
+
+  // Edit is initiator-only (server also enforces). Block deep-links / stale state.
+  useEffect(() => {
+    if (!isEdit || !row) return;
+    const creatorId =
+      row?.createdBy && typeof row.createdBy === "object"
+        ? row.createdBy._id
+        : row?.createdBy;
+    if (
+      !currentUser?.id ||
+      !creatorId ||
+      String(creatorId) !== String(currentUser.id)
+    ) {
+      toast.error("Only the request initiator can edit this request.");
+      navigate("/request/requeststatus", { replace: true });
+    }
+  }, [isEdit, row, currentUser?.id, navigate]);
+  // Accept populated refs or plain ids (some endpoints return ids only).
   const [selectedDistrict, setSelectedDistrict] = useState(
-    row?.district?._id || ""
+    refId(row?.district) || userDistrict
   );
   const [users, setUsers] = useState([]);
+  // True once the authorizer list for the selected district has loaded.
+  const [usersLoaded, setUsersLoaded] = useState(false);
+  const noDistrictAuthorizer = Boolean(selectedDistrict) && usersLoaded && users.length === 0;
 
+  // Authorizers for the request's district: its district authorizers, or
+  // head-office authorizers when it has none (decided by the server).
+  // Refetched whenever the district changes.
   useEffect(() => {
-    const fetchUsers = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        // console.error("No authentication token found");
-        toast.error("User is not authenticated");
-        navigate("/home");
-        return;
-      }
-
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("User is not authenticated");
+      navigate("/home");
+      return undefined;
+    }
+    let cancelled = false;
+    setUsersLoaded(false);
+    (async () => {
       try {
-        try {
-          const response = await axios.get(`${apiUrl}/auth/getAuthorizingUser`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-          });
-          setUsers(response.data.users);
-          return response.data.users;
-        } catch (error) {
-          // console.error("Error fetching data:", error);
-          toast.error(`Error: ${error.response?.data?.message || error.message}`);
-          navigate("/home");
-          return [];
+        const response = await axios.get(`${apiUrl}/auth/getAuthorizingUser`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: selectedDistrict ? { district: selectedDistrict } : {},
+          withCredentials: true,
+        });
+        if (cancelled) return;
+        const list = response.data?.users || [];
+        setUsers(list);
+        setUsersLoaded(true);
+        // Only district authorizers of this district are valid (no fallback),
+        // so a selected/current assignee not in the list is cleared.
+        const formik = formikRef.current;
+        const selected = formik?.values?.assignAuthorizationUser;
+        if (selected && !list.some((u) => String(u._id) === String(selected))) {
+          formik.setFieldValue("assignAuthorizationUser", "", false);
         }
-        
       } catch (error) {
-        console.error("Failed to fetch users:", error);
+        if (!cancelled) {
+          setUsers([]);
+          setUsersLoaded(false);
+          toast.error(`Error: ${error.response?.data?.message || error.message}`);
+        }
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-
-    fetchUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedDistrict]);
 
   console.log("row", row);
   console.log("selected", selectedFile);
 
   const initialValues = {
     serialNumber: row?.serialNumber?._id || "",
-    branchName: row?.branchName?._id || "",
-    district: row?.district?._id || "",
+    branchName: refId(row?.branchName) || "",
+    district: refId(row?.district) || userDistrict,
     site: row?.site || "",
     merchantName: row?.merchantName || "",
     merchantAddress: row?.merchantAddress || "",
@@ -81,7 +276,7 @@ const RequestPOS = () => {
     serviceNumber: row?.serviceNumber || "",
     contactPhonenumber: row?.contactPhonenumber || "",
     businessType: row?.businessType || "",
-    assignAuthorizationUser: row?.assignAuthorizationUser?._id || "",
+    assignAuthorizationUser: String(refId(row?.assignAuthorizationUser) || ""),
   };
 
   useEffect(() => {
@@ -104,10 +299,12 @@ const RequestPOS = () => {
         });
 
         setDistricts(
-          response.data.alldistricts.map((district) => ({
-            value: district._id,
-            label: district.districtName,
-          }))
+          response.data.alldistricts
+            .filter((district) => !userDistrict || String(district._id) === String(userDistrict))
+            .map((district) => ({
+              value: district._id,
+              label: district.districtName,
+            }))
         );
       } catch (error) {
         toast.error(`Error: ${error.response?.data?.message || error.message}`);
@@ -166,6 +363,14 @@ const RequestPOS = () => {
     }
   }, [selectedDistrict]);
 
+  // District users: district is fixed to their own (the server enforces it too).
+  useEffect(() => {
+    if (userDistrict) {
+      setSelectedDistrict(userDistrict);
+      formikRef.current?.setFieldValue("district", userDistrict);
+    }
+  }, [userDistrict]);
+
   useEffect(() => {
     if (row?.file) {
       setSelectedFile(row?.file); // If editing, pre-fill the selected file
@@ -186,6 +391,7 @@ const RequestPOS = () => {
       .matches(phoneRegExp, "Phone number must be 9 digits")
       .min(9, "Phone number is short. it must be 9 digits")
       .max(9, "Phone number is long. it must be 9 digits"),
+    contactName: Yup.string().required("Contact name is required"),
     contactPhonenumber: Yup.string()
       .required("Phone number is required")
       .matches(phoneRegExp, "Phone number must be 9 digits")
@@ -214,12 +420,41 @@ const RequestPOS = () => {
       }),
   });
 
+  const fileInputRef = useRef(null);
+
   const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error(`File is too large (${formatFileSize(file.size)}). Maximum is 5 MB.`);
+      event.target.value = "";
+      return;
+    }
+    setSelectedFile(file);
   };
 
+  const handleRemoveFile = () => {
+    // In edit mode this returns to "keep the existing agreement".
+    setSelectedFile(isEdit ? row?.file || null : null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // A newly chosen File vs. the stored agreement object from the request row.
+  const isNewFile = typeof File !== "undefined" && selectedFile instanceof File;
+  const selectedFileName = selectedFile?.name || selectedFile?.fileName || "";
+  const selectedFileSize = selectedFile?.size ?? selectedFile?.fileSize;
+  // The agreement is required: a new upload, or (edit) the stored file.
+  const hasAgreement = isNewFile || Boolean(selectedFile?.filePath || selectedFile?.fileName);
+  const [fileTouched, setFileTouched] = useState(false);
+  const fileError = fileTouched && !hasAgreement;
+
   const handleSubmit = async (values, { resetForm }) => {
-    console.log("sent to req contr", values);
+    // The signed POS agreement is required (an existing stored file counts).
+    if (!hasAgreement) {
+      setFileTouched(true);
+      toast.error("Please attach the signed POS agreement file.");
+      return;
+    }
     setLoading(true);
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem("token");
@@ -229,9 +464,19 @@ const RequestPOS = () => {
       return;
     }
 
-    // Create FormData object and populate it with values and file
+    // Create FormData object and populate it with values and file.
+    // When serial is locked (not New), force the original device id.
     const formData = new FormData();
-    Object.keys(values).forEach((key) => formData.append(key, values[key]));
+    Object.keys(values).forEach((key) => {
+      if (isEdit && key === "serialNumber" && !canEditSerial) {
+        formData.append(
+          key,
+          row?.serialNumber?._id || row?.serialNumber || values.serialNumber
+        );
+        return;
+      }
+      formData.append(key, values[key]);
+    });
     if (selectedFile) formData.append("file", selectedFile);
 
     // Log the FormData content to check if all fields are appended correctly
@@ -270,6 +515,7 @@ const RequestPOS = () => {
 
         toast.success(response.data.message);
         resetForm();
+        if (userDistrict) formikRef.current?.setFieldValue("district", userDistrict);
         setSelectedFile(null);
       }
     } catch (error) {
@@ -281,338 +527,371 @@ const RequestPOS = () => {
     }
   };
 
+  const iconSx = { fontSize: 20 };
+
   return (
-    <Box sx={{ position: "relative", width: "100%" }}>
-      <Box sx={{ display: "flex", justifyContent: "center", margin: 1 }}>
-        <Card
-          sx={{
-            paddingTop: 1,
-            paddingBottom: 3,
-            paddingX: 3,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            borderRadius: 2,
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            width: { xs: "100%", sm: "100%", md: "90%", lg: "80%" },
-            position: "relative",
-          }}
+    <Box sx={{ width: "100%", display: "flex", justifyContent: "center", py: 2 }}>
+      <Box sx={{ width: { xs: "100%", sm: "95%", md: "90%", lg: "80%" }, px: { xs: 1, sm: 0 } }}>
+        <Formik
+          innerRef={formikRef}
+          initialValues={initialValues}
+          validationSchema={FORM_VALIDATION}
+          onSubmit={handleSubmit}
+          validateOnMount
         >
-          <Formik
-            initialValues={initialValues}
-            validationSchema={FORM_VALIDATION}
-            onSubmit={handleSubmit}
-            validateOnMount
-          >
-            {({
-              isValid,
-              errors,
-              resetForm,
-              validateForm,
-              handleChange,
-              setFieldValue,
-            }) => (
-              <Form>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  <Typography variant="h5" sx={{ textAlign: "center" }}>
+          {({ handleChange, validateForm, isSubmitting }) => (
+            <Form noValidate>
+              <Stack spacing={2}>
+                {/* Header */}
+                <Box>
+                  <Typography variant="h5" fontWeight={600}>
                     {!isEdit
                       ? "Request New POS Configuration"
-                      : "Edit POS configuration"}
+                      : "Edit POS Configuration Request"}
                   </Typography>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 2,
-                      paddingX: 3,
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 1,
-                      }}
-                    >
-                      <Typography sx={{ fontWeight: "bold" }}>
-                        Terminal Information
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: { xs: "column", md: "row" },
-                          gap: 2,
-                        }}
-                      >
-                        <CustomSelect
-                          name="district"
-                          label="District *"
-                          options={districts}
-                          onChange={(e) => {
-                            handleChange(e);
-                            const districtId = e.target.value;
-                            setSelectedDistrict(districtId); // Ensure this is set correctly
-                            setBranches([]); // Reset branches before fetching new data
-                            console.log("Selected District:", districtId); // Log selected district
-                            validateForm();
-                          }}
-                        />
-                        <CustomSelect
-                          name="site"
-                          label="Terminal Site *"
-                          options={pos_sites}
-                          required
-                        />
-                      </Box>
-
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: { xs: "column", md: "row" },
-                          gap: 1,
-                          width: { xs: "100%", md: "49%" },
-                        }}
-                      >
-                        <CustomSelect
-                          name="branchName"
-                          label="Branch Name *"
-                          options={branches}
-                          onChange={(e) => {
-                            handleChange(e);
-                            validateForm();
-                          }}
-                          disabled={branches.length === 0}
-                        />
-                      </Box>
-                    </Box>
-                    <Divider />
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 1,
-                      }}
-                    >
-                      <Typography sx={{ fontWeight: "bold" }}>
-                        Merchant Information
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: { xs: "column", md: "row" },
-                          gap: 2,
-                        }}
-                      >
-                        <CustomTextField
-                          name="merchantName"
-                          label="Merchant Name"
-                          required
-                        />
-                        <CustomTextField
-                          name="merchantPhonenumber"
-                          label="Merchant Phone Number"
-                          required
-                        />
-                      </Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: { xs: "column", md: "row" },
-                          gap: 2,
-                        }}
-                      >
-                        <CustomTextField
-                          name="merchantAddress"
-                          label="Merchant Address"
-                          required
-                        />
-                        <CustomTextField
-                          name="businessType"
-                          label="Business Type"
-                          required
-                        />
-                      </Box>   
-                    </Box>
-                    
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: { xs: "column", md: "row" },
-                        gap: 2,
-                      }}
-                    >
-                      <CustomTextField
-                          name="contactName"
-                          label="Contact Name"
-                          required
-                        />
-                      <CustomTextField
-                        name="contactPhonenumber"
-                        label="Contact Phone Number"
-                        required
-                      />
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: { xs: "column", md: "row" },
-                        gap: 2,
-                      }}
-                    >
-                      <CustomTextField
-                        name="posCbsAccount"
-                        label="CBS Account"
-                        required
-                        sx={{ width: { xs: "100%", md: "49%" } }}
-                      />
-                    </Box>
-                    <Divider />
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 1,
-                      }}
-                    >
-                      <Typography sx={{ fontWeight: "bold" }}>
-                        POS Machine Information
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: { md: "row", xs: "column" },
-                          gap: 2,
-                        }}
-                      >
-                        <Box sx={{ flex: 1 }}>
-                          <Field name="serialNumber" component={ComboBox} />
-                        </Box>
-                        <CustomTextField
-                          name="serviceNumber"
-                          label="Service Number"
-                          sx={{ flex: 1 }}
-                          required
-                        />
-                      </Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: {
-                            lg: "row",
-                            md: "column",
-                            xs: "column",
-                          },
-                          gap: 2,
-                        }}
-                      >
-                        <CustomTextField
-                          name="staticIp"
-                          label="Static IP Address"
-                          required
-                          sx={{ width: { md: "49%", xs: "100%" } }}
-                        />
-                        {/* File Upload Section */}
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 1,
-                            flex: 1,
-                          }}
-                        >
-                          <Typography>
-                            {isEdit
-                              ? "Upload New POS Agreement (Optional)"
-                              : "Upload POS Agreement"}
-                          </Typography>
-                          <Button
-                            variant="outlined"
-                            component="label"
-                            startIcon={<CloudUpload />}
-                          >
-                            {selectedFile ? "Change File" : "Upload File"}
-                            <input
-                              type="file"
-                              hidden
-                              onChange={handleFileChange}
-                              accept=".pdf,.jpg,.jpeg,.png"
-                            />
-                          </Button>
-                          {selectedFile && (
-                            <Typography variant="body2">
-                              {selectedFile.name}
-                            </Typography>
-                          )}
-                        </Box>
-                      </Box>
-                    </Box>
-
-                    <Divider />
-
-                    <Box 
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 1,
-                      }}
-                    >
-                      <Typography sx={{ fontWeight: "bold" }}>
-                        Authorizer Information
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: { md: "row", xs: "column" },
-                          gap: 2,
-                        }}
-                      >
-                        <CustomTextField
-                          select
-                          name="assignAuthorizationUser"
-                          label="Assign Authorization User"
-                          // value={row?.assignAuthorizationUser || ""}
-                          onChange={handleChange}
-                        >
-                          {users.map((user) => (
-                            <MenuItem key={user._id} value={user._id}>
-                              {user.firstName} {user.fatherName} {user.gfatherName}
-                            </MenuItem>
-                          ))}
-                        </CustomTextField>
-                      </Box>
-                    </Box>
-                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Fields marked * are required. The request is sent to the
+                    selected authorizer for review.
+                  </Typography>
                 </Box>
-                <Box
+
+                <ScrollToFirstError />
+
+                {/* 1. Location */}
+                <Section
+                  step={1}
+                  title="Location"
+                  subtitle="Where the terminal will be installed"
+                  icon={<LocationOn sx={iconSx} />}
+                >
+                  <FieldSlot name="district">
+                    <CustomSelect
+                      name="district"
+                      label="District *"
+                      options={districts}
+                      disabled={!!userDistrict}
+                      onChange={(e) => {
+                        handleChange(e);
+                        const districtId = e.target.value;
+                        setSelectedDistrict(districtId); // Ensure this is set correctly
+                        setBranches([]); // Reset branches before fetching new data
+                        validateForm();
+                      }}
+                    />
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5, ml: 1.5, minHeight: 20 }}
+                    >
+                      {userDistrict ? (
+                        <>
+                          <Lock sx={{ fontSize: 14 }} /> Locked to your district
+                        </>
+                      ) : (
+                        "Select a district to load its branches"
+                      )}
+                    </Typography>
+                  </FieldSlot>
+                  <FieldSlot name="branchName">
+                    <CustomSelect
+                      name="branchName"
+                      label="Branch Name *"
+                      options={branches}
+                      onChange={(e) => {
+                        handleChange(e);
+                        validateForm();
+                      }}
+                      disabled={branches.length === 0}
+                    />
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ display: "block", mt: 0.5, ml: 1.5, minHeight: 20 }}
+                    >
+                      {branches.length === 0
+                        ? selectedDistrict
+                          ? "No branches loaded for this district yet"
+                          : "Choose a district first"
+                        : `${branches.length} branch${branches.length > 1 ? "es" : ""} available`}
+                    </Typography>
+                  </FieldSlot>
+                  <FieldSlot name="site">
+                    <CustomSelect
+                      name="site"
+                      label="Terminal Site *"
+                      options={pos_sites}
+                      required
+                    />
+                    <Box sx={{ minHeight: 20, mt: 0.5 }} />
+                  </FieldSlot>
+                </Section>
+
+                {/* 2. Merchant */}
+                <Section
+                  step={2}
+                  title="Merchant"
+                  subtitle="Business and contact details"
+                  icon={<Storefront sx={iconSx} />}
+                >
+                  <FieldSlot name="merchantName">
+                    <FormTextField name="merchantName" label="Merchant Name" required />
+                  </FieldSlot>
+                  <FieldSlot name="businessType">
+                    <FormTextField
+                      name="businessType"
+                      label="Business Type"
+                      required
+                      helperText="e.g. Supermarket, Pharmacy"
+                    />
+                  </FieldSlot>
+                  <FieldSlot name="merchantAddress">
+                    <FormTextField name="merchantAddress" label="Merchant Address" required />
+                  </FieldSlot>
+                  <FieldSlot name="contactName">
+                    <FormTextField name="contactName" label="Contact Name" required />
+                  </FieldSlot>
+                  <FieldSlot name="merchantPhonenumber">
+                    <FormTextField
+                      name="merchantPhonenumber"
+                      label="Merchant Phone Number"
+                      required
+                      helperText="9 digits, e.g. 911234567"
+                      inputProps={{ inputMode: "numeric", maxLength: 9 }}
+                    />
+                  </FieldSlot>
+                  <FieldSlot name="contactPhonenumber">
+                    <FormTextField
+                      name="contactPhonenumber"
+                      label="Contact Phone Number"
+                      required
+                      helperText="9 digits, e.g. 911234567"
+                      inputProps={{ inputMode: "numeric", maxLength: 9 }}
+                    />
+                  </FieldSlot>
+                </Section>
+
+                {/* 3. Terminal & Network */}
+                <Section
+                  step={3}
+                  title="Terminal & Network"
+                  subtitle="Device, connectivity and settlement account"
+                  icon={<Router sx={iconSx} />}
+                >
+                  <FieldSlot name="serialNumber">
+                    <Field
+                      name="serialNumber"
+                      component={ComboBox}
+                      disabled={!canEditSerial}
+                    />
+                    {isEdit && !canEditSerial && (
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ display: "block", mt: 0.5, ml: 0.5 }}
+                      >
+                        Serial number can only be changed while the request is
+                        New. Relocate the POS to use a different device.
+                      </Typography>
+                    )}
+                  </FieldSlot>
+                  <FieldSlot name="serviceNumber">
+                    <FormTextField
+                      name="serviceNumber"
+                      label="Service Number"
+                      required
+                      helperText="9 to 13 digits"
+                    />
+                  </FieldSlot>
+                  <FieldSlot name="staticIp">
+                    <FormTextField
+                      name="staticIp"
+                      label="Static IP Address"
+                      required
+                      helperText="IPv4, e.g. 10.0.0.25"
+                    />
+                  </FieldSlot>
+                  <FieldSlot name="posCbsAccount">
+                    <FormTextField
+                      name="posCbsAccount"
+                      label="CBS Account"
+                      required
+                      helperText="13 characters"
+                      inputProps={{ maxLength: 13 }}
+                    />
+                  </FieldSlot>
+                </Section>
+
+                {/* 4. Authorization & Attachment */}
+                <Section
+                  step={4}
+                  title="Authorization & Agreement"
+                  subtitle="Who reviews the request, and the signed POS agreement"
+                  icon={<VerifiedUser sx={iconSx} />}
+                >
+                  <FieldSlot name="assignAuthorizationUser">
+                    <FormTextField
+                      select
+                      name="assignAuthorizationUser"
+                      label="Assign Authorization User"
+                      required
+                      error={noDistrictAuthorizer}
+                      disabled={noDistrictAuthorizer}
+                      helperText={
+                        noDistrictAuthorizer
+                          ? "No authorizer is set up for this district; a request can't be initiated until one is added."
+                          : !selectedDistrict
+                          ? "Choose a district first"
+                          : "The authorizer who will review this request"
+                      }
+                      onChange={handleChange}
+                    >
+                      {/* Only this district's authorizers; a current assignee who
+                          is no longer valid is not offered (and is cleared). */}
+                      {users.map((user) => (
+                        <MenuItem key={user._id} value={String(user._id)}>
+                          {[user.firstName, user.fatherName, user.gfatherName]
+                            .filter(Boolean)
+                            .join(" ") || user.username}
+                        </MenuItem>
+                      ))}
+                    </FormTextField>
+                  </FieldSlot>
+
+                  <FieldSlot name="file">
+                    <Box
+                      sx={{
+                        border: "1px dashed",
+                        borderColor: "divider",
+                        borderRadius: 2,
+                        p: 2,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
+                      }}
+                    >
+                      <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                        <Typography variant="body2" fontWeight={600}>
+                          POS Agreement *
+                        </Typography>
+                        {isEdit && hasAgreement && (
+                          <Chip size="small" label="Replace file (current file kept)" variant="outlined" />
+                        )}
+                      </Stack>
+
+                      {selectedFile ? (
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          alignItems="center"
+                          sx={{ bgcolor: "action.hover", borderRadius: 1, px: 1.5, py: 1 }}
+                        >
+                          <InsertDriveFile color="primary" />
+                          <Box sx={{ minWidth: 0, flex: 1 }}>
+                            <Typography variant="body2" noWrap title={selectedFileName}>
+                              {selectedFileName || "Selected file"}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {[
+                                formatFileSize(selectedFileSize),
+                                isNewFile ? "new upload" : "current file",
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </Typography>
+                          </Box>
+                          {(isNewFile || !isEdit) && (
+                            <Tooltip title={isEdit ? "Keep current file" : "Remove file"}>
+                              <IconButton size="small" onClick={handleRemoveFile} aria-label="Remove file">
+                                <Close fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Stack>
+                      ) : (
+                        <Typography variant="body2" color={fileError ? "error" : "text.secondary"}>
+                          {fileError
+                            ? "The signed POS agreement file is required."
+                            : "No file selected"}
+                        </Typography>
+                      )}
+
+                      <Box>
+                        <Button
+                          variant="outlined"
+                          component="label"
+                          size="small"
+                          startIcon={<CloudUpload />}
+                        >
+                          {selectedFile ? "Change File" : "Upload File"}
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            hidden
+                            onChange={handleFileChange}
+                            accept={ACCEPTED_FILE_TYPES}
+                          />
+                        </Button>
+                      </Box>
+                      <Typography variant="caption" color="text.secondary">
+                        PDF, JPG or PNG · max 5 MB
+                      </Typography>
+                    </Box>
+                  </FieldSlot>
+                </Section>
+
+                {/* Sticky footer */}
+                <Paper
+                  elevation={3}
                   sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: 2,
-                    mt: 2,
+                    position: "sticky",
+                    bottom: 0,
+                    zIndex: 2,
+                    borderRadius: 2,
+                    px: { xs: 2, md: 3 },
+                    py: 1.5,
                   }}
                 >
-                  <LoadingButton
-                    loading={loading}
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    width={200}
+                  <Stack
+                    direction={{ xs: "column-reverse", sm: "row" }}
+                    spacing={1.5}
+                    justifyContent="space-between"
+                    alignItems={{ xs: "stretch", sm: "center" }}
                   >
-                    {isEdit ? "Update Request" : "Add Request"}
-                  </LoadingButton>
-                  <Button onClick={() => navigate(-1)}>Back</Button>
-                </Box>
-              </Form>
-            )}
-          </Formik>
-        </Card>
+                    <Button
+                      startIcon={<ArrowBack />}
+                      onClick={() => navigate(-1)}
+                      disabled={loading || isSubmitting}
+                    >
+                      Back
+                    </Button>
+                    <LoadingButton
+                      loading={loading || isSubmitting}
+                      disabled={loading || isSubmitting || noDistrictAuthorizer}
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      sx={{ minWidth: 200 }}
+                    >
+                      {isEdit ? "Update Request" : "Add Request"}
+                    </LoadingButton>
+                  </Stack>
+                </Paper>
+              </Stack>
+            </Form>
+          )}
+        </Formik>
       </Box>
     </Box>
   );
+};
+
+// Add and Edit share the /request/request route, so React Router reuses the
+// same instance (Edit -> Add kept the edit row, file and option lists).
+// Keying by location.key remounts the form on every navigation, giving a
+// clean Add form or a fresh Edit form for the row in location.state.
+const RequestPOS = () => {
+  const location = useLocation();
+  return <RequestPOSForm key={location.key} />;
 };
 
 export default RequestPOS;

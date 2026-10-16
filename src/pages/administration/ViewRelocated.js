@@ -124,8 +124,9 @@ export default function ViewRelocated() {
       );
     })
 
-  // Split sorted rows into CRM and NCR
+  // Split sorted rows by terminal type
   const crmRows = filteredRows.filter((row) => row.type === "CRM");
+  const crm2Rows = filteredRows.filter((row) => row.type === "CRM2");
   const ncrRows = filteredRows.filter((row) => row.type === "NCR");
 
   return (
@@ -142,6 +143,7 @@ export default function ViewRelocated() {
         <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
           <Tab label="All Relocated Terminals" />
           <Tab label="Relocated CRM Terminals" />
+          <Tab label="Relocated CRM2 Terminals" />
           <Tab label="Relocated NCR Terminals" />
         </Tabs>
         <TextField
@@ -168,6 +170,10 @@ export default function ViewRelocated() {
       </TabPanel>
 
       <TabPanel value={value} index={2}>
+        <ViewTerminalGridComponent rows={crm2Rows} isRelocated={true} />
+      </TabPanel>
+
+      <TabPanel value={value} index={3}>
         <ViewTerminalGridComponent rows={ncrRows} isRelocated={true} />
       </TabPanel>
     </Box>

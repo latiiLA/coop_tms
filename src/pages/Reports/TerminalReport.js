@@ -5,6 +5,7 @@ import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { gridContainerSx, PermissionGridToolbar } from "../../components/gridStyles";
 
 const TerminalReport = () => {
   const navigate = useNavigate();
@@ -107,44 +108,14 @@ const TerminalReport = () => {
         Terminal Report
       </Typography>
       <Box
-        sx={{
-          width: "100%",
-          bgcolor: theme.palette.background.default,
-          borderRadius: 1,
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: `1px solid ${theme.palette.divider}`,
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-          },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-          },
-          "& .MuiDataGrid-toolbarContainer": {
-            backgroundColor: theme.palette.primary.dark,
-          },
-          "& .MuiDataGrid-toolbar": {
-            color: theme.palette.primary.contrastText,
-          },
-          "& .MuiDataGrid-cell--textLeft": {
-            color: theme.palette.text.primary,
-          },
-          // Adjust footer cell text color based on theme
-          "& .MuiDataGrid-footerCell": {
-            color: theme.palette.primary.contrastText,
-          },
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           rows={rows} // Correctly pass rows
           columns={columns}
           loading={loading}
           showToolbar
+          slots={{ toolbar: PermissionGridToolbar }}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 5 },

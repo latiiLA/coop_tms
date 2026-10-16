@@ -20,6 +20,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Search } from "@mui/icons-material";
+import { gridContainerSx, PermissionGridToolbar } from "../../components/gridStyles";
 
 const ViewPort = () => {
   const navigate = useNavigate();
@@ -262,21 +263,13 @@ const ViewPort = () => {
         />
       </Box>
       <Box
-        sx={{
-          "& .super-app-theme--header": {
-            backgroundColor: "#0693e3",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#0693e3",
-            color: "#fff",
-          },
-          margin: 1,
-        }}
+        sx={gridContainerSx}
       >
         <DataGrid
           rows={filteredRows}
           columns={columns}
           showToolbar
+          slots={{ toolbar: PermissionGridToolbar }}
           // getRowId={(row) => row.id} // Ensure unique row ID
           initialState={{
             pagination: {

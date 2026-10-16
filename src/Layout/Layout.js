@@ -8,7 +8,7 @@ import { useAuthContext } from "../context/AuthContext";
 
 const Layout = ({ children }) => {
   const theme = useTheme();
-  const { role } = useAuthContext();
+  const { role, can } = useAuthContext();
 
   // Define the sidebar width as a percentage
   const sidebarWidth = "15%";
@@ -24,7 +24,7 @@ const Layout = ({ children }) => {
         backgroundColor: theme.palette.background.default,
       }}
     >
-      {(role === "user" || role === "admin" || role === "superadmin") && (
+      {can("ui_classic_layout") && (
         <Box
           sx={{
             width: sidebarWidth,
@@ -48,9 +48,7 @@ const Layout = ({ children }) => {
           minHeight: "100vh",
         }}
       >
-        {(role === "user" || role === "admin" || role === "superadmin") && (
-          <Header />
-        )}
+        {can("ui_classic_layout") && <Header />}
 
         {/* Container to handle content and footer positioning */}
         <Box

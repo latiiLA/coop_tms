@@ -158,15 +158,15 @@ export default function ManagePOS() {
         />
       </Box>
       <TabPanel value={value} index={0}>
-        <ViewPOSGridComponent requestType="posInfo" rows={filteredRows} />
+        <ViewPOSGridComponent requestType="posInfo" rows={filteredRows} onRefresh={fetchRows} />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <ViewPOSGridComponent requestType="posInfo" rows={merchantRows} />
+        <ViewPOSGridComponent requestType="posInfo" rows={merchantRows} onRefresh={fetchRows} />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <ViewPOSGridComponent requestType="posInfo" rows={branchRows} />
+        <ViewPOSGridComponent requestType="posInfo" rows={branchRows} onRefresh={fetchRows} />
       </TabPanel>
     </Box>
   );

@@ -35,11 +35,25 @@ import {
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { apiGet } from "../../demo/demoApi";
+import {
+  chartGridStroke,
+  chartThemeSx,
+  chartTickFill,
+  chartTooltipStyle,
+  pieChartSlotProps,
+} from "./chartTheme";
+
 
 const fadeUp = keyframes`
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 `;
+
+const TYPE_MIX_COLORS = {
+  NCR: "#ff9800",
+  CRM: "#00bcd4",
+  CRM2: "#7e57c2",
+};
 
 const STATUS_COLORS = {
   Active: "#00AEEF",
@@ -167,8 +181,8 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [districtFilter, setDistrictFilter] = useState("All");
 
-  const chartText = theme.palette.text.secondary;
-  const gridStroke = alpha(theme.palette.text.primary, 0.12);
+  const chartText = chartTickFill;
+  const gridStroke = chartGridStroke;
 
   useEffect(() => {
     let cancelled = false;
@@ -203,8 +217,10 @@ const Dashboard = () => {
             district: item.districtName || item.district,
             mnemonic: item.mnemonic || item.districtName || item.district,
             CRM: item.CRM || 0,
+            CRM2: item.CRM2 || 0,
             NCR: item.NCR || 0,
-            total: (item.CRM || 0) + (item.NCR || 0),
+            total:
+              (item.CRM || 0) + (item.CRM2 || 0) + (item.NCR || 0),
           }))
         );
 
@@ -248,8 +264,10 @@ const Dashboard = () => {
           district: item.districtName || item.district,
           mnemonic: item.mnemonic || item.districtName || item.district,
           CRM: item.CRM || 0,
+          CRM2: item.CRM2 || 0,
           NCR: item.NCR || 0,
-          total: (item.CRM || 0) + (item.NCR || 0),
+          total:
+            (item.CRM || 0) + (item.CRM2 || 0) + (item.NCR || 0),
         }))
       );
     } catch (error) {
@@ -261,16 +279,25 @@ const Dashboard = () => {
     }
   };
 
+  const liveTerminals = useMemo(
+    () => terminals.filter((t) => !t.isDeleted),
+    [terminals]
+  );
+
   const filteredTerminals = useMemo(() => {
-    if (statusFilter === "All") return terminals;
-    return terminals.filter((t) => t.type === statusFilter);
-  }, [terminals, statusFilter]);
+    if (statusFilter === "All") return liveTerminals;
+    return liveTerminals.filter(
+      (t) => String(t.type || "").trim().toUpperCase() === statusFilter
+    );
+  }, [liveTerminals, statusFilter]);
 
   const metrics = useMemo(() => {
-    const ncr = terminals.filter((t) => t.type === "NCR").length;
-    const crm = terminals.filter((t) => t.type === "CRM").length;
-    const total = terminals.length;
-    const statusCounts = countStatuses(terminals);
+    const typeOf = (t) => String(t.type || "").trim().toUpperCase();
+    const ncr = liveTerminals.filter((t) => typeOf(t) === "NCR").length;
+    const crm = liveTerminals.filter((t) => typeOf(t) === "CRM").length;
+    const crm2 = liveTerminals.filter((t) => typeOf(t) === "CRM2").length;
+    const total = liveTerminals.length;
+    const statusCounts = countStatuses(liveTerminals);
 
     const onsite = siteCounts.reduce((sum, s) => sum + (s.onsite || 0), 0);
     const offsite = siteCounts.reduce((sum, s) => sum + (s.offsite || 0), 0);
@@ -281,6 +308,7 @@ const Dashboard = () => {
       total,
       ncr,
       crm,
+      crm2,
       statusCounts,
       onsite,
       offsite,
@@ -292,16 +320,18 @@ const Dashboard = () => {
         ? Math.round((statusCounts.Active / total) * 100)
         : 0,
       ncrShare: total ? Math.round((ncr / total) * 100) : 0,
+      crmShare: total ? Math.round((crm / total) * 100) : 0,
+      crm2Share: total ? Math.round((crm2 / total) * 100) : 0,
       topDistrict,
       districtCount: districtData.length,
     };
-  }, [terminals, siteCounts, districtData]);
+  }, [liveTerminals, siteCounts, districtData]);
 
   const insights = useMemo(() => {
     const items = [];
     if (metrics.total) {
       items.push(
-        `Fleet is ${metrics.ncrShare}% NCR and ${100 - metrics.ncrShare}% CRM (${metrics.total.toLocaleString()} terminals).`
+        `Fleet is ${metrics.ncrShare}% NCR · ${metrics.crmShare}% CRM · ${metrics.crm2Share}% CRM2 (${metrics.total.toLocaleString()} terminals).`
       );
       items.push(
         `${metrics.activeShare}% are Active (${metrics.statusCounts.Active.toLocaleString()}).`
@@ -338,13 +368,20 @@ const Dashboard = () => {
       .filter((item) => item.value > 0);
   }, [filteredTerminals]);
 
+  // Always include all ATM types so CRM2 is never dropped from Type mix.
   const typePie = useMemo(
     () =>
       [
-        { id: 0, value: metrics.ncr, label: "NCR" },
-        { id: 1, value: metrics.crm, label: "CRM" },
+        { id: 0, value: metrics.ncr, label: "NCR", color: TYPE_MIX_COLORS.NCR },
+        { id: 1, value: metrics.crm, label: "CRM", color: TYPE_MIX_COLORS.CRM },
+        {
+          id: 2,
+          value: metrics.crm2,
+          label: "CRM2",
+          color: TYPE_MIX_COLORS.CRM2,
+        },
       ].filter((d) => d.value > 0),
-    [metrics.ncr, metrics.crm]
+    [metrics.ncr, metrics.crm, metrics.crm2]
   );
 
   const sitePie = useMemo(
@@ -380,7 +417,7 @@ const Dashboard = () => {
   }
 
   return (
-    <Box sx={{ px: { xs: 2, md: 3 }, py: { xs: 3, md: 3.5 }, bgcolor: "background.default" }}>
+    <Box sx={{ px: { xs: 2, md: 3 }, py: { xs: 3, md: 3.5 }, bgcolor: "background.default", ...chartThemeSx }}>
       <Stack
         direction={{ xs: "column", md: "row" }}
         justifyContent="space-between"
@@ -393,8 +430,8 @@ const Dashboard = () => {
             ATM Dashboard
           </Typography>
           <Typography color="text.secondary" sx={{ mt: 0.75, maxWidth: 560 }}>
-            Fleet health, site mix, and district coverage across NCR and CRM
-            terminals.
+            Fleet health, site mix, and district coverage across NCR, CRM, and
+            CRM2 terminals.
           </Typography>
         </Box>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.25}>
@@ -420,7 +457,7 @@ const Dashboard = () => {
           <StatCard
             label="Total ATMs"
             value={metrics.total.toLocaleString()}
-            hint={`${metrics.ncr} NCR · ${metrics.crm} CRM`}
+            hint={`${metrics.ncr} NCR · ${metrics.crm} CRM · ${metrics.crm2} CRM2`}
             icon={<Atm fontSize="small" />}
             delay={0.05}
           />
@@ -520,6 +557,7 @@ const Dashboard = () => {
                 >
                   <MenuItem value="All">All</MenuItem>
                   <MenuItem value="CRM">CRM</MenuItem>
+                  <MenuItem value="CRM2">CRM2</MenuItem>
                   <MenuItem value="NCR">NCR</MenuItem>
                 </Select>
               </FormControl>
@@ -545,17 +583,28 @@ const Dashboard = () => {
                     />
                     <YAxis tick={{ fill: chartText, fontSize: 11 }} />
                     <Tooltip
-                      contentStyle={{
-                        background: theme.palette.background.paper,
-                        border: `1px solid ${theme.palette.divider}`,
+                      contentStyle={chartTooltipStyle}
+                      labelStyle={{ color: chartTooltipStyle.color }}
+                      itemStyle={{ color: chartTooltipStyle.color }}
+                      cursor={{
+                        fill: "color-mix(in srgb, var(--mui-palette-text-primary) 6%, transparent)",
                       }}
                     />
-                    <Legend />
+                    <Legend wrapperStyle={{ color: chartText }} />
                     {(districtFilter === "All" || districtFilter === "NCR") && (
                       <Bar dataKey="NCR" fill="#ff9800" name="NCR" stackId="a" />
                     )}
                     {(districtFilter === "All" || districtFilter === "CRM") && (
                       <Bar dataKey="CRM" fill="#00bcd4" name="CRM" stackId="a" />
+                    )}
+                    {(districtFilter === "All" ||
+                      districtFilter === "CRM2") && (
+                      <Bar
+                        dataKey="CRM2"
+                        fill="#7e57c2"
+                        name="CRM2"
+                        stackId="a"
+                      />
                     )}
                   </BarChart>
                 </ResponsiveContainer>
@@ -579,6 +628,7 @@ const Dashboard = () => {
                 >
                   <MenuItem value="All">All</MenuItem>
                   <MenuItem value="CRM">CRM</MenuItem>
+                  <MenuItem value="CRM2">CRM2</MenuItem>
                   <MenuItem value="NCR">NCR</MenuItem>
                 </Select>
               </FormControl>
@@ -600,6 +650,7 @@ const Dashboard = () => {
                       paddingAngle: 2,
                     },
                   ]}
+                  slotProps={pieChartSlotProps}
                   width={280}
                   height={250}
                 />
@@ -613,9 +664,8 @@ const Dashboard = () => {
             {typePie.length === 0 ? (
               <Typography color="text.secondary">No type data yet.</Typography>
             ) : (
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Stack spacing={1.5} alignItems="center">
                 <PieChart
-                  colors={["#ff9800", "#00bcd4"]}
                   series={[
                     {
                       data: typePie,
@@ -624,10 +674,51 @@ const Dashboard = () => {
                       paddingAngle: 2,
                     },
                   ]}
+                  slotProps={pieChartSlotProps}
                   width={280}
-                  height={250}
+                  height={220}
                 />
-              </Box>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  flexWrap="wrap"
+                  useFlexGap
+                  justifyContent="center"
+                >
+                  {[
+                    { label: "NCR", value: metrics.ncr, color: TYPE_MIX_COLORS.NCR },
+                    { label: "CRM", value: metrics.crm, color: TYPE_MIX_COLORS.CRM },
+                    {
+                      label: "CRM2",
+                      value: metrics.crm2,
+                      color: TYPE_MIX_COLORS.CRM2,
+                    },
+                  ].map((item) => (
+                    <Stack
+                      key={item.label}
+                      direction="row"
+                      spacing={0.75}
+                      alignItems="center"
+                    >
+                      <Box
+                        sx={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: "50%",
+                          bgcolor: item.color,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <Typography variant="caption" color="text.secondary">
+                        {item.label}:{" "}
+                        <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+                          {item.value.toLocaleString()}
+                        </Box>
+                      </Typography>
+                    </Stack>
+                  ))}
+                </Stack>
+              </Stack>
             )}
           </Panel>
         </Grid>
@@ -648,6 +739,7 @@ const Dashboard = () => {
                       paddingAngle: 2,
                     },
                   ]}
+                  slotProps={pieChartSlotProps}
                   width={280}
                   height={250}
                 />
@@ -689,7 +781,7 @@ const Dashboard = () => {
                         {d.total.toLocaleString()}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {d.NCR} NCR · {d.CRM} CRM
+                        {d.NCR} NCR · {d.CRM} CRM · {d.CRM2} CRM2
                       </Typography>
                     </Box>
                   </Grid>

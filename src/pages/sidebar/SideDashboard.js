@@ -5,12 +5,14 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
-import { DashboardLayout } from "@toolpad/core/DashboardLayout";
+import {
+  DashboardHeader,
+  DashboardLayout,
+} from "@toolpad/core/DashboardLayout";
 import logo from "../../assets/coop.gif";
 import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer";
 import { GlobalStyles, createTheme } from "@mui/material";
-import { alpha } from "@mui/material/styles";
 import propicture from "../../assets/profile_avatar.jpg";
 import {
   Add,
@@ -51,6 +53,7 @@ import {
   FolderTwoTone,
   ViewAgenda,
   StopCircleTwoTone,
+  Shield,
 } from "@mui/icons-material";
 import { useAuthContext } from "../../context/AuthContext";
 import { isDemoMode } from "../../demo/demoApi";
@@ -135,7 +138,8 @@ const NAVIGATION = [
       {
         segment: "viewbranch",
         title: "Branch Code",
-        permission: "view_branch",
+        // Admin catalog — not for district-scoped roles (they keep view_branch for POS forms).
+        permission: "view_all_districts",
         icon: <DescriptionIcon />,
       },
       {
@@ -159,7 +163,8 @@ const NAVIGATION = [
       {
         segment: "viewdistrict",
         title: "Explore District",
-        permission: "view_district",
+        // Admin catalog — not for district-scoped roles (they keep view_district for POS forms).
+        permission: "view_all_districts",
         icon: <DescriptionIcon />,
       },
       {
@@ -243,7 +248,6 @@ const NAVIGATION = [
   {
     segment: "administration",
     title: "System Administration",
-    permission: "administration",
     icon: <AdminPanelSettings />,
     children: [
       {
@@ -257,6 +261,18 @@ const NAVIGATION = [
         title: "Manage User",
         permission: "manage_user",
         icon: <ManageAccounts />,
+      },
+      {
+        segment: "manageroles",
+        title: "Manage Roles",
+        permission: "manage_role",
+        icon: <Shield />,
+      },
+      {
+        segment: "managepermissions",
+        title: "Manage Permissions",
+        permission: "manage_permission",
+        icon: <Key />,
       },
       {
         segment: "viewfeedback",
@@ -305,16 +321,6 @@ const NAVIGATION = [
         permission: "request_pos",
         icon: <Add />,
       },
-      // {
-      //   segment: "bulkrequest",
-      //   title: "Bulk POS Request",
-      //   icon: <List />,
-      // },
-      // {
-      //   segment: "relocate",
-      //   title: "Relocate POS",
-      //   icon: <TbStatusChange />,
-      // },
       {
         segment: "requests",
         title: "New POS Requests",
@@ -489,32 +495,130 @@ const toolpadTheme = createTheme({
   },
 });
 
-/** Toolpad mini flyouts are position:fixed without top — pin them beside the hovered item. */
+const SIDEBAR_COLLAPSED_KEY = "sidebarCollapsed";
+
+/** Prefer saved preference; otherwise Toolpad default (expanded). */
+function getStoredSidebarCollapsed() {
+  if (typeof window === "undefined") return false;
+  try {
+    const saved = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
+    if (saved === null) return false;
+    return JSON.parse(saved) === true;
+  } catch {
+    return false;
+  }
+}
+
+/** Persist desktop sidebar collapse via the layout header toggle. */
+function PersistSidebarHeader(props) {
+  const { onToggleMenu, ...rest } = props;
+
+  const handleToggleMenu = React.useCallback(
+    (isExpanded) => {
+      // Only persist desktop/tablet permanent drawer (md+), not mobile temp drawer
+      const isDesktop =
+        typeof window !== "undefined" &&
+        window.matchMedia("(min-width: 600px)").matches;
+      if (isDesktop) {
+        try {
+          localStorage.setItem(
+            SIDEBAR_COLLAPSED_KEY,
+            JSON.stringify(!isExpanded)
+          );
+        } catch {
+          // ignore quota / private mode
+        }
+      }
+      onToggleMenu?.(isExpanded);
+    },
+    [onToggleMenu]
+  );
+
+  return <DashboardHeader {...rest} onToggleMenu={handleToggleMenu} />;
+}
+
+/**
+ * Toolpad mini flyouts are position:fixed without a reliable top.
+ * Pin them beside the hovered item and clamp into the viewport so
+ * bottom items (Settings, Manual, Password…) keep all children visible.
+ */
 function MiniSidebarFlyoutFix() {
   React.useEffect(() => {
-    const positionFlyout = (event) => {
-      const item = event.target.closest?.(".MuiDrawer-paper .MuiListItem-root");
-      if (!item?.querySelector(".MuiTypography-caption")) return;
+    let rafId = 0;
 
+    const placeFlyout = (item) => {
       const paper = item.querySelector(".MuiPaper-root");
       const container = paper?.parentElement;
       const drawer = item.closest(".MuiDrawer-paper");
       if (!container || !paper || !drawer) return;
 
       const itemRect = item.getBoundingClientRect();
-      // Place past the drawer edge (divider/scrollbar), not on top of it
       const drawerRect = drawer.getBoundingClientRect();
+      const margin = 10;
+      const viewportH = window.innerHeight;
+      const maxH = Math.max(160, viewportH - margin * 2);
+
+      // Invisible left padding bridges the gap so hover isn't lost en route.
+      const bridge = 8;
       container.style.position = "fixed";
-      container.style.left = `${drawerRect.right + 2}px`;
-      container.style.top = `${itemRect.top}px`;
+      container.style.left = `${drawerRect.right}px`;
       container.style.transform = "none";
-      container.style.paddingLeft = "0px";
+      container.style.paddingLeft = `${bridge}px`;
       container.style.zIndex = "1600";
+      container.style.pointerEvents = "auto";
+
       paper.style.transform = "none";
+      paper.style.maxHeight = `${maxH}px`;
+      paper.style.overflowY = "auto";
+      paper.style.overflowX = "hidden";
+
+      const paperH = paper.getBoundingClientRect().height || paper.scrollHeight;
+      let top = itemRect.top;
+
+      // Prefer aligning with the hovered row; if it would clip below, shift up.
+      if (top + paperH > viewportH - margin) {
+        top = viewportH - margin - paperH;
+      }
+      // Tall menus (e.g. Manual): pin to top and scroll inside the flyout.
+      if (top < margin) {
+        top = margin;
+      }
+
+      container.style.top = `${top}px`;
     };
 
-    document.addEventListener("mouseover", positionFlyout, true);
-    return () => document.removeEventListener("mouseover", positionFlyout, true);
+    const schedulePlace = (item) => {
+      cancelAnimationFrame(rafId);
+      // Double rAF: wait until Toolpad mounts/measures the flyout paper.
+      rafId = requestAnimationFrame(() => {
+        requestAnimationFrame(() => placeFlyout(item));
+      });
+    };
+
+    const onMouseOver = (event) => {
+      const item = event.target.closest?.(".MuiDrawer-paper .MuiListItem-root");
+      if (!item?.querySelector(".MuiTypography-caption")) return;
+      if (!item.querySelector(".MuiPaper-root")) return;
+      schedulePlace(item);
+    };
+
+    const onScrollOrResize = () => {
+      const open = document.querySelector(
+        ".MuiDrawer-paper .MuiListItem-root:has(.MuiTypography-caption):hover .MuiPaper-root"
+      );
+      const item = open?.closest(".MuiListItem-root");
+      if (item) schedulePlace(item);
+    };
+
+    document.addEventListener("mouseover", onMouseOver, true);
+    window.addEventListener("resize", onScrollOrResize);
+    document.addEventListener("scroll", onScrollOrResize, true);
+    return () => {
+      cancelAnimationFrame(rafId);
+      document.removeEventListener("mouseover", onMouseOver, true);
+      window.removeEventListener("resize", onScrollOrResize);
+      document.removeEventListener("scroll", onScrollOrResize, true);
+    };
   }, []);
 
   return null;
@@ -648,6 +752,8 @@ function SideDashboard(props) {
     [navigate, currentUser]
   );
 
+  const [defaultSidebarCollapsed] = React.useState(getStoredSidebarCollapsed);
+
   // Prevent rendering until currentUser is available
   if (!currentUser) {
     return null; // Or a loader/spinner if preferred
@@ -670,34 +776,51 @@ function SideDashboard(props) {
     >
       <MiniSidebarFlyoutFix />
       <GlobalStyles
-        styles={(theme) => ({
+        styles={{
+          // Prefer CSS vars so light/dark scheme switches actually update colors.
+          // (theme.palette.* baked into GlobalStyles often sticks to light values.)
+          ".MuiDrawer-paper": {
+            borderRight:
+              "1px solid color-mix(in srgb, var(--mui-palette-divider) 80%, transparent)",
+            backgroundColor: "var(--mui-palette-background-paper)",
+            backgroundImage:
+              "linear-gradient(180deg, color-mix(in srgb, var(--mui-palette-primary-main) 8%, transparent) 0%, transparent 160px)",
+            color: "var(--mui-palette-text-primary)",
+          },
           ".MuiDrawer-paper, .MuiDrawer-paper nav": {
             scrollbarWidth: "thin",
-            scrollbarColor: `${alpha(theme.palette.text.primary, 0.28)} transparent`,
+            scrollbarColor:
+              "color-mix(in srgb, var(--mui-palette-text-primary) 30%, transparent) transparent",
           },
-          ".MuiDrawer-paper::-webkit-scrollbar, .MuiDrawer-paper nav::-webkit-scrollbar":
+          ".MuiDrawer-paper > div, .MuiDrawer-paper nav": {
+            overflowY: "auto",
+            overflowX: "hidden",
+          },
+          ".MuiDrawer-paper::-webkit-scrollbar, .MuiDrawer-paper nav::-webkit-scrollbar, .MuiDrawer-paper .MuiPaper-root::-webkit-scrollbar":
             {
               width: 4,
             },
-          ".MuiDrawer-paper::-webkit-scrollbar-track, .MuiDrawer-paper nav::-webkit-scrollbar-track":
+          ".MuiDrawer-paper::-webkit-scrollbar-track, .MuiDrawer-paper nav::-webkit-scrollbar-track, .MuiDrawer-paper .MuiPaper-root::-webkit-scrollbar-track":
             {
               background: "transparent",
             },
-          ".MuiDrawer-paper::-webkit-scrollbar-thumb, .MuiDrawer-paper nav::-webkit-scrollbar-thumb":
+          ".MuiDrawer-paper::-webkit-scrollbar-thumb, .MuiDrawer-paper nav::-webkit-scrollbar-thumb, .MuiDrawer-paper .MuiPaper-root::-webkit-scrollbar-thumb":
             {
-              backgroundColor: alpha(theme.palette.text.primary, 0.28),
+              backgroundColor:
+                "color-mix(in srgb, var(--mui-palette-text-primary) 30%, transparent)",
               borderRadius: 8,
             },
-          ".MuiDrawer-paper::-webkit-scrollbar-thumb:hover, .MuiDrawer-paper nav::-webkit-scrollbar-thumb:hover":
+          ".MuiDrawer-paper::-webkit-scrollbar-thumb:hover, .MuiDrawer-paper nav::-webkit-scrollbar-thumb:hover, .MuiDrawer-paper .MuiPaper-root::-webkit-scrollbar-thumb:hover":
             {
-              backgroundColor: alpha(theme.palette.text.primary, 0.42),
+              backgroundColor:
+                "color-mix(in srgb, var(--mui-palette-text-primary) 45%, transparent)",
             },
           ".MuiDrawer-paper .MuiListItem-root": {
             paddingLeft: "8px !important",
             paddingRight: "8px !important",
           },
           ".MuiDrawer-paper .MuiListItemButton-root": {
-            borderRadius: 10,
+            borderRadius: 12,
             margin: "2px 0",
             width: "100%",
             minHeight: 48,
@@ -706,7 +829,9 @@ function SideDashboard(props) {
             paddingBottom: "8px",
             paddingLeft: "12px",
             paddingRight: "12px",
-            transition: "background-color 0.2s ease, color 0.2s ease",
+            color: "var(--mui-palette-text-primary)",
+            transition:
+              "background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease",
           },
           ".MuiDrawer-paper .MuiListItemButton-root .MuiListItemIcon-root": {
             minWidth: "36px !important",
@@ -716,9 +841,10 @@ function SideDashboard(props) {
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
+            borderRadius: 10,
             color: "var(--mui-palette-text-secondary)",
             backgroundColor: "transparent",
-            transition: "color 0.2s ease",
+            transition: "color 0.2s ease, background-color 0.2s ease",
           },
           ".MuiDrawer-paper .MuiListItemButton-root .MuiListItemText-root": {
             marginLeft: 12,
@@ -726,45 +852,67 @@ function SideDashboard(props) {
           },
           ".MuiDrawer-paper .MuiListItemButton-root .MuiListItemText-root .MuiTypography-root":
             {
-              color: "var(--mui-palette-text-primary)",
+              color: "var(--mui-palette-text-primary) !important",
               transition: "color 0.2s ease",
             },
           ".MuiDrawer-paper .MuiListItemButton-root .MuiListItemIcon-root svg": {
             fontSize: 22,
             color: "inherit",
           },
-          // react-icons (e.g. Cybersource GrGlobe) — follow icon color, not hardcoded black
           ".MuiDrawer-paper .MuiListItemIcon-root svg, .MuiDrawer-paper .MuiListItemIcon-root svg *":
             {
               color: "inherit !important",
               stroke: "currentColor !important",
             },
           ".MuiDrawer-paper .MuiListItemButton-root > .MuiSvgIcon-root": {
-            color: "var(--mui-palette-text-primary)",
-            transition: "color 0.2s ease",
+            color: "var(--mui-palette-text-secondary)",
+            transition: "color 0.2s ease, opacity 0.2s ease",
           },
           ".MuiDrawer-paper .MuiTypography-caption": {
-            color: "var(--mui-palette-text-primary)",
+            color: "var(--mui-palette-text-secondary) !important",
           },
-          // Mini MAIN sidebar items only (have caption under icon) — not flyout children
+          ".MuiDrawer-paper .MuiListSubheader-root": {
+            lineHeight: 1.4,
+            minHeight: 28,
+            paddingTop: 6,
+            paddingBottom: 2,
+            opacity: 0.8,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            fontSize: "0.68rem",
+            color: "var(--mui-palette-text-secondary) !important",
+            backgroundColor: "transparent !important",
+          },
+          ".MuiDrawer-paper .MuiDivider-root": {
+            margin: "6px 12px",
+            borderColor:
+              "color-mix(in srgb, var(--mui-palette-divider) 85%, transparent)",
+          },
+          ".MuiDrawer-paper:has(.MuiTypography-caption) .MuiListSubheader-root": {
+            display: "none",
+          },
+          ".MuiDrawer-paper:has(.MuiTypography-caption) .MuiDivider-root": {
+            margin: "4px 10px",
+          },
+          // Mini MAIN items
           ".MuiDrawer-paper .MuiListItem-root:has(.MuiTypography-caption)": {
-            paddingLeft: "4px !important",
-            paddingRight: "4px !important",
             overflow: "visible !important",
           },
-          ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption)":
-            {
-              position: "relative",
-              justifyContent: "center !important",
-              minHeight: 60,
-              paddingLeft: "0 !important",
-              paddingRight: "0 !important",
-            },
+          ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption)": {
+            position: "relative",
+            justifyContent: "center !important",
+            minHeight: 58,
+            paddingLeft: "6px !important",
+            paddingRight: "6px !important",
+            borderRadius: 14,
+          },
           ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption) > .MuiBox-root":
             {
-              left: "0 !important",
-              top: "-2px !important",
-              width: "100%",
+              position: "absolute !important",
+              left: "50% !important",
+              top: "calc(50% - 7px) !important",
+              transform: "translate(-50%, -50%) !important",
+              width: "auto",
               display: "flex !important",
               justifyContent: "center",
               alignItems: "center",
@@ -773,76 +921,126 @@ function SideDashboard(props) {
             {
               marginLeft: "0 !important",
               marginRight: "0 !important",
+              width: 34,
+              height: 34,
+              borderRadius: 10,
             },
           ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption) .MuiTypography-caption":
             {
               left: "50% !important",
-              width: "calc(100% - 8px) !important",
               transform: "translateX(-50%) !important",
               textAlign: "center !important",
+              maxWidth: 56,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              fontSize: "0.62rem",
+              lineHeight: 1.15,
+              fontWeight: 600,
+              opacity: 0.95,
+              color: "var(--mui-palette-text-primary) !important",
             },
           ".MuiDrawer-paper .MuiListItemButton-root:has(.MuiTypography-caption) > .MuiSvgIcon-root":
             {
               position: "absolute !important",
-              top: "50%",
-              right: 2,
+              top: "38%",
+              right: 1,
               margin: 0,
-              fontSize: 18,
+              fontSize: 14,
+              opacity: 0.65,
               transform: "translateY(-50%) rotate(-90deg)",
               zIndex: 1,
+              color: "var(--mui-palette-text-secondary) !important",
             },
+          // Flyout — scheme-aware surface (never bake light paper into dark)
           ".MuiDrawer-paper .MuiListItem-root:has(.MuiTypography-caption) .MuiPaper-root":
             {
               transform: "none !important",
-              minWidth: 220,
-              boxShadow: theme.shadows[8],
+              minWidth: 236,
+              maxWidth: 288,
+              borderRadius: 14,
+              padding: "8px",
+              backgroundImage: "none !important",
+              backgroundColor: "var(--mui-palette-background-paper) !important",
+              color: "var(--mui-palette-text-primary) !important",
+              border:
+                "1px solid color-mix(in srgb, var(--mui-palette-divider) 95%, transparent)",
+              boxShadow:
+                "0 12px 40px color-mix(in srgb, var(--mui-palette-common-black) 22%, transparent)",
             },
-          // Flyout children keep normal left-aligned row (icon + label)
           ".MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root": {
             justifyContent: "flex-start !important",
             minHeight: 40,
-            paddingLeft: "12px !important",
-            paddingRight: "12px !important",
+            margin: "2px 0",
+            paddingLeft: "10px !important",
+            paddingRight: "10px !important",
+            borderRadius: 10,
+            color: "var(--mui-palette-text-primary) !important",
           },
           ".MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root > .MuiBox-root":
             {
+              position: "static !important",
               left: "0 !important",
+              top: "auto !important",
+              transform: "none !important",
               width: "auto",
               display: "inline-flex",
+            },
+          ".MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root .MuiListItemIcon-root":
+            {
+              width: 32,
+              height: 32,
+              minWidth: "32px !important",
+              color: "var(--mui-palette-text-secondary) !important",
+              backgroundColor: "transparent !important",
+            },
+          ".MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root .MuiListItemText-root .MuiTypography-root":
+            {
+              color: "var(--mui-palette-text-primary) !important",
+              fontWeight: 500,
             },
           ".MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root > .MuiSvgIcon-root":
             {
               position: "static !important",
               transform: "none !important",
             },
-          // Hover / selected — use CSS vars so dark theme stays light text
-          ".MuiDrawer-paper .MuiListItemButton-root:hover": {
-            backgroundColor: alpha(theme.palette.primary.main, 0.12),
-          },
-          ".MuiDrawer-paper .MuiListItemButton-root:hover .MuiListItemIcon-root":
+          ".MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root .MuiTypography-caption":
             {
-              color: "var(--mui-palette-primary-main)",
-              backgroundColor: "transparent",
+              display: "none",
             },
+          // Hover / selected
+          ".MuiDrawer-paper .MuiListItemButton-root:hover": {
+            backgroundColor:
+              "color-mix(in srgb, var(--mui-palette-primary-main) 12%, transparent)",
+          },
+          ".MuiDrawer-paper .MuiListItemButton-root:hover .MuiListItemIcon-root": {
+            color: "var(--mui-palette-primary-main) !important",
+            backgroundColor:
+              "color-mix(in srgb, var(--mui-palette-primary-main) 14%, transparent)",
+          },
           ".MuiDrawer-paper .MuiListItemButton-root:hover .MuiListItemText-root .MuiTypography-root":
             {
               color: "var(--mui-palette-text-primary) !important",
               fontWeight: 600,
             },
-          ".MuiDrawer-paper .MuiListItemButton-root:hover .MuiTypography-caption":
-            {
-              color: "var(--mui-palette-text-primary) !important",
-            },
+          ".MuiDrawer-paper .MuiListItemButton-root:hover .MuiTypography-caption": {
+            color: "var(--mui-palette-text-primary) !important",
+            opacity: 1,
+          },
           ".MuiDrawer-paper .MuiListItemButton-root:hover > .MuiSvgIcon-root": {
-            color: "var(--mui-palette-text-primary)",
+            color: "var(--mui-palette-text-primary) !important",
+            opacity: 0.95,
           },
           ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected": {
-            backgroundColor: alpha(theme.palette.primary.main, 0.16),
+            backgroundColor:
+              "color-mix(in srgb, var(--mui-palette-primary-main) 16%, transparent)",
+            boxShadow: "inset 3px 0 0 var(--mui-palette-primary-main)",
           },
           ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root":
             {
-              color: "var(--mui-palette-primary-main)",
-              backgroundColor: "transparent",
+              color: "var(--mui-palette-primary-main) !important",
+              backgroundColor:
+                "color-mix(in srgb, var(--mui-palette-primary-main) 16%, transparent)",
             },
           ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemText-root .MuiTypography-root":
             {
@@ -855,35 +1053,89 @@ function SideDashboard(props) {
             },
           ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected > .MuiSvgIcon-root":
             {
-              color: "var(--mui-palette-text-primary)",
+              color: "var(--mui-palette-text-primary) !important",
             },
           ".MuiDrawer-paper .MuiListItemButton-root.Mui-selected:hover": {
-            backgroundColor: alpha(theme.palette.primary.main, 0.2),
+            backgroundColor:
+              "color-mix(in srgb, var(--mui-palette-primary-main) 22%, transparent)",
           },
-          // Dark theme: keep labels + chevrons white (incl. children flyout)
-          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root .MuiListItemText-root .MuiTypography-root':
+          // Dark scheme: elevated charcoal flyout + high-contrast labels/icons
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper': {
+            backgroundColor: "#141414",
+            backgroundImage:
+              "linear-gradient(180deg, color-mix(in srgb, var(--mui-palette-primary-main) 14%, transparent) 0%, transparent 180px)",
+            borderRightColor: "rgba(255,255,255,0.08)",
+          },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItem-root:has(.MuiTypography-caption) .MuiPaper-root':
             {
-              color: "#fff",
+              backgroundColor: "#1f1f1f !important",
+              color: "#f5f5f5 !important",
+              border: "1px solid rgba(255,255,255,0.12) !important",
+              boxShadow:
+                "0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04)",
             },
-          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root:hover .MuiListItemText-root .MuiTypography-root, [data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemText-root .MuiTypography-root':
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root':
+            {
+              color: "#f5f5f5 !important",
+            },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root .MuiListItemText-root .MuiTypography-root':
+            {
+              color: "#f5f5f5 !important",
+            },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root .MuiListItemIcon-root':
+            {
+              color: "rgba(255,255,255,0.72) !important",
+            },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root:hover':
+            {
+              backgroundColor:
+                "color-mix(in srgb, var(--mui-palette-primary-main) 22%, transparent) !important",
+            },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiPaper-root .MuiListItemButton-root:hover .MuiListItemIcon-root':
             {
               color: "#fff !important",
+              backgroundColor:
+                "color-mix(in srgb, var(--mui-palette-primary-main) 24%, transparent) !important",
+            },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root .MuiListItemText-root .MuiTypography-root':
+            {
+              color: "#f5f5f5 !important",
             },
           '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiTypography-caption':
             {
-              color: "#fff",
+              color: "rgba(255,255,255,0.88) !important",
             },
-          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root > .MuiSvgIcon-root, [data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root:hover > .MuiSvgIcon-root, [data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root.Mui-selected > .MuiSvgIcon-root':
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root .MuiListItemIcon-root':
             {
-              color: "#fff !important",
+              color: "rgba(255,255,255,0.78) !important",
+            },
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root > .MuiSvgIcon-root':
+            {
+              color: "rgba(255,255,255,0.7) !important",
             },
           '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root:hover .MuiListItemIcon-root, [data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root':
             {
-              color: "#fff",
+              color: "#fff !important",
             },
-        })}
+          '[data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root:hover > .MuiSvgIcon-root, [data-toolpad-color-scheme="dark"] .MuiDrawer-paper .MuiListItemButton-root.Mui-selected > .MuiSvgIcon-root':
+            {
+              color: "#fff !important",
+            },
+          // Light scheme flyout polish
+          '[data-toolpad-color-scheme="light"] .MuiDrawer-paper .MuiListItem-root:has(.MuiTypography-caption) .MuiPaper-root':
+            {
+              backgroundColor: "#ffffff !important",
+              color: "rgba(0,0,0,0.87) !important",
+              border: "1px solid rgba(0,0,0,0.08) !important",
+              boxShadow:
+                "0 12px 36px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.03)",
+            },
+        }}
       />
-      <DashboardLayout>
+      <DashboardLayout
+        defaultSidebarCollapsed={defaultSidebarCollapsed}
+        slots={{ header: PersistSidebarHeader }}
+      >
         <Box
           sx={{
             display: "flex",

@@ -114,9 +114,9 @@ export default function RelocationRequests() {
         }}
       >
         <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
-          <Tab label="All Relocation Requests" />
-          <Tab label="Merchant Relocation Requests" />
-          <Tab label="Branch Relocation Requests" />
+          <Tab label="All Relocation Queue" />
+          <Tab label="Merchant" />
+          <Tab label="Branch" />
         </Tabs>
         <TextField
           label="Search"
@@ -134,15 +134,27 @@ export default function RelocationRequests() {
         />
       </Box>
       <TabPanel value={value} index={0}>
-        <ViewPOSGridComponent isRelocatedReq={true} rows={rows} />
+        <ViewPOSGridComponent
+          isRelocatedReq={true}
+          rows={rows}
+          onRefresh={fetchRows}
+        />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <ViewPOSGridComponent isRelocatedReq={true} rows={merchantRows} />
+        <ViewPOSGridComponent
+          isRelocatedReq={true}
+          rows={merchantRows}
+          onRefresh={fetchRows}
+        />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <ViewPOSGridComponent isRelocatedReq={true} rows={branchRows} />
+        <ViewPOSGridComponent
+          isRelocatedReq={true}
+          rows={branchRows}
+          onRefresh={fetchRows}
+        />
       </TabPanel>
     </Box>
   );

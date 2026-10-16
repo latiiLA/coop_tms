@@ -109,6 +109,7 @@ const Home = () => {
   const [atmStopped, setAtmStopped] = useState(0);
   const [ncr, setNcr] = useState(0);
   const [crm, setCrm] = useState(0);
+  const [crm2, setCrm2] = useState(0);
   const [onsite, setOnsite] = useState(0);
   const [offsite, setOffsite] = useState(0);
   const [atmDistricts, setAtmDistricts] = useState([]);
@@ -165,8 +166,10 @@ const Home = () => {
         const counts = value(0)?.terminalsCount || [];
         const ncrCount = counts.find((t) => t._id === "NCR")?.count || 0;
         const crmCount = counts.find((t) => t._id === "CRM")?.count || 0;
+        const crm2Count = counts.find((t) => t._id === "CRM2")?.count || 0;
         setNcr(ncrCount);
         setCrm(crmCount);
+        setCrm2(crm2Count);
 
         const terminals = value(1)?.terminals || [];
         setAtmTotal(
@@ -186,7 +189,7 @@ const Home = () => {
         const atmByDistrict = (value(3)?.data || [])
           .map((item) => ({
             district: item.districtName || item.district,
-            total: (item.CRM || 0) + (item.NCR || 0),
+            total: (item.CRM || 0) + (item.CRM2 || 0) + (item.NCR || 0),
           }))
           .sort((a, b) => b.total - a.total);
         setAtmDistricts(atmByDistrict);
@@ -285,7 +288,7 @@ const Home = () => {
     );
     if (atmTotal) {
       items.push(
-        `ATM health: ${overall.atmActiveShare}% active · ${ncr} NCR / ${crm} CRM · ${overall.offsiteShare}% offsite.`
+        `ATM health: ${overall.atmActiveShare}% active · ${ncr} NCR / ${crm} CRM / ${crm2} CRM2 · ${overall.offsiteShare}% offsite.`
       );
     }
     if (posTotal) {
@@ -330,6 +333,7 @@ const Home = () => {
     posTotal,
     ncr,
     crm,
+    crm2,
     posNew,
     posStopped,
     posBranches,
@@ -472,7 +476,8 @@ const Home = () => {
                   ATM network
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {ncr} NCR · {crm} CRM · {atmDistricts.length} districts
+                  {ncr} NCR · {crm} CRM · {crm2} CRM2 · {atmDistricts.length}{" "}
+                  districts
                 </Typography>
               </Box>
             </Stack>

@@ -127,8 +127,9 @@ export default function ViewTerminal() {
     });
 
   // console.log(filteredRows);
-  // Split sorted rows into CRM and NCR
+  // Split sorted rows by terminal type
   const crmRows = filteredRows.filter((row) => row.type === "CRM");
+  const crm2Rows = filteredRows.filter((row) => row.type === "CRM2");
   const ncrRows = filteredRows.filter((row) => row.type === "NCR");
 
   if (loading) {
@@ -153,6 +154,7 @@ export default function ViewTerminal() {
         <Tabs value={value} onChange={handleChange} aria-label="Terminal Tabs">
           <Tab label="All Terminals" />
           <Tab label="CRM Terminals" />
+          <Tab label="CRM2 Terminals" />
           <Tab label="NCR Terminals" />
         </Tabs>
         <TextField
@@ -179,6 +181,10 @@ export default function ViewTerminal() {
       </TabPanel>
 
       <TabPanel value={value} index={2}>
+        <ViewTerminalGridComponent rows={crm2Rows} />
+      </TabPanel>
+
+      <TabPanel value={value} index={3}>
         <ViewTerminalGridComponent rows={ncrRows} />
       </TabPanel>
     </Box>
