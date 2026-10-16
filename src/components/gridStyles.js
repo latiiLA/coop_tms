@@ -1,6 +1,3 @@
-import React from "react";
-import CustomToolbar from "./CustomToolbar";
-
 // Shared DataGrid container styling (same layout as Manage POS, no header colour).
 export const gridContainerSx = {
   width: "auto",
@@ -11,5 +8,5 @@ export const gridContainerSx = {
   },
 };
 
-// Stable toolbar slot: v8 Toolbar with export gated by export_data inside CustomToolbar.
-export const PermissionGridToolbar = (props) => <CustomToolbar {...props} />;
+// Re-export toolbar (named export avoids default-import TDZ / circular HMR crashes).
+export { PermissionGridToolbar } from "./CustomToolbar";

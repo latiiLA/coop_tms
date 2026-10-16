@@ -17,7 +17,7 @@ import { isDemoMode } from "../demo/demoApi";
  * Data Grid v8 toolbar: columns, filters, optional CSV export.
  * Page-level search fields stay outside the toolbar (avoid a second search box).
  */
-const CustomToolbar = () => {
+export function PermissionGridToolbar() {
   const { can, permissions } = useAuthContext();
   const showExport =
     isDemoMode() || can("export_data") || permissions?.includes("export_data");
@@ -43,6 +43,6 @@ const CustomToolbar = () => {
       )}
     </Toolbar>
   );
-};
+}
 
-export default CustomToolbar;
+export default PermissionGridToolbar;
