@@ -1,33 +1,48 @@
 import {
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-  GridToolbarDensitySelector,
+  ColumnsPanelTrigger,
+  ExportCsv,
+  FilterPanelTrigger,
+  Toolbar,
+  ToolbarButton,
 } from "@mui/x-data-grid";
-import { useMemo } from "react";
-import { GridToolbarExport } from "@mui/x-data-grid";
+import {
+  FileDownloadOutlined,
+  FilterList,
+  ViewColumn,
+} from "@mui/icons-material";
 import { useAuthContext } from "../context/AuthContext";
+import { isDemoMode } from "../demo/demoApi";
 
-// Restricted toolbar for users without export_data.
-const CustomToolbar = () => {
-  const { can } = useAuthContext();
-  const showExportButton = useMemo(() => can("export_data"), [can]);
+/**
+ * Data Grid v8 toolbar: columns, filters, optional CSV export.
+ * Page-level search fields stay outside the toolbar (avoid a second search box).
+ */
+export function PermissionGridToolbar() {
+  const { can, permissions } = useAuthContext();
+  const showExport =
+    isDemoMode() || can("export_data") || permissions?.includes("export_data");
 
   return (
-    <GridToolbarContainer>
-      {/* Common toolbar items */}
-      <GridToolbarColumnsButton />
-      <GridToolbarFilterButton />
-      <GridToolbarDensitySelector />
-      {/* Conditionally render the export button */}
-      {showExportButton && (
-        <GridToolbarExport
-          printOptions={{ disableToolbarButton: true }}
-          csvOptions={{ fileName: "exported-data" }}
-        />
-      )}
-    </GridToolbarContainer>
-  );
-};
+    <Toolbar>
+      <ColumnsPanelTrigger render={<ToolbarButton />} aria-label="Columns">
+        <ViewColumn fontSize="small" />
+      </ColumnsPanelTrigger>
 
-export default CustomToolbar;
+      <FilterPanelTrigger render={<ToolbarButton />} aria-label="Filters">
+        <FilterList fontSize="small" />
+      </FilterPanelTrigger>
+
+      {showExport && (
+        <ExportCsv
+          render={<ToolbarButton />}
+          options={{ fileName: "exported-data" }}
+          aria-label="Export CSV"
+        >
+          <FileDownloadOutlined fontSize="small" />
+        </ExportCsv>
+      )}
+    </Toolbar>
+  );
+}
+
+export default PermissionGridToolbar;
