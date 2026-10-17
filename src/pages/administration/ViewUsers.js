@@ -453,6 +453,15 @@ export default function ViewUsers() {
       flex: 0.6,
     },
     { field: "department", headerName: "Department", flex: 0.4 },
+    {
+      field: "district",
+      headerName: "District",
+      flex: 0.4,
+      valueGetter: (value, row) =>
+        row?.district?.districtName ||
+        (typeof row?.district === "string" ? row.district : "") ||
+        "",
+    },
     { field: "role", headerName: "Role", flex: 0.4 },
     { field: "createdBy", headerName: "createdBy", flex: 0.3 },
     { field: "createdAt", headerName: "Date Created", flex: 0.5,
@@ -596,6 +605,9 @@ export default function ViewUsers() {
       String(row.fatherName || "").toLowerCase().includes(searchLower) ||
       String(row.gfatherName || "").toLowerCase().includes(searchLower) ||
       String(row.department || "").toLowerCase().includes(searchLower) ||
+      String(row.district?.districtName || row.district || "")
+        .toLowerCase()
+        .includes(searchLower) ||
       String(row.role || "").toLowerCase().includes(searchLower) ||
       String(row.status || "").toLowerCase().includes(searchLower)
     );
