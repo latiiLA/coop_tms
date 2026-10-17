@@ -10,7 +10,13 @@ import {
   DashboardLayout,
 } from "@toolpad/core/DashboardLayout";
 import logo from "../../assets/coop.gif";
-import { Outlet, useNavigate } from "react-router-dom";
+import {
+  Link as ReactRouterLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import Footer from "../../components/Footer";
 import { GlobalStyles, createTheme } from "@mui/material";
 import propicture from "../../assets/profile_avatar.jpg";
@@ -59,6 +65,38 @@ import { useAuthContext } from "../../context/AuthContext";
 import { isDemoMode } from "../../demo/demoApi";
 import { GrGlobe } from "react-icons/gr";
 import { TbWorldDollar } from "react-icons/tb";
+
+// Detail/edit screens live outside list segments (e.g. /edit, /posdetail).
+// Remap them so Toolpad keeps the parent sidebar item selected.
+const DETAIL_PATH_TO_NAV = {
+  "/edit": "/atm/manageterminal",
+  "/viewdetail": "/atm/manageterminal",
+  "/atmdetail": "/atm/manageterminal",
+  "/editpos": "/pos/managepos",
+  "/posdetail": "/pos/managepos",
+  "/approverequest": "/request/authorizedrequests",
+  "/editrequest": "/request/request",
+  "/requestdetail": "/request/requests",
+  "/password/edit": "/password/vault",
+  "/password/details": "/password/vault",
+};
+
+const navPathnameFor = (pathname) =>
+  DETAIL_PATH_TO_NAV[pathname] || pathname;
+
+const ToolpadNavLink = React.forwardRef(function ToolpadNavLink(
+  { href, history, ...rest },
+  ref
+) {
+  return (
+    <ReactRouterLink
+      ref={ref}
+      to={href}
+      replace={history === "replace"}
+      {...rest}
+    />
+  );
+});
 
 const NAVIGATION = [
   {
@@ -754,6 +792,29 @@ function SideDashboard(props) {
 
   const [defaultSidebarCollapsed] = React.useState(getStoredSidebarCollapsed);
 
+  const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
+  const navigateImpl = React.useCallback(
+    (url, { history = "auto" } = {}) => {
+      if (history === "auto" || history === "push") return navigate(url);
+      if (history === "replace") return navigate(url, { replace: true });
+      throw new Error(`Invalid history option: ${history}`);
+    },
+    [navigate]
+  );
+  // Override Toolpad's router pathname so orphan detail URLs still highlight
+  // the list page they came from (ReactRouterAppProvider spreads props after
+  // its own router, so this wins).
+  const selectionRouter = React.useMemo(
+    () => ({
+      pathname: navPathnameFor(pathname),
+      searchParams,
+      navigate: navigateImpl,
+      Link: ToolpadNavLink,
+    }),
+    [pathname, searchParams, navigateImpl]
+  );
+
   // Prevent rendering until currentUser is available
   if (!currentUser) {
     return null; // Or a loader/spinner if preferred
@@ -765,6 +826,7 @@ function SideDashboard(props) {
       authentication={authentication}
       navigation={filteredNavigation}
       theme={toolpadTheme}
+      router={selectionRouter}
       branding={{
         title: (
           <Typography variant="h5" fontSize="20px">
