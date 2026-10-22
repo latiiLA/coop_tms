@@ -31,7 +31,6 @@ import {
 import ComboBox from "../../components/ComboBox";
 import PdfBlobViewer from "../../components/PdfBlobViewer";
 import { useAuthContext } from "../../context/AuthContext";
-import { isDemoMode } from "../../demo/demoApi";
 import { FieldSlot, FormTextField, Section } from "./requests/RequestPOS";
 // Start from the full row we came in with (it already has populated names
 // for createdBy, branchName, etc.) and apply the server's updated values on
@@ -145,19 +144,11 @@ const EDIT_STATUS_OPTIONS = [
 ];
 const RELOCATION_WORKFLOW_STATUSES = ["ToBeRelocated", "RelocationAuthorized"];
 
-const toDateInput = (value) => {
-  if (!value) return "";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
-};
-
 const EditPOS = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const row = location.state?.row || null;
-  const { currentUser, permissions } = useAuthContext();
-  const can = (perm) => isDemoMode() || permissions?.includes(perm);
-  const canEditConfiguredDate = can("edit_pos");
+  const { currentUser } = useAuthContext();
   const userDistrict = idOf(currentUser?.district) || "";
   const initialDistrict =
     idOf(row?.branchName?.district) || idOf(row?.district) || userDistrict || "";
@@ -186,7 +177,14 @@ const EditPOS = () => {
     payload.comment = (values.comment || "").trim(); // new note, appended by server
     payload.updatedAt = row.updatedAt; // optimistic concurrency check on the server
     delete payload.district; // server derives the district from the branch
-    if (!canEditConfiguredDate) delete payload.configuredDate;
+    // Case 1 (New → Active): server stamps today — never send a client date.
+    // Case 2 (additional config): send configuredDate only when the user filled it.
+    const isFirstActivation =
+      String(row?.status || "") === "New" &&
+      String(payload.status || "") === "Active";
+    if (isFirstActivation || !payload.configuredDate) {
+      delete payload.configuredDate;
+    }
 
     submittingRef.current = true;
     setLoading(true);
@@ -201,12 +199,13 @@ const EditPOS = () => {
       );
 
       toast.success(response.data.message);
+      // Prefer the server document (includes configuredDate / configuredDates).
       navigate("/posdetail", {
         replace: true,
         state: {
           isRequest: false,
           relocated: false,
-          row: mergeUpdatedRow(row, response.data.posTerminal),
+          row: response.data.posTerminal || mergeUpdatedRow(row, response.data.posTerminal),
         },
       });
     } catch (error) {
@@ -338,7 +337,8 @@ const EditPOS = () => {
             merchantPhonenumber: row?.merchantPhonenumber || "",
             status: row?.status || "",
             configVersion: row?.configVersion ?? "",
-            configuredDate: toDateInput(row?.configuredDate),
+            // Reconfigure date starts empty; first activation is stamped by the server.
+            configuredDate: "",
             comment: "",
           }}
           validationSchema={FORM_VALIDATION}
@@ -555,11 +555,13 @@ const EditPOS = () => {
                         label="Configured Date"
                         type="date"
                         InputLabelProps={{ shrink: true }}
-                        disabled={!canEditConfiguredDate}
+                        // Case 1: New → Active is stamped by the server (field locked).
+                        // Case 2: on later edits, leave blank unless adding another config date.
+                        disabled={row?.status === "New"}
                         helperText={
-                          canEditConfiguredDate
-                            ? "Leave empty to clear"
-                            : "Requires edit permission"
+                          row?.status === "New"
+                            ? "Set automatically when status changes to Active"
+                            : "Optional — fill only to add another configured date to the history"
                         }
                       />
                     </FieldSlot>

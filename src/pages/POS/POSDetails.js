@@ -8,7 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   FileOpen,
@@ -18,7 +18,10 @@ import {
   LocalShipping,
   Settings,
 } from "@mui/icons-material";
+import axios from "axios";
+import toast from "react-hot-toast";
 import PdfBlobViewer from "../../components/PdfBlobViewer";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const EMPTY = "—";
 
@@ -74,7 +77,10 @@ const Field = ({ label, value }) => (
     >
       {label}
     </Typography>
-    <Typography variant="body1" sx={{ wordBreak: "break-word" }}>
+    <Typography
+      variant="body1"
+      sx={{ wordBreak: "break-word", whiteSpace: "pre-line" }}
+    >
       {show(value)}
     </Typography>
   </Box>
@@ -109,13 +115,76 @@ const Section = ({ title, icon, children }) => (
   </Card>
 );
 
+const formatConfigDate = (value) => {
+  if (!value) return EMPTY;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
 const POSDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isRequest, isRelocated, row } = location.state || {};
+  const { isRequest, isRelocated, row: stateRow } = location.state || {};
 
+  const [row, setRow] = useState(stateRow || null);
+  const [loadingDetail, setLoadingDetail] = useState(
+    Boolean(!isRequest && stateRow?._id)
+  );
   const [pdfOpen, setPdfOpen] = useState(false);
   const [pdfPath, setPdfPath] = useState("");
+
+  const posId = stateRow?._id ? String(stateRow._id) : "";
+
+  // Details from the grid can be stale (e.g. missing configuredDates). Reload POS.
+  useEffect(() => {
+    if (isRequest || !posId) {
+      setRow(stateRow || null);
+      setLoadingDetail(false);
+      return;
+    }
+    let cancelled = false;
+    const load = async () => {
+      const token = localStorage.getItem("token");
+      const apiUrl = process.env.REACT_APP_API_URL;
+      if (!token || !apiUrl) {
+        setRow(stateRow);
+        setLoadingDetail(false);
+        return;
+      }
+      setLoadingDetail(true);
+      try {
+        const response = await axios.get(`${apiUrl}/pos/getPosById/${posId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+        if (!cancelled) {
+          setRow(response.data?.posTerminal || stateRow);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          const detail =
+            error.response?.data?.message ||
+            error.message ||
+            "unknown error";
+          toast.error(
+            `Could not refresh POS details (${detail}); showing cached data.`
+          );
+          setRow(stateRow);
+        }
+      } finally {
+        if (!cancelled) setLoadingDetail(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [isRequest, posId, stateRow]);
 
   const handlePdfView = (filepath) => {
     setPdfPath(filepath);
@@ -131,7 +200,18 @@ const POSDetails = () => {
       !!row.relocationAuthorizedBy ||
       !!row.relocationRejectedBy);
 
+  const configHistory =
+    row?.configuredDates?.length > 0
+      ? row.configuredDates
+      : row?.configuredDate
+        ? [{ date: row.configuredDate, configuredBy: row.configuredBy }]
+        : [];
+
   const iconSx = { color: "primary.main" };
+
+  if (loadingDetail) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <Box sx={{ width: { xs: "100%", sm: "95%", md: "90%" }, mx: "auto", mt: 2 }}>
@@ -298,20 +378,29 @@ const POSDetails = () => {
               <Section title="Configuration" icon={<Settings sx={iconSx} />}>
                 <Field label="Config Version" value={row.configVersion} />
                 <Field
-                  label="Config Date"
+                  label="Configured Date"
+                  value={formatConfigDate(row.configuredDate)}
+                />
+                <Field
+                  label="Configured By"
+                  value={row.configuredBy ? personName(row.configuredBy) : EMPTY}
+                />
+                <Field
+                  label="Configuration History"
                   value={
-                    row.configuredDate
-                      ? new Date(row.configuredDate).toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        })
+                    configHistory.length
+                      ? configHistory
+                          .map((entry) => {
+                            const when = formatConfigDate(entry?.date);
+                            const who = entry?.configuredBy
+                              ? personName(entry.configuredBy)
+                              : EMPTY;
+                            return `${when} — ${who}`;
+                          })
+                          .join("\n")
                       : EMPTY
                   }
                 />
-                {row.configuredBy && (
-                  <Field label="Configured By" value={personName(row.configuredBy)} />
-                )}
               </Section>
             </Box>
           )}
