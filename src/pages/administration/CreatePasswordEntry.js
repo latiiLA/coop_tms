@@ -17,11 +17,24 @@ import {
 } from "@mui/material";
 import { Formik, Form, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Search, Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CustomSelect } from "../../components/CustomFields";
+
+const userMatchesQuery = (user, query) => {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return true;
+  return [user.username, user.firstName, user.fatherName, user.gfatherName, user.email]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase()
+    .includes(needle);
+};
+
+const userLabel = (user) =>
+  [user.username, [user.firstName, user.fatherName].filter(Boolean).join(" ")].filter(Boolean).join(" — ");
 
 const CreatePasswordEntry = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -38,12 +51,31 @@ const CreatePasswordEntry = () => {
   const [, setError] = useState(null);
   const [dataRows, setDataRows] = useState([]); // user data
   const [, setLoading] = useState(true);
+  const [userQuery, setUserQuery] = useState("");
 
 
   const environment = [
     { value: "production", label: "Production" },
     { value: "test", label: "Test" },
   ];
+
+  const accessKinds = [
+    { value: "ssh", label: "SSH" },
+    { value: "web", label: "Web" },
+  ];
+
+  const ipSchema = Yup.string()
+    .required("Server IP Address is required")
+    .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
+    .test("is-valid-ip", "Invalid IP Address", (value) => {
+      if (!value) return false;
+      const parts = value.split(".");
+      if (parts.length !== 4) return false;
+      return parts.every((part) => {
+        const num = parseInt(part, 10);
+        return !isNaN(num) && num >= 0 && num <= 255;
+      });
+    });
 
   async function fetchRows() {
     const token = localStorage.getItem("token");
@@ -85,13 +117,18 @@ const CreatePasswordEntry = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const visibleUsers = dataRows.filter((user) => userMatchesQuery(user, userQuery));
+
   const INITIAL_FORM_STATE = {
+    accessKind: "ssh",
     serverName: "",
     serverIP: "",
     serverOS: "",
+    webAddress: "",
     environment: "",
     serverUsername: "",
     serverPassword: "",
+    passwordExpiresOn: "",
     assignedUsers: [],
   };
 
@@ -99,21 +136,26 @@ const CreatePasswordEntry = () => {
     serverName: Yup.string()
       .required("Server Name is required")
       .min(3, "Server Name must be at least 3 characters"),
-    serverIP: Yup.string()
-        .required("Server IP Address is required")
-        .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
-        .test("is-valid-ip", "Invalid IP Address", (value) => {
-        const parts = value.split(".");
-        if (parts.length !== 4) return false;
-        return parts.every((part) => {
-            const num = parseInt(part, 10);
-            return !isNaN(num) && num >= 0 && num <= 255;
-        });
-        }),
-    serverOS: Yup.string().required("Server OS is required"),
+    accessKind: Yup.string().oneOf(["ssh", "web"]).required("Access type is required"),
+    serverIP: Yup.string().when("accessKind", {
+      is: "web",
+      then: (schema) => schema.notRequired(),
+      otherwise: () => ipSchema,
+    }),
+    serverOS: Yup.string().when("accessKind", {
+      is: "web",
+      then: (schema) => schema.notRequired(),
+      otherwise: (schema) => schema.required("Server OS is required"),
+    }),
+    webAddress: Yup.string().when("accessKind", {
+      is: "web",
+      then: (schema) => schema.trim().required("Web address is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
     environment: Yup.string().required("Environment is required"),
     serverUsername: Yup.string().required("Server Username is required"),
     serverPassword: Yup.string().required("Server Password is required"),
+    passwordExpiresOn: Yup.string(),
     assignedUsers: Yup.array().required("Atleast one assigned user is required")
   });
 
@@ -136,12 +178,15 @@ const CreatePasswordEntry = () => {
       const response = await axios.post(
         `${apiUrl}/password/createPasswordEntry`,
         {
+          accessKind: data.accessKind,
           serverName: data.serverName,
           serverIP: data.serverIP,
           serverOS: data.serverOS,
+          webAddress: data.webAddress,
           environment: data.environment,
           serverUsername: data.serverUsername,
           serverPassword: data.serverPassword,
+          passwordExpiresOn: data.passwordExpiresOn,
           assignedUsers: data.assignedUsers,
         },
         {
@@ -203,6 +248,11 @@ const CreatePasswordEntry = () => {
                 <Typography variant="h5" sx={{ textAlign: "center" }}>
                   New Password Entry
                 </Typography>
+                <CustomSelect
+                  name="accessKind"
+                  label="Access"
+                  options={accessKinds}
+                />
 
                 <Box
                   sx={{
@@ -222,30 +272,44 @@ const CreatePasswordEntry = () => {
                     <Field
                       as={TextField}
                       name="serverName"
-                      label="Server Name"
+                      label={values.accessKind === "web" ? "Name" : "Server Name"}
                       variant="outlined"
                       fullWidth
                       error={touched.serverName && !!errors.serverName}
                       helperText={<ErrorMessage name="serverName" />}
                     />
-                    <Field
-                      as={TextField}
-                      name="serverIP"
-                      label="Server IP"
-                      variant="outlined"
-                      fullWidth
-                      error={touched.serverIP && !!errors.serverIP}
-                      helperText={<ErrorMessage name="serverIP" />}
-                    />
-                    <Field
-                      as={TextField}
-                      name="serverOS"
-                      label="Server OS"
-                      variant="outlined"
-                      fullWidth
-                      error={touched.serverOS && !!errors.serverOS}
-                      helperText={<ErrorMessage name="serverOS" />}
-                    />
+                    {values.accessKind === "web" ? (
+                      <Field
+                        as={TextField}
+                        name="webAddress"
+                        label="Web address"
+                        variant="outlined"
+                        fullWidth
+                        error={touched.webAddress && !!errors.webAddress}
+                        helperText={<ErrorMessage name="webAddress" />}
+                      />
+                    ) : (
+                      <>
+                        <Field
+                          as={TextField}
+                          name="serverIP"
+                          label="Server IP"
+                          variant="outlined"
+                          fullWidth
+                          error={touched.serverIP && !!errors.serverIP}
+                          helperText={<ErrorMessage name="serverIP" />}
+                        />
+                        <Field
+                          as={TextField}
+                          name="serverOS"
+                          label="Server OS"
+                          variant="outlined"
+                          fullWidth
+                          error={touched.serverOS && !!errors.serverOS}
+                          helperText={<ErrorMessage name="serverOS" />}
+                        />
+                      </>
+                    )}
                   </Box>
                   
                   <Box
@@ -261,7 +325,7 @@ const CreatePasswordEntry = () => {
                     <Field
                       as={TextField}
                       name="serverUsername"
-                      label="Server Username"
+                      label={values.accessKind === "web" ? "Username" : "Server Username"}
                       variant="outlined"
                       fullWidth
                       error={touched.serverUsername && !!errors.serverUsername}
@@ -278,7 +342,7 @@ const CreatePasswordEntry = () => {
                       fullWidth
                     >
                       <InputLabel htmlFor="outlined-adornment-password">
-                        Server Password
+                        {values.accessKind === "web" ? "Admin password" : "Server Password"}
                       </InputLabel>
                       <Field
                         as={OutlinedInput}
@@ -301,7 +365,7 @@ const CreatePasswordEntry = () => {
                             </IconButton>
                           </InputAdornment>
                         }
-                        label="Server Password"
+                        label={values.accessKind === "web" ? "Admin password" : "Server Password"}
                       />
                       <ErrorMessage
                         name="serverPassword"
@@ -309,12 +373,37 @@ const CreatePasswordEntry = () => {
                         style={{ color: "red" }}
                       />
                     </FormControl>
+                    <Field
+                      as={TextField}
+                      name="passwordExpiresOn"
+                      label="Password expires on"
+                      type="date"
+                      variant="outlined"
+                      fullWidth
+                      InputLabelProps={{ shrink: true }}
+                      helperText="Optional. Leave blank if this password does not expire."
+                    />
                   </Box>
                 </Box>
                 <FormControl component="fieldset" fullWidth sx={{ mt: 2 }}>
                     <FormLabel component="legend">
                         Assigned Users
                     </FormLabel>
+                    <TextField
+                      value={userQuery}
+                      onChange={(event) => setUserQuery(event.target.value)}
+                      label="Search users"
+                      size="small"
+                      fullWidth
+                      sx={{ mt: 1 }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Search fontSize="small" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
 
                     <FormGroup
                         sx={{
@@ -327,7 +416,7 @@ const CreatePasswordEntry = () => {
                         overflowY: "auto",
                         }}
                     >
-                        {dataRows.map((user) => (
+                        {visibleUsers.map((user) => (
                         <FormControlLabel
                             key={user._id}
                             control={
@@ -352,9 +441,14 @@ const CreatePasswordEntry = () => {
                                 }}
                             />
                             }
-                            label={user.username}
+                            label={userLabel(user)}
                         />
                         ))}
+                        {dataRows.length > 0 && visibleUsers.length === 0 && (
+                          <Typography variant="body2" color="text.secondary">
+                            No users match your search.
+                          </Typography>
+                        )}
                     </FormGroup>
                 </FormControl>
                 <Button

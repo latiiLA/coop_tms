@@ -5,6 +5,7 @@ import {
   Typography,
   Button,
   Card,
+  Chip,
   FormControl,
   InputLabel,
   OutlinedInput,
@@ -14,6 +15,11 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
 } from "@mui/material";
 import {
   Visibility,
@@ -33,7 +39,47 @@ const PasswordEntryDetails = () => {
   // Fetched from the reveal endpoint; the entry passed through navigation no
   // longer carries the secret.
   const [serverPassword, setServerPassword] = React.useState("");
+  const [passwordHistory, setPasswordHistory] = React.useState([]);
+  const [revealedHistory, setRevealedHistory] = React.useState({});
+  const [visibleHistory, setVisibleHistory] = React.useState({});
   const { permissions } = useAuthContext();
+
+  const formatWhen = (value) => {
+    if (!value) return "";
+    return new Date(value).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
+  const formatPerson = (user) => {
+    if (!user) return "N/A";
+    if (typeof user === "string") return user;
+    const name = `${user.firstName || ""} ${user.fatherName || ""}`.trim();
+    return name || user.username || "N/A";
+  };
+
+  const formatDateOnly = (value) => {
+    if (!value) return "";
+    return new Date(value).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+    });
+  };
+
+  const daysUntilExpiry = (value) => {
+    if (!value) return null;
+    const expiry = new Date(value);
+    const today = new Date();
+    expiry.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    return Math.round((expiry.getTime() - today.getTime()) / 86400000);
+  };
 
   // Row passed from PasswordVault
   const row = location.state?.row;
@@ -77,6 +123,72 @@ const PasswordEntryDetails = () => {
     fetchPassword();
   }, [row?._id, apiUrl]);
 
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (!row?._id) return;
+
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await axios.get(
+          `${apiUrl}/password/passwordHistory/${row._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
+
+        setPasswordHistory(response.data?.history || []);
+      } catch (error) {
+        toast.error(
+          error.response?.data?.message ||
+            "Failed to load password history."
+        );
+      }
+    };
+
+    fetchHistory();
+  }, [row?._id, apiUrl]);
+
+  const revealHistoryItem = async (historyId) => {
+    if (revealedHistory[historyId] !== undefined) {
+      setVisibleHistory((prev) => ({
+        ...prev,
+        [historyId]: !prev[historyId],
+      }));
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await axios.get(
+        `${apiUrl}/password/revealPasswordHistory/${row._id}/${historyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      setRevealedHistory((prev) => ({
+        ...prev,
+        [historyId]: response.data?.password ?? "",
+      }));
+      setVisibleHistory((prev) => ({ ...prev, [historyId]: true }));
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to reveal the previous password."
+      );
+    }
+  };
+
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
@@ -88,6 +200,9 @@ const PasswordEntryDetails = () => {
   if (!row) {
     return null;
   }
+
+  const remaining = daysUntilExpiry(row.passwordExpiresOn);
+  const updates = [...(row.updates || [])].reverse();
 
   return (
     <Box
@@ -156,7 +271,16 @@ const PasswordEntryDetails = () => {
               }}
             >
               <TextField
-                label="Server Name"
+                label="Access"
+                value={row.accessKind === "web" ? "Web" : "SSH"}
+                fullWidth
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+
+              <TextField
+                label={row.accessKind === "web" ? "Name" : "Server Name"}
                 value={row.serverName || ""}
                 fullWidth
                 InputProps={{
@@ -164,23 +288,35 @@ const PasswordEntryDetails = () => {
                 }}
               />
 
-              <TextField
-                label="Server IP"
-                value={row.serverIP || ""}
-                fullWidth
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
-
-              <TextField
-                label="Server OS"
-                value={row.serverOS || ""}
-                fullWidth
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
+              {row.accessKind === "web" ? (
+                <TextField
+                  label="Web address"
+                  value={row.webAddress || ""}
+                  fullWidth
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              ) : (
+                <>
+                  <TextField
+                    label="Server IP"
+                    value={row.serverIP || ""}
+                    fullWidth
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                  <TextField
+                    label="Server OS"
+                    value={row.serverOS || ""}
+                    fullWidth
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </>
+              )}
             </Box>
 
             {/* RIGHT SIDE */}
@@ -197,7 +333,7 @@ const PasswordEntryDetails = () => {
               }}
             >
               <TextField
-                label="Server Username"
+                label={row.accessKind === "web" ? "Username" : "Server Username"}
                 value={row.serverUsername || ""}
                 fullWidth
                 InputProps={{
@@ -221,7 +357,7 @@ const PasswordEntryDetails = () => {
                 fullWidth
               >
                 <InputLabel htmlFor="server-password">
-                  Server Password
+                  {row.accessKind === "web" ? "Admin password" : "Server Password"}
                 </InputLabel>
 
                 <OutlinedInput
@@ -257,11 +393,33 @@ const PasswordEntryDetails = () => {
                       </IconButton>
                     </InputAdornment>
                   }
-                  label="Server Password"
+                  label={row.accessKind === "web" ? "Admin password" : "Server Password"}
                 />
               </FormControl>
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <TextField
+                  label="Password expires on"
+                  value={
+                    row.passwordExpiresOn
+                      ? formatDateOnly(row.passwordExpiresOn)
+                      : "Not set"
+                  }
+                  fullWidth
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+                {remaining !== null && remaining < 0 && (
+                  <Chip label="Expired" color="error" />
+                )}
+                {remaining !== null && remaining >= 0 && remaining <= 5 && (
+                  <Chip label="Expiring soon" color="warning" />
+                )}
+              </Box>
             </Box>
           </Box>
+
 
           {/* =====================================
               ASSIGNED USERS
@@ -359,26 +517,91 @@ const PasswordEntryDetails = () => {
 
             <TextField
               label="Created At"
-              value={
-                row.createdAt
-                  ? new Date(
-                      row.createdAt
-                    ).toLocaleString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                    })
-                  : ""
-              }
+              value={formatWhen(row.createdAt)}
               fullWidth
               InputProps={{
                 readOnly: true,
               }}
             />
           </Box>
+
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="h6">Update history</Typography>
+            {updates.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                No updates recorded yet.
+              </Typography>
+            ) : (
+              <Table size="small" sx={{ mt: 1 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Updated by</TableCell>
+                    <TableCell>Updated at</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {updates.map((update, index) => (
+                    <TableRow key={`${update.at || "at"}-${index}`}>
+                      <TableCell>{formatPerson(update.by)}</TableCell>
+                      <TableCell>{formatWhen(update.at)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </Box>
+
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="h6">Password history</Typography>
+            {passwordHistory.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                No previous passwords.
+              </Typography>
+            ) : (
+              <Table size="small" sx={{ mt: 1 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Changed by</TableCell>
+                    <TableCell>Changed at</TableCell>
+                    <TableCell>Password</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {passwordHistory.map((item) => (
+                    <TableRow key={item._id}>
+                      <TableCell>{item.changedBy || "N/A"}</TableCell>
+                      <TableCell>{formatWhen(item.changedAt)}</TableCell>
+                      <TableCell>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <span>
+                            {visibleHistory[item._id]
+                              ? revealedHistory[item._id]
+                              : "••••••••"}
+                          </span>
+                          <IconButton
+                            size="small"
+                            aria-label={
+                              visibleHistory[item._id]
+                                ? "hide previous password"
+                                : "show previous password"
+                            }
+                            onClick={() => revealHistoryItem(item._id)}
+                          >
+                            {visibleHistory[item._id] ? (
+                              <VisibilityOff fontSize="small" />
+                            ) : (
+                              <Visibility fontSize="small" />
+                            )}
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </Box>
+
 
           {/* =====================================
               BUTTONS
