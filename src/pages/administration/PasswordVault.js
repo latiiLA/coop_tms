@@ -21,7 +21,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
-import { Search, Visibility, VisibilityOff } from "@mui/icons-material";
+import { ContentCopy, Search, Visibility, VisibilityOff } from "@mui/icons-material";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { gridContainerSx, PermissionGridToolbar } from "../../components/gridStyles";
 
@@ -85,10 +85,10 @@ export default function PasswordVault() {
     }
   };
 
-  const fetchRevealedPassword = async (rowId) => {
+  const fetchRevealedPassword = async (entryId) => {
     // Already fetched once - reuse it so toggling does not hit the API again.
-    if (revealedPasswords[rowId] !== undefined) {
-      return revealedPasswords[rowId];
+    if (revealedPasswords[entryId] !== undefined) {
+      return revealedPasswords[entryId];
     }
 
     const token = localStorage.getItem("token");
@@ -100,7 +100,7 @@ export default function PasswordVault() {
 
     try {
       const response = await axios.get(
-        `${apiUrl}/password/revealPasswordEntry/${rowId}`,
+        `${apiUrl}/password/revealPasswordEntry/${entryId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -110,12 +110,42 @@ export default function PasswordVault() {
       );
 
       const value = response.data?.serverPassword ?? "";
-      setRevealedPasswords((prev) => ({ ...prev, [rowId]: value }));
+      setRevealedPasswords((prev) => ({ ...prev, [entryId]: value }));
       return value;
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
       return null;
     }
+  };
+
+  const writeClipboard = (text) => {
+    const onCopied = () => toast.success("Password copied.");
+    const onFailed = () => toast.error("Failed to copy password.");
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(onCopied).catch(onFailed);
+      return;
+    }
+
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand("copy");
+      onCopied();
+    } catch (error) {
+      onFailed();
+    }
+    document.body.removeChild(textArea);
+  };
+
+  const copyPassword = async (entryId) => {
+    const value = await fetchRevealedPassword(entryId);
+    if (!value) return;
+    writeClipboard(value);
   };
 
   const columns = [
@@ -127,6 +157,13 @@ export default function PasswordVault() {
       flex: 1,
     },
     { field: "serverOS", headerName: "Operating System", flex: 1 },
+    {
+      field: "accessKind",
+      headerName: "Access",
+      flex: 0.6,
+      valueGetter: (value) => (value === "web" ? "Web" : "SSH"),
+    },
+    { field: "webAddress", headerName: "Web address", flex: 1 },
     { field: "environment", headerName: "Environment", flex: 1 },
     { field: "serverUsername", headerName: "Username", flex: 1 },
     {
@@ -142,7 +179,7 @@ export default function PasswordVault() {
             // because the list response no longer contains it.
             if (!showPassword && revealedPasswords[rowId] === undefined) {
                 setRevealingId(rowId);
-                const value = await fetchRevealedPassword(rowId);
+                const value = await fetchRevealedPassword(params.row._id);
                 setRevealingId(null);
                 if (value === null) return;
             }
@@ -186,6 +223,20 @@ export default function PasswordVault() {
             );
         },
     },
+    {
+      field: "passwordExpiresOn",
+      headerName: "Expires On",
+      flex: 1,
+      valueFormatter: (value) => {
+        if (!value) return "";
+        const date = new Date(value);
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+        });
+      },
+    },
     { field: "createdBy", headerName: "Created By",
         valueGetter: (value, row) => row.createdBy?.firstName + " " + row.createdBy?.fatherName || "N/A", 
         flex: 1 
@@ -211,15 +262,17 @@ export default function PasswordVault() {
       field: "actions",
       headerName: "Actions",
       flex: 1,
-      renderCell: (params) => (
+      minWidth: 150,
+      renderCell: (params) => {
+        return (
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-around",
+            justifyContent: "flex-start",
             alignItems: "center",
-            height: "100%", // Ensure the Box takes the full height of the cell
-            // width: "100%",
-            margin: "auto",
+            height: "100%",
+            width: "100%",
+            gap: 0.5,
           }}
         >
           {permissions?.includes("edit_password_entry") && (
@@ -233,6 +286,17 @@ export default function PasswordVault() {
                 margin="auto"
               >
                 <EditIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          {permissions?.includes("view_password_entry_detail") && (
+            <Tooltip title="Copy password">
+              <IconButton
+                color="primary"
+                size="small"
+                onClick={() => copyPassword(params.row._id)}
+              >
+                <ContentCopy fontSize="small" />
               </IconButton>
             </Tooltip>
           )}
@@ -259,7 +323,8 @@ export default function PasswordVault() {
               </Tooltip>
           )}
         </Box>
-      ),
+        );
+      },
     },
   ];
 
@@ -304,9 +369,10 @@ export default function PasswordVault() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const rows = dataRows.map((row, index) => ({
+  const rows = dataRows.map((entry, index) => ({
     id: index + 1,
-    ...row,
+    ...entry,
+    webAddress: entry.webAddress || "",
   }));
 
   const filteredRows = rows.filter((row) => {
@@ -317,6 +383,8 @@ export default function PasswordVault() {
       String(row.serverIP || "").toLowerCase().includes(searchLower) ||
       String(row.serverOS || "").toLowerCase().includes(searchLower) ||
       String(row.serverUsername || "").toLowerCase().includes(searchLower) ||
+      String(row.webAddress || "").toLowerCase().includes(searchLower) ||
+      String(row.accessKind || "").toLowerCase().includes(searchLower) ||
       String(row.createdBy.firstName || "").toLowerCase().includes(searchLower) ||
       String(row.createdBy.fatherName || "").toLowerCase().includes(searchLower)
     );

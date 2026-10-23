@@ -18,6 +18,7 @@ import {
 import { Formik, Form, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 import {
+  Search,
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
@@ -25,6 +26,19 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CustomSelect } from "../../components/CustomFields";
+
+const userMatchesQuery = (user, query) => {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return true;
+  return [user.username, user.firstName, user.fatherName, user.gfatherName, user.email]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase()
+    .includes(needle);
+};
+
+const userLabel = (user) =>
+  [user.username, [user.firstName, user.fatherName].filter(Boolean).join(" ")].filter(Boolean).join(" — ");
 
 const EditPasswordEntry = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -35,6 +49,7 @@ const EditPasswordEntry = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [userQuery, setUserQuery] = useState("");
   // The password is fetched from the reveal endpoint; the row handed over by
   // the vault list no longer contains it.
   const [revealedPassword, setRevealedPassword] = useState("");
@@ -63,6 +78,24 @@ const EditPasswordEntry = () => {
     { value: "production", label: "Production" },
     { value: "test", label: "Test" },
   ];
+
+  const accessKinds = [
+    { value: "ssh", label: "SSH" },
+    { value: "web", label: "Web" },
+  ];
+
+  const ipSchema = Yup.string()
+    .required("Server IP Address is required")
+    .matches(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, "Invalid IP Address format")
+    .test("is-valid-ip", "Invalid IP Address", (value) => {
+      if (!value) return false;
+      const parts = value.split(".");
+      if (parts.length !== 4) return false;
+      return parts.every((part) => {
+        const num = parseInt(part, 10);
+        return !isNaN(num) && num >= 0 && num <= 255;
+      });
+    });
 
   // ============================================
   // Redirect if no row was passed
@@ -175,6 +208,8 @@ const EditPasswordEntry = () => {
   // ["id1", "id2"]
   // ============================================
 
+  const visibleUsers = users.filter((user) => userMatchesQuery(user, userQuery));
+
   const assignedUserIds =
     row?.assignedUsers?.map((user) =>
       typeof user === "object"
@@ -182,17 +217,25 @@ const EditPasswordEntry = () => {
         : user
     ) || [];
 
-  // ============================================
-  // Initial Formik values
-  // ============================================
+  const toDateInput = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${date.getFullYear()}-${month}-${day}`;
+  };
 
   const INITIAL_FORM_STATE = {
+    accessKind: row?.accessKind === "web" ? "web" : "ssh",
     serverName: row?.serverName || "",
     serverIP: row?.serverIP || "",
     serverOS: row?.serverOS || "",
+    webAddress: row?.webAddress || "",
     environment: row?.environment || "",
     serverUsername: row?.serverUsername || "",
     serverPassword: revealedPassword,
+    passwordExpiresOn: toDateInput(row?.passwordExpiresOn),
     assignedUsers: assignedUserIds,
   };
 
@@ -201,6 +244,8 @@ const EditPasswordEntry = () => {
   // ============================================
 
   const FORM_VALIDATION = Yup.object().shape({
+    accessKind: Yup.string().oneOf(["ssh", "web"]).required("Access type is required"),
+
     serverName: Yup.string()
       .required("Server Name is required")
       .min(
@@ -208,39 +253,23 @@ const EditPasswordEntry = () => {
         "Server Name must be at least 3 characters"
       ),
 
-    serverIP: Yup.string()
-      .required("Server IP Address is required")
-      .matches(
-        /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/,
-        "Invalid IP Address format"
-      )
-      .test(
-        "is-valid-ip",
-        "Invalid IP Address",
-        (value) => {
-          if (!value) return false;
+    serverIP: Yup.string().when("accessKind", {
+      is: "web",
+      then: (schema) => schema.notRequired(),
+      otherwise: () => ipSchema,
+    }),
 
-          const parts = value.split(".");
+    serverOS: Yup.string().when("accessKind", {
+      is: "web",
+      then: (schema) => schema.notRequired(),
+      otherwise: (schema) => schema.required("Server OS is required"),
+    }),
 
-          if (parts.length !== 4) {
-            return false;
-          }
-
-          return parts.every((part) => {
-            const num = parseInt(part, 10);
-
-            return (
-              !isNaN(num) &&
-              num >= 0 &&
-              num <= 255
-            );
-          });
-        }
-      ),
-
-    serverOS: Yup.string().required(
-      "Server OS is required"
-    ),
+    webAddress: Yup.string().when("accessKind", {
+      is: "web",
+      then: (schema) => schema.trim().required("Web address is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
 
     environment: Yup.string().required(
       "Environment is required"
@@ -253,6 +282,8 @@ const EditPasswordEntry = () => {
     serverPassword: Yup.string().required(
       "Server Password is required"
     ),
+
+    passwordExpiresOn: Yup.string(),
 
     assignedUsers: Yup.array()
       .min(
@@ -285,21 +316,19 @@ const EditPasswordEntry = () => {
       return;
     }
 
-    console.log(
-      "Updated password entry:",
-      values
-    );
-
     try {
       const response = await axios.put(
         `${apiUrl}/password/editPasswordEntry/${row._id}`,
         {
+          accessKind: values.accessKind,
           serverName: values.serverName,
           serverIP: values.serverIP,
           serverOS: values.serverOS,
+          webAddress: values.webAddress,
           environment: values.environment,
           serverUsername: values.serverUsername,
           serverPassword: values.serverPassword,
+          passwordExpiresOn: values.passwordExpiresOn,
           assignedUsers: values.assignedUsers,
         },
         {
@@ -393,6 +422,12 @@ const EditPasswordEntry = () => {
                   Edit Password Entry
                 </Typography>
 
+                <CustomSelect
+                  name="accessKind"
+                  label="Access"
+                  options={accessKinds}
+                />
+
                 {/* =====================================
                     SERVER INFORMATION
                 ====================================== */}
@@ -425,7 +460,7 @@ const EditPasswordEntry = () => {
                     <Field
                       as={TextField}
                       name="serverName"
-                      label="Server Name"
+                      label={values.accessKind === "web" ? "Name" : "Server Name"}
                       variant="outlined"
                       fullWidth
                       error={
@@ -437,35 +472,48 @@ const EditPasswordEntry = () => {
                       }
                     />
 
-                    <Field
-                      as={TextField}
-                      name="serverIP"
-                      label="Server IP"
-                      variant="outlined"
-                      fullWidth
-                      error={
-                        touched.serverIP &&
-                        !!errors.serverIP
-                      }
-                      helperText={
-                        <ErrorMessage name="serverIP" />
-                      }
-                    />
-
-                    <Field
-                      as={TextField}
-                      name="serverOS"
-                      label="Server OS"
-                      variant="outlined"
-                      fullWidth
-                      error={
-                        touched.serverOS &&
-                        !!errors.serverOS
-                      }
-                      helperText={
-                        <ErrorMessage name="serverOS" />
-                      }
-                    />
+                    {values.accessKind === "web" ? (
+                      <Field
+                        as={TextField}
+                        name="webAddress"
+                        label="Web address"
+                        variant="outlined"
+                        fullWidth
+                        error={touched.webAddress && !!errors.webAddress}
+                        helperText={<ErrorMessage name="webAddress" />}
+                      />
+                    ) : (
+                      <>
+                        <Field
+                          as={TextField}
+                          name="serverIP"
+                          label="Server IP"
+                          variant="outlined"
+                          fullWidth
+                          error={
+                            touched.serverIP &&
+                            !!errors.serverIP
+                          }
+                          helperText={
+                            <ErrorMessage name="serverIP" />
+                          }
+                        />
+                        <Field
+                          as={TextField}
+                          name="serverOS"
+                          label="Server OS"
+                          variant="outlined"
+                          fullWidth
+                          error={
+                            touched.serverOS &&
+                            !!errors.serverOS
+                          }
+                          helperText={
+                            <ErrorMessage name="serverOS" />
+                          }
+                        />
+                      </>
+                    )}
                   </Box>
 
                   {/* RIGHT */}
@@ -484,7 +532,7 @@ const EditPasswordEntry = () => {
                     <Field
                       as={TextField}
                       name="serverUsername"
-                      label="Server Username"
+                      label={values.accessKind === "web" ? "Username" : "Server Username"}
                       variant="outlined"
                       fullWidth
                       error={
@@ -513,7 +561,7 @@ const EditPasswordEntry = () => {
                       }
                     >
                       <InputLabel htmlFor="server-password">
-                        Server Password
+                        {values.accessKind === "web" ? "Admin password" : "Server Password"}
                       </InputLabel>
 
                       <Field
@@ -549,7 +597,7 @@ const EditPasswordEntry = () => {
                             </IconButton>
                           </InputAdornment>
                         }
-                        label="Server Password"
+                        label={values.accessKind === "web" ? "Admin password" : "Server Password"}
                       />
 
                       <ErrorMessage
@@ -561,6 +609,17 @@ const EditPasswordEntry = () => {
                         }}
                       />
                     </FormControl>
+
+                    <Field
+                      as={TextField}
+                      name="passwordExpiresOn"
+                      label="Password expires on"
+                      type="date"
+                      variant="outlined"
+                      fullWidth
+                      InputLabelProps={{ shrink: true }}
+                      helperText="Optional. Leave blank if this password does not expire."
+                    />
                   </Box>
                 </Box>
 
@@ -580,6 +639,22 @@ const EditPasswordEntry = () => {
                   <FormLabel component="legend">
                     Assigned Users
                   </FormLabel>
+
+                  <TextField
+                    value={userQuery}
+                    onChange={(event) => setUserQuery(event.target.value)}
+                    label="Search users"
+                    size="small"
+                    fullWidth
+                    sx={{ mt: 1 }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Search fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
 
                   <FormGroup
                     sx={{
@@ -602,8 +677,12 @@ const EditPasswordEntry = () => {
                       >
                         No users found.
                       </Typography>
+                    ) : visibleUsers.length === 0 ? (
+                      <Typography color="text.secondary">
+                        No users match your search.
+                      </Typography>
                     ) : (
-                      users.map((user) => (
+                      visibleUsers.map((user) => (
                         <FormControlLabel
                           key={user._id}
                           control={
@@ -637,7 +716,7 @@ const EditPasswordEntry = () => {
                               }}
                             />
                           }
-                          label={user.username}
+                          label={userLabel(user)}
                         />
                       ))
                     )}
