@@ -92,7 +92,6 @@ export default function SendRequests() {
       row.merchantName,
       row.branchName?.companyName,
       row.branchName?.district?.districtName,
-      row.district?.districtName,
       row.site,
       row.contactName,
       row.merchantAddress,

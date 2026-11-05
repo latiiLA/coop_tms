@@ -151,7 +151,7 @@ const EditPOS = () => {
   const { currentUser } = useAuthContext();
   const userDistrict = idOf(currentUser?.district) || "";
   const initialDistrict =
-    idOf(row?.branchName?.district) || idOf(row?.district) || userDistrict || "";
+    idOf(row?.branchName?.district) || userDistrict || "";
 
   const [loading, setLoading] = useState(false);
   const submittingRef = useRef(false);

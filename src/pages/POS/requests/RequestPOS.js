@@ -208,7 +208,7 @@ const RequestPOSForm = () => {
   }, [isEdit, row, currentUser?.id, navigate]);
   // Accept populated refs or plain ids (some endpoints return ids only).
   const [selectedDistrict, setSelectedDistrict] = useState(
-    refId(row?.district) || userDistrict
+    refId(row?.branchName?.district) || userDistrict
   );
   const [users, setUsers] = useState([]);
   // True once the authorizer list for the selected district has loaded.
@@ -265,7 +265,7 @@ const RequestPOSForm = () => {
   const initialValues = {
     serialNumber: row?.serialNumber?._id || "",
     branchName: refId(row?.branchName) || "",
-    district: refId(row?.district) || userDistrict,
+    district: refId(row?.branchName?.district) || userDistrict,
     site: row?.site || "",
     merchantName: row?.merchantName || "",
     merchantAddress: row?.merchantAddress || "",

@@ -269,7 +269,7 @@ export const AtmFormSections = ({
             name="unitId"
             label="Unit ID"
             required
-            helperText="Whole number, unique per ATM type"
+            helperText="Whole number. Prefills from the latest in this family (CRM/CRM2 share; NCR is separate)."
             inputProps={{ inputMode: "numeric" }}
           />
         </FieldSlot>

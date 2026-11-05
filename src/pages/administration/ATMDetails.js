@@ -131,7 +131,7 @@ const ATMDetails = () => {
   // The district is populated on the terminal directly by getAllTerminal and
   // nested under branchName by getTerminal; support both shapes.
   const districtName =
-    row?.district?.districtName || row?.branchName?.district?.districtName;
+    row?.branchName?.district?.districtName;
 
   const status = row?.status;
   const isLifecycle = LIFECYCLE_STATUSES.includes(status);

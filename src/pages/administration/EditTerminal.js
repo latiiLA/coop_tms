@@ -77,7 +77,7 @@ const toFormValues = (row) => ({
   unitId: str(row.unitId),
   terminalId: str(row.terminalId),
   terminalName: str(row.terminalName),
-  district: str(idOf(row.district) || idOf(row.branchName?.district)),
+  district: str(idOf(row.branchName?.district)),
   branchName: str(idOf(row.branchName)),
   site: str(row.site),
   port: str(row.port),

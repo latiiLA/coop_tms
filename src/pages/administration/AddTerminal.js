@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
 import { Form, Formik } from "formik";
 import axios from "axios";
@@ -20,6 +20,21 @@ import {
   useDistrictOptions,
 } from "../../components/atm/atmFormShared";
 
+const fetchSuggestedUnitId = async (type) => {
+  const token = localStorage.getItem("token");
+  if (!token || !type) return null;
+  const response = await axios.get(
+    `${process.env.REACT_APP_API_URL}/terminal/suggestUnitId`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+      withCredentials: true,
+      params: { type },
+    }
+  );
+  const value = response.data?.suggestedUnitId;
+  return value === undefined || value === null ? null : String(value);
+};
+
 const AddTerminal = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuthContext();
@@ -31,6 +46,7 @@ const AddTerminal = () => {
   const [selectedDistrict, setSelectedDistrict] = useState(userDistrict);
   const [selectedType, setSelectedType] = useState("");
   const [selectedSite, setSelectedSite] = useState("");
+  const formikRef = useRef(null);
 
   const districts = useDistrictOptions();
   const { branches, branchesLoaded } = useBranchOptions(selectedDistrict);
@@ -38,7 +54,29 @@ const AddTerminal = () => {
   const portOptions = toPortOptions(availablePorts);
   const validationSchema = useMemo(() => buildAtmSchema(availablePorts), [availablePorts]);
 
-  const handleCreate = async (values) => {
+  useEffect(() => {
+    if (!selectedType) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const next = await fetchSuggestedUnitId(selectedType);
+        if (cancelled || !next) return;
+        // Refresh when ATM type changes (CRM/CRM2 share a sequence; NCR is separate).
+        formikRef.current?.setFieldValue("unitId", next, false);
+      } catch (error) {
+        if (!cancelled) {
+          toast.error(
+            error.response?.data?.message || "Could not load the suggested unit ID."
+          );
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedType]);
+
+  const handleCreate = async (values, setFieldValue) => {
     if (submittingRef.current) return;
     const token = localStorage.getItem("token");
     if (!token) {
@@ -58,6 +96,10 @@ const AddTerminal = () => {
       // Existing behaviour: open the new terminal's detail page.
       navigate("/atmdetail", { state: { row: response.data?.terminal } });
     } catch (error) {
+      const next = error.response?.data?.suggestedUnitId;
+      if (next != null && setFieldValue) {
+        setFieldValue("unitId", String(next), false);
+      }
       toast.error(error.response?.data?.message || error.message || "Something went wrong");
     } finally {
       submittingRef.current = false;
@@ -69,6 +111,7 @@ const AddTerminal = () => {
     <Box sx={{ width: "100%", display: "flex", justifyContent: "center", py: 2 }}>
       <Box sx={{ width: { xs: "100%", sm: "95%", md: "90%", lg: "80%" }, px: { xs: 1, sm: 0 } }}>
         <Formik
+          innerRef={formikRef}
           initialValues={{ ...ATM_INITIAL_VALUES, district: userDistrict }}
           validationSchema={validationSchema}
           onSubmit={(values) => {
@@ -146,7 +189,7 @@ const AddTerminal = () => {
                     onClick={() => {
                       const values = pendingValues;
                       setPendingValues(null);
-                      if (values) handleCreate(values);
+                      if (values) handleCreate(values, setFieldValue);
                     }}
                   >
                     Confirm
