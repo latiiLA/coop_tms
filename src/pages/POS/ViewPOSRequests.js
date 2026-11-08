@@ -95,7 +95,7 @@ export default function ViewPOSRequests() {
           .toLowerCase()
           .includes(searchText.toLowerCase());
       } else if (key === "district") {
-        return String(row[key]?.districtName)
+        return String(row.branchName?.district?.districtName || row[key]?.districtName || "")
           .toLowerCase()
           .includes(searchText.toLowerCase());
       } else if (key === "serialNumber") {

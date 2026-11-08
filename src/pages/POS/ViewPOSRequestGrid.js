@@ -291,7 +291,7 @@ const ViewPOSRequestGrid = ({
     ${rowData.serialNumber?.serialNumber || "-"}
     ${rowData.merchantName || "-"}
     ${rowData.branchName?.companyName || "-"}
-    ${rowData.district?.districtName || rowData.branchName?.district?.districtName || "-"}
+    ${rowData.branchName?.district?.districtName || "-"}
     ${rowData.site}
     ${rowData.merchantAddress}
     ${rowData.merchantPhonenumber}

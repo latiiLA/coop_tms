@@ -194,7 +194,7 @@ const ApprovePOSRequest = () => {
   }
 
   const districtName =
-    row?.branchName?.district?.districtName || row?.district?.districtName;
+    row?.branchName?.district?.districtName;
 
   const iconSx = { fontSize: 20 };
   const fieldsDisabled = !canAct || busy;
