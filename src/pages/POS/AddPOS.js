@@ -250,7 +250,6 @@ const AddPOS = () => {
       const response = await axios.post(`${apiUrl}/pos/createPos`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
         },
         withCredentials: true,
       });
