@@ -251,9 +251,19 @@ const AddPOS = () => {
       const response = await axios.post(`${apiUrl}/pos/createPos`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": undefined,
         },
-        withCredentials: true,
+        transformRequest: [
+          (data, headers) => {
+            if (data instanceof FormData) {
+              delete headers["Content-Type"];
+            }
+            return data;
+          },
+        ],
+        withCredentials: false,
+        timeout: 120000,
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
       });
 
       toast.success(response.data.message);
