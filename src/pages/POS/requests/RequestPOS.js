@@ -479,21 +479,25 @@ const RequestPOSForm = () => {
     });
     if (selectedFile) formData.append("file", selectedFile);
 
-    // Log the FormData content to check if all fields are appended correctly
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-
     try {
       // Never set Content-Type for FormData — the browser must add the
-      // multipart boundary. A bare "multipart/form-data" header makes Node
-      // drop the connection (ERR_CONNECTION_RESET / Firefox CORSDidNotSucceed).
+      // multipart boundary. Bearer auth is enough; skip cookies on upload.
       const multipartConfig = {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": undefined,
         },
-        withCredentials: true,
+        transformRequest: [
+          (data, headers) => {
+            if (data instanceof FormData) {
+              delete headers["Content-Type"];
+            }
+            return data;
+          },
+        ],
+        withCredentials: false,
+        timeout: 120000,
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
       };
 
       if (isEdit) {
