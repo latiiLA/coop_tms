@@ -242,24 +242,35 @@ const AddPOS = () => {
       return;
     }
 
-    const formData = new FormData();
-    Object.keys(values).forEach((key) => formData.append(key, values[key]));
-    if (selectedFile) formData.append("file", selectedFile);
+    // JSON + base64 — same path as Request POS (prod resets multipart uploads).
+    const payload = {};
+    Object.keys(values).forEach((key) => {
+      const value = values[key];
+      payload[key] = value == null ? "" : value;
+    });
 
     try {
-      // Let the browser set multipart Content-Type + boundary.
-      const response = await axios.post(`${apiUrl}/pos/createPos`, formData, {
+      if (selectedFile) {
+        const fileBase64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = String(reader.result || "");
+            resolve(result.includes(",") ? result.split(",")[1] : result);
+          };
+          reader.onerror = () =>
+            reject(reader.error || new Error("Failed to read file"));
+          reader.readAsDataURL(selectedFile);
+        });
+        payload.fileName = selectedFile.name;
+        payload.fileMimeType = selectedFile.type;
+        payload.fileBase64 = fileBase64;
+      }
+
+      const response = await axios.post(`${apiUrl}/pos/createPos`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        transformRequest: [
-          (data, headers) => {
-            if (data instanceof FormData) {
-              delete headers["Content-Type"];
-            }
-            return data;
-          },
-        ],
         withCredentials: false,
         timeout: 120000,
         maxBodyLength: Infinity,
