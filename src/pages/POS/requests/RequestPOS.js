@@ -464,36 +464,41 @@ const RequestPOSForm = () => {
       return;
     }
 
-    // Create FormData object and populate it with values and file.
-    // When serial is locked (not New), force the original device id.
-    const formData = new FormData();
+    // JSON + base64 upload. Prod was resetting multipart/form-data POSTs
+    // (server saw "aborted by client" within ~2ms of multer starting).
+    const payload = {};
     Object.keys(values).forEach((key) => {
       if (isEdit && key === "serialNumber" && !canEditSerial) {
-        formData.append(
-          key,
-          row?.serialNumber?._id || row?.serialNumber || values.serialNumber
-        );
+        payload[key] =
+          row?.serialNumber?._id || row?.serialNumber || values.serialNumber;
         return;
       }
-      formData.append(key, values[key]);
+      const value = values[key];
+      payload[key] = value == null ? "" : value;
     });
-    if (selectedFile) formData.append("file", selectedFile);
 
     try {
-      // Never set Content-Type for FormData — the browser must add the
-      // multipart boundary. Bearer auth is enough; skip cookies on upload.
-      const multipartConfig = {
+      if (selectedFile) {
+        const fileBase64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = String(reader.result || "");
+            resolve(result.includes(",") ? result.split(",")[1] : result);
+          };
+          reader.onerror = () =>
+            reject(reader.error || new Error("Failed to read file"));
+          reader.readAsDataURL(selectedFile);
+        });
+        payload.fileName = selectedFile.name;
+        payload.fileMimeType = selectedFile.type;
+        payload.fileBase64 = fileBase64;
+      }
+
+      const jsonConfig = {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        transformRequest: [
-          (data, headers) => {
-            if (data instanceof FormData) {
-              delete headers["Content-Type"];
-            }
-            return data;
-          },
-        ],
         withCredentials: false,
         timeout: 120000,
         maxBodyLength: Infinity,
@@ -503,18 +508,17 @@ const RequestPOSForm = () => {
       if (isEdit) {
         const response = await axios.put(
           `${apiUrl}/request/updateRequest/${row._id}`,
-          formData,
-          multipartConfig
+          payload,
+          jsonConfig
         );
 
-        // console.log("The ATM is successfully updated:", response.data);
         toast.success(response.data.message);
         navigate("/request/requeststatus");
       } else {
         const response = await axios.post(
           `${apiUrl}/request/newRequest`,
-          formData,
-          multipartConfig
+          payload,
+          jsonConfig
         );
 
         toast.success(response.data.message);
