@@ -485,34 +485,32 @@ const RequestPOSForm = () => {
     }
 
     try {
+      // Never set Content-Type for FormData — the browser must add the
+      // multipart boundary. A bare "multipart/form-data" header makes Node
+      // drop the connection (ERR_CONNECTION_RESET / Firefox CORSDidNotSucceed).
+      const multipartConfig = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": undefined,
+        },
+        withCredentials: true,
+      };
+
       if (isEdit) {
         const response = await axios.put(
           `${apiUrl}/request/updateRequest/${row._id}`,
           formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-          }
+          multipartConfig
         );
 
         // console.log("The ATM is successfully updated:", response.data);
         toast.success(response.data.message);
         navigate("/request/requeststatus");
       } else {
-        // Do not set Content-Type manually: the browser must add the multipart
-        // boundary. A bare "multipart/form-data" header breaks the upload and
-        // can surface in the browser as NS_ERROR_NET_RESET / a fake CORS error.
         const response = await axios.post(
           `${apiUrl}/request/newRequest`,
           formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-          }
+          multipartConfig
         );
 
         toast.success(response.data.message);

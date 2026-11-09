@@ -247,9 +247,11 @@ const AddPOS = () => {
     if (selectedFile) formData.append("file", selectedFile);
 
     try {
+      // Let the browser set multipart Content-Type + boundary.
       const response = await axios.post(`${apiUrl}/pos/createPos`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": undefined,
         },
         withCredentials: true,
       });
