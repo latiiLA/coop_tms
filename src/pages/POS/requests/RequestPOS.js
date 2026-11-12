@@ -478,7 +478,9 @@ const RequestPOSForm = () => {
     });
 
     try {
-      if (selectedFile) {
+      // Only encode a newly chosen File. On edit, selectedFile may be the
+      // existing row.file metadata object (not a Blob) — keep that server-side.
+      if (isNewFile) {
         const fileBase64 = await new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = () => {
